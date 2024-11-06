@@ -1,0 +1,7 @@
+AuthName "myquip.24livehost.com statistics"
+AuthType Basic
+AuthUserFile /home/myquip/.stats-htpasswd
+require valid-user
+<Files .stats-htpasswd>
+deny from all
+</Files>

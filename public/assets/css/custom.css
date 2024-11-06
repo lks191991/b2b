@@ -1,0 +1,496 @@
+.list-grid-product-wrap.list-group-wrapper .item {
+  width: 100%;
+  background-color: var(--white-color); 
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.08);
+  margin: 20px;
+  padding: 0px;
+}
+
+.package-card {
+  padding: 20px;
+  border-radius: 0px;
+ background-color: var(--white-color); 
+  box-shadow: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.primary-btn1-sm {
+  border-radius: 5px;
+  background-color: var(--primary-color1);
+  font-family: var(--font-rubik);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--white-color);
+  letter-spacing: 0.48px;
+  text-transform: capitalize;
+  line-height: 1;
+  padding: 10px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.5s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.checkout-page .cart-body ul .single-item .item-area .main-item .item-img {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.breadcrumb-section {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 50px 0 50px;
+}
+
+.form-inner label {
+  color: #5d5b58;
+  font-family: var(--font-rubik);
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-block;
+  line-height: 1;
+  margin-bottom: 7px;
+  text-align: left;
+  width: 100%;
+}
+
+.room-suits-card .room-img a img {
+  border-radius: 5px 0 0 5px;
+  /* height: 100%; */
+  -o-object-fit: contain;
+  object-fit: contain;
+  max-width: 100%;
+  width: auto;
+    max-height: 200px;
+  height: auto;
+  }
+  
+  .home1-banner-bottom .filter-wrapper .nav-buttons {
+    display: flex;
+    align-items: left; 
+   justify-content: left;
+}
+
+@media (max-width: 1399px)
+{
+	.login-form-area {
+    padding: 30px 30px;
+}
+}
+.login-form-area {
+	
+	
+
+    
+background: #fff;
+   border-radius: 20px;
+   	  padding: 30px 35px;
+
+	
+    box-shadow: 0px 0px 30px -2px rgba(0, 0, 0, 0.08);
+}
+.footer-section .footer-top {
+    padding-top: 30px;
+    padding-bottom: 95px;
+}
+.feature-card-section .login-bg-4 {
+    position: absolute;
+    /* top: -40%; */
+    /* right: 0; */
+    z-index: -1; 
+}
+.login-form-area .form-inner input {
+    border: 1px solid var(--title-color);
+    border-radius: 200px;
+    background-color: transparent;
+    width: 100%;
+    height: 46px;
+    color: var(--title-color);
+    font-family: var(--font-rubik);
+    font-size: 13px;
+    padding: 15px 20px;
+}
+
+.login-form-area .login-btn {
+    border-radius: 35px;
+    background-color: var(--title-color);
+    font-family: var(--font-rubik);
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--white-color);
+    letter-spacing: 0.48px;
+    text-transform: capitalize;
+    line-height: 1;
+    padding: 15px 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.sign-up-btn {
+    border-radius: 35px;
+    background-color: var(--white-color);
+    border: 1px solid var(--title-color);
+    font-family: var(--font-rubik);
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--title-color);
+    letter-spacing: 0.48px;
+    text-transform: capitalize;
+    line-height: 1;
+    padding: 10px 26px!important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: 0.5s;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.login-form-area .divider {
+    position: relative;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-form-area .divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    background-color: #DBDBDB;
+    width: 100%;
+    height: 1px;
+}
+.package-inner-title-section {
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 25px 0px rgba(16, 16, 16, 0.25);
+}
+
+.package-inner-title-section .nice-select {
+    border: none;
+    background-color: #F3F3F3;
+}
+
+.room-suits-card .room-img {
+     height: 100%; 
+     display: block;
+     width: auto;
+	max-width: 100%;
+    height: auto;
+	 max-height: 100%;
+     position: inherit;
+    border-radius: 5px 0 0 5px; 
+}
+.room-suits-card .room-img::after {
+   
+    position: inherit;
+    top: 0;
+    left: 0;
+    width: auto;
+	max-width: 100%;
+    height: auto;
+	 max-height: 100%;
+    background: none;
+    border-radius: 5px 5px 0 0;
+    z-index: 1;
+}
+.right-sidebar-menu {
+	background: none;
+	background-color: #fff;
+	
+}
+.room-img{
+    min-height: 250px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+
+}
+
+table.rounded-corners {
+    border-spacing: 0;
+    border-collapse: separate;
+    border-radius: 10px !important;
+    font-size:10pt;
+  }
+  
+   table.rounded-corners th, table.rounded-corners td {
+    /* border: 1px solid #dee2e6; */
+    padding: 5px;
+    vertical-align: middle;
+  }
+   table.rounded-corners {
+    border-spacing: 0;
+    border-collapse: separate;
+    border-radius: 10px;
+    border: 1px solid #f5f5f5;
+  }
+  
+   table.rounded-corners {
+   border-spacing: 0;
+   border-collapse: separate;
+   border-radius: 5px;
+   border: 1px solid #f5f5f5;
+  }
+  
+  /* Apply a border to the right of all but the last column */
+  table.rounded-corners th:not(:last-child),
+  table.rounded-corners td:not(:last-child) {
+   /* border-right: 1px solid #dee2e6; */
+  }
+  
+  /* Apply a border to the bottom of all but the last row */
+  table.rounded-corners>thead>tr:not(:last-child)>th,
+  table.rounded-corners>thead>tr:not(:last-child)>td,
+  table.rounded-corners>tbody>tr:not(:last-child)>th,
+  table.rounded-corners>tbody>tr:not(:last-child)>td,
+  table.rounded-corners>tfoot>tr:not(:last-child)>th,
+  table.rounded-corners>tfoot>tr:not(:last-child)>td,
+  table.rounded-corners>tr:not(:last-child)>td,
+  table.rounded-corners>tr:not(:last-child)>th,
+  table.rounded-corners>thead:not(:last-child),
+  table.rounded-corners>tbody:not(:last-child),
+  table.rounded-corners>tfoot:not(:last-child) {
+   border-bottom: 1px solid #f5f5f5;
+  }
+  #activities-list-blade .table thead th {
+    vertical-align: middle;
+     border-bottom: none;
+  }
+  
+  table.rounded-corners th {
+    background-color: #f5f5f5;
+    color: #3b444f;
+  }
+  
+  table.rounded-corners {
+   /* Change these properties */
+   --border: 1px solid #f5f5f5;
+   border-radius: 5px;
+   
+  margin-top: 20px;
+   /* Don't change these properties */
+   border-spacing: 0;
+   border-collapse: separate;
+   border: var(--border);
+   overflow: hidden;
+   font-size: 9pt;
+  }
+
+
+  table.rounded-corners input, table.rounded-corners select {
+  
+    font-size: 9pt;
+   }
+
+   table.rounded-corners .primary-btn1-sm {
+    border-radius: 5px;
+    background-color: var(--primary-color1);
+    font-family: var(--font-rubik);
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--white-color);
+    letter-spacing: 0.48px;
+    text-transform: capitalize;
+    line-height: 1;
+    padding: 5px 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.5s;
+    position: relative;
+    /* overflow: hidden; */
+    /* z-index: 1; */
+    white-space: nowrap;
+}
+  
+  /* Apply a border to the right of all but the last column */
+  table.rounded-corners th:not(:last-child),
+  table.rounded-corners td:not(:last-child) {
+   /* border-right: var(--border); */
+  }
+  
+  /* Apply a border to the bottom of all but the last row */
+  table.rounded-corners>thead>tr:not(:last-child)>th,
+  table.rounded-corners>thead>tr:not(:last-child)>td,
+  table.rounded-corners>tbody>tr:not(:last-child)>th,
+  table.rounded-corners>tbody>tr:not(:last-child)>td,
+  table.rounded-corners>tfoot>tr:not(:last-child)>th,
+  table.rounded-corners>tfoot>tr:not(:last-child)>td,
+  table.rounded-corners>tr:not(:last-child)>td,
+  table.rounded-corners>tr:not(:last-child)>th,
+  table.rounded-corners>thead:not(:last-child),
+  table.rounded-corners>tbody:not(:last-child),
+  table.rounded-corners>tfoot:not(:last-child) {
+   border-bottom: var(--border);
+  }
+  table.rounded-corners tbody tr:hover {
+    background-color: #efefef;
+  }
+  .checkout-page .inquiry-form {
+    border-radius: 10px;
+    background: linear-gradient(125deg, rgba(99, 171, 69, 0.1) 0%, rgba(251, 176, 59, 0.1) 100%);
+    padding: 15px;
+}
+
+.right-sidebar-menu .sidebar-content-wrap {
+    padding: 0 30px;
+    height: 350px;
+    overflow: auto;
+}
+
+.right-sidebar-menu .sidebar-content-wrap ul li {
+    font-size: 9pt;
+}
+
+.right-sidebar-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    z-index: 99999;
+    height: 100%;
+    overflow: auto;
+    background-image: url(../img/sidebar-bg.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-color: var(--white-color);
+    border-right: 1px solid #eee;
+    transform: translateX(120%);
+    transform-origin: right;
+    transition: transform 0.5s ease-in;
+    box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.03);
+}
+
+.right-sidebar-menu .sidebar-bottom {
+    padding: 10px;
+    border-top: 1px solid rgba(16, 12, 8, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.login-outter{
+  min-height: 550px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+
+}
+
+header.style-3
+{
+	-webkit-box-shadow: 0px 5px 10px 0px rgba(16, 16, 16, 0.25);
+-moz-box-shadow: 0px 5px 10px 0px rgba(16, 16, 16, 0.25);
+box-shadow: 0px 5px 10px 0px rgba(16, 16, 16, 0.25);
+}
+
+.room-suits-card {
+    border: 1px solid #eee;
+    border-radius: 5px;
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(16, 16, 16, 0.25);
+    -moz-box-shadow: 0px 2px 5px 0px rgba(16, 16, 16, 0.25);
+    box-shadow: 0px 2px 5px 0px rgba(16, 16, 16, 0.25);
+}
+
+.room-suits-card:hover {
+    border: 1px solid #eee;
+    border-radius: 5px;
+    -webkit-box-shadow: 0px 5px 10px 0px rgba(16, 16, 16, 0.25);
+    -moz-box-shadow: 0px 5px 10px 0px rgba(16, 16, 16, 0.25);
+    box-shadow: 0px 5px 10px 0px rgba(16, 16, 16, 0.25);
+}
+
+.sidebar-area .single-widget {
+    padding: 25px;
+    border-radius: 5px;
+    box-shadow: 0px 5px 25px 0px rgba(16, 16, 16, 0.25);
+}
+select {
+    word-wrap: normal;
+    border: solid #63AB45 1px;
+    padding: 5px;
+}
+
+.login-form-area .form-inner {
+    position: relative;
+    line-height: 1;
+}
+
+.login-form-area .form-inner > i {
+    position: absolute;
+    right: 20px;
+    bottom: 15px;
+    color: var(--primary-color1);
+    cursor: pointer;
+}
+
+#pagination_ajax {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.paginations {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+ .paginations-buttons {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.paginations .page-item.active a {
+    background-color: var(--primary-color1);
+}
+
+.paginations .page-item a {
+    color: var(--title-color);
+    font-family: var(--font-jost);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(22, 25, 30, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

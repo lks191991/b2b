@@ -1,0 +1,198 @@
+.red {
+    color: #dc3545;
+}
+
+.pagination svg {
+    height: 20px;
+}
+
+.pagination .flex.justify-between.flex-1.sm\:hidden {
+    display: none;
+}
+
+.pagination .flex.items-center.justify-between {
+    width: 100%;
+    padding: 10px;
+}
+
+.pagination .hidden.sm\:flex-1.sm\:flex.sm\:items-center.sm\:justify-between div:first-child {
+    float: left;
+}
+
+.pagination .hidden.sm\:flex-1.sm\:flex.sm\:items-center.sm\:justify-between div {
+    float: right;
+}
+
+#togglePassword {
+    margin-left: -30px;
+    cursor: pointer;
+}
+
+.form-control.pass {
+    display: inline-block;
+}
+
+.generate-pass.button {
+    float: right;
+}
+
+.profile-image {
+    border-radius: 500px;
+    border: solid 5px #17a2b8;
+    overflow: hidden;
+    display: inline-block;
+    width: 250px;
+    height: 250px;
+    margin-right: 30px;
+    background-color: #fff;
+}
+
+.profile-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+header.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.clear {
+    clear: both;
+}
+
+.profile-content {
+    flex: 1;
+}
+
+.profile-content label {
+    display: block;
+    margin-bottom: 0;
+}
+
+.info a {
+    color: #17a2b8;
+}
+
+.card-header {
+   /*  background-color: #083F60; */
+    color: #fff;
+}
+.card.card-primary .card-header {
+     background-color: #fff; 
+    color: #fff;
+}
+
+.profile-image-td {
+    border-radius: 500px;
+    border: solid 2px #17a2b8;
+    overflow: hidden;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    margin-right: 0;
+    background-color: #fff;
+}
+
+[class*=sidebar-dark-] {
+    background-color: #1a1c1e;
+}
+
+.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
+    background-color: #2ba0a6;
+}
+
+
+.bg-row{border:1px solid #ced4da;padding:2px }
+
+.slider-outer {
+    max-width: 500px;
+}
+
+.slider-outer .owl-theme .owl-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    right: 0;
+    height: 0;
+    margin: 0;
+	    display: flex;
+    justify-content: space-between;
+}
+
+.slider-outer .owl-carousel .owl-nav button.owl-next, .slider-outer .owl-carousel .owl-nav button.owl-prev {
+    font-size: 40px;
+    color: #fff;
+    line-height: 25px;
+    margin: 0 10px;
+    background-color: #2ba0a6;
+    margin-top: -35px;
+    padding: 0px 8px !important;
+}
+
+#loader-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.hide {
+  display:none;
+}
+
+.show {
+  display:block;
+}
+.btn:hover{color:#fff !important;}
+.btn-default:hover{color:#000 !important;}
+
+.card-title {
+    color: #212529;
+}
+.error{
+	color:#dc3545;
+}
+
+.small-box p{
+	color:#fff!important;
+}
+
+
+
+/* Change border color when there is an error */
+#cartForm .form-control.error:invalid {
+    border-color: #dc3545!important; /* Change this to the desired color */
+}
+.form-control.error-rq {
+   border-color: #dc3545!important; /* Change this to the desired color */
+}
+
+/* Hide error label by default */
+label.error {
+    display: none!important; /* Change this to the desired color */
+}

@@ -1,0 +1,673 @@
+@font-face {
+  font-family: Rubik;
+  src: url('../fonts/Rubik-Regular.ttf');
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body
+{
+  font-family: "Rubik", Helvetica, Arial, sans-serif;
+  font-size: .9rem;
+}
+p {
+  color: #77838f;
+  line-height: 1.7;
+}
+.btn-link 
+{
+  color: #000 !important;
+
+}
+.btn-link:hover
+{
+  color: #000 !important;
+  font-weight: 500 !important;
+}
+a
+{
+  color: #000!important;
+  
+}
+a:hover
+{
+  color: #000 !important;
+ 
+  font-weight: 500 !important;
+}
+.mb-10
+{
+  margin-bottom: 10px;
+}
+.text-dark {
+  color: #3b444f !important;
+}
+.text-color
+{
+  color: #77838f !important;
+}
+.font-size-21 {
+  font-size: 1.313rem;
+}
+#activities-list-blade .card-title a
+{
+  font-size: 1.313rem !important;
+  color: #3b444f !important;
+  font-weight: 500 !important;
+}
+.card-primary.card-outline {
+  border-top: 3px solid #007bff;
+}
+.login-page
+{
+    background: white url('../../main_banner.jpg') no-repeat;
+    background-size: cover;
+}
+
+.btn-primary {
+    color: #fff !important;
+    background-color: #b72925;
+    border-color: #b72925;
+    box-shadow: none;
+}
+.btn-primary:active {
+  color: #b72925!important;
+  background-color:transparent;
+  border: 2px solid #b72925;
+  box-shadow: none;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle {
+  color: #fff!important;
+  background-color: #b72925;
+  border-color: #b72925;
+}
+
+.btn-primary.focus, .btn-primary:focus {
+  color: #fff!important;
+  background-color: #b72925;
+  border-color: #b72925;
+  box-shadow: 0 0 0 0 rgba(38,143,255,.5);
+}
+
+
+.btn-primary:hover {
+  
+    color: #b72925!important;
+    background-color:transparent;
+    border: 1px solid #b72925;
+    box-shadow: none;
+}
+
+
+input:focus, select:focus {
+  border: 1px solid #b72925;
+}
+.btn-primary-flip {
+  color: #b72925!important;
+  background-color:transparent;
+  border: 2px solid #b72925;
+  box-shadow: none;
+}
+.btn-primary-flip:active {
+  color: #b72925!important;
+  background-color:transparent;
+  border: 2px solid #b72925;
+  box-shadow: none;
+}
+
+.btn-primary-flip:not(:disabled):not(.disabled).active, .btn-primary-flip:not(:disabled):not(.disabled):active, .show>.btn-primary-flip.dropdown-toggle {
+color: #fff!important;
+background-color: #b72925;
+border-color: #b72925;
+}
+
+.btn-primary-flip.focus, .btn-primary-flip:focus {
+color: #fff!important;
+background-color: #b72925;
+border-color: #b72925;
+box-shadow: 0 0 0 0 rgba(38,143,255,.5);
+}
+.btn-primary-flip:hover 
+{
+  color: #fff!important;
+  background-color:#b72925;
+  border: 1px solid #b72925;
+}
+
+.btn-success {
+    color: #fff!important;
+    background-color: #14344b;
+    border-color: #14344b;
+    box-shadow: none;
+}
+
+.btn-success:hover {
+    color: #14344b!important;
+    background-color: transparent;
+    border: 1px solid #14344b;
+    box-shadow: none;
+}
+
+.btn-success:not(:disabled):not(.disabled).active, .btn-success:not(:disabled):not(.disabled):active, .show>.btn-success.dropdown-toggle {
+  color: #fff!important;
+  background-color: #14344b;
+  border-color: #14344b;
+}
+
+.btn-success.focus, .btn-success:focus {
+  color: #fff!important;
+  background-color: #14344b;
+  border-color: #14344b;
+  box-shadow: 0 0 0 0 rgba(38,143,255,.5);
+}
+
+
+.btn-secondary {
+  color: #fff!important;
+  background-color: #6c757d;
+  border-color: #6c757d;
+  box-shadow: none;
+}
+
+.btn-secondary:hover {
+  color: #6c757d!important;
+  background-color: transparent;
+  border: 1px solid #6c757d;
+  box-shadow: none;
+}
+
+.btn-secondary.focus, .btn-secondary:focus {
+  color: #fff!important;
+  background-color: #6c757d;
+  border-color: #6c757d;
+  box-shadow: 0 0 0 0 rgba(38,143,255,.5);
+}
+
+.btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
+color: #fff!important;
+background-color: #6c757d;
+border-color: #6c757d;
+}
+
+
+.card-primary.card-outline {
+  border-top: 3px solid #b72925;
+}
+
+.login-div
+{
+margin: 10px auto; 
+border-radius: 5px; 
+}
+
+.login-box
+{
+margin: 50px auto;  
+}
+
+.login-box .card, .login-div .card
+{
+  margin: 0px;  
+}
+
+.login-box a, .login-div a 
+{
+  font-size: 0.9rem;
+
+}
+
+/* #C78132*/
+
+
+/*id="activities-list-blade"*/
+
+#activities-list-blade h3
+{
+    color: #3b444f;
+}
+#activities-list-blade .form-control {
+    display: block;
+    width: 100%;
+    height: calc(2.25rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-shadow: inset 0 0 0 transparent;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    text-align: left;
+}
+
+#activities-list-blade .card-body {
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 0.75rem;
+}
+table.rounded-corners {
+  border-spacing: 0;
+  border-collapse: separate;
+  border-radius: 10px !important;
+  font-size:10pt;
+}
+
+ table.rounded-corners th, table.rounded-corners td {
+  /* border: 1px solid #dee2e6; */
+  padding: 5px;
+  vertical-align: middle;
+}
+ table.rounded-corners {
+  border-spacing: 0;
+  border-collapse: separate;
+  border-radius: 10px;
+  border: 1px solid #f5f5f5;
+}
+
+ table.rounded-corners {
+ border-spacing: 0;
+ border-collapse: separate;
+ border-radius: 5px;
+ border: 1px solid #f5f5f5;
+}
+
+/* Apply a border to the right of all but the last column */
+table.rounded-corners th:not(:last-child),
+table.rounded-corners td:not(:last-child) {
+ /* border-right: 1px solid #dee2e6; */
+}
+
+/* Apply a border to the bottom of all but the last row */
+table.rounded-corners>thead>tr:not(:last-child)>th,
+table.rounded-corners>thead>tr:not(:last-child)>td,
+table.rounded-corners>tbody>tr:not(:last-child)>th,
+table.rounded-corners>tbody>tr:not(:last-child)>td,
+table.rounded-corners>tfoot>tr:not(:last-child)>th,
+table.rounded-corners>tfoot>tr:not(:last-child)>td,
+table.rounded-corners>tr:not(:last-child)>td,
+table.rounded-corners>tr:not(:last-child)>th,
+table.rounded-corners>thead:not(:last-child),
+table.rounded-corners>tbody:not(:last-child),
+table.rounded-corners>tfoot:not(:last-child) {
+ border-bottom: 1px solid #f5f5f5;
+}
+#activities-list-blade .table thead th {
+  vertical-align: middle;
+   border-bottom: none;
+}
+
+table.rounded-corners th {
+  background-color: #f5f5f5;
+  color: #3b444f;
+}
+
+table.rounded-corners {
+ /* Change these properties */
+ --border: 1px solid #f5f5f5;
+ border-radius: 5px;
+ 
+
+ /* Don't change these properties */
+ border-spacing: 0;
+ border-collapse: separate;
+ border: var(--border);
+ overflow: hidden;
+}
+
+/* Apply a border to the right of all but the last column */
+table.rounded-corners th:not(:last-child),
+table.rounded-corners td:not(:last-child) {
+ /* border-right: var(--border); */
+}
+
+/* Apply a border to the bottom of all but the last row */
+table.rounded-corners>thead>tr:not(:last-child)>th,
+table.rounded-corners>thead>tr:not(:last-child)>td,
+table.rounded-corners>tbody>tr:not(:last-child)>th,
+table.rounded-corners>tbody>tr:not(:last-child)>td,
+table.rounded-corners>tfoot>tr:not(:last-child)>th,
+table.rounded-corners>tfoot>tr:not(:last-child)>td,
+table.rounded-corners>tr:not(:last-child)>td,
+table.rounded-corners>tr:not(:last-child)>th,
+table.rounded-corners>thead:not(:last-child),
+table.rounded-corners>tbody:not(:last-child),
+table.rounded-corners>tfoot:not(:last-child) {
+ border-bottom: var(--border);
+}
+table.rounded-corners tbody tr:hover {
+  background-color: #efefef;
+}
+#activities-list-blade .card-body-hover:hover
+{
+  background-color: #efefef;
+}
+
+#activities-list-blade .card-header{
+  border-bottom: none!important;
+}
+#activities-list-blade .form-control:disabled, .form-control[readonly] {
+    background-color: #fff;
+    opacity: 1;
+}
+
+#activities-list-blade .disabled-date { background-color: #ccc; }
+#activities-list-blade .available-date { background-color: #b2ffb2; }
+#activities-list-blade .disabled-day { background-color: #FF00B9; }
+
+
+.ui-widget-header {
+     border: 1px solid #fff; 
+    background: transparent;
+    color: #333;
+    font-weight: bold;
+}
+.available-date
+{
+    color: #fff!important;
+    background-color: #b72925;
+    border: 2px solid #fff;
+    text-align: center;
+
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
+    color: #fff!important;
+    background-color: #b72925;
+    font-weight: normal;
+    text-align: center;
+    
+}
+#div-cart-list
+{
+  padding: 7px;
+}
+#div-cart-list .card
+{
+  box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+  margin-bottom: 1rem;
+  border-radius: 7px;
+  position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0 solid rgba(0,0,0,.125);
+    border-radius: 1.25rem;
+}
+#div-cart-list .card-body {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  min-height: 1px;
+  padding: 0.40rem 0.75rem;
+}
+#div-cart-list .card-body-hover:hover
+{
+  background-color: #efefef;
+  border-radius: 1.25rem;
+
+  -webkit-box-shadow: 1px 0px 22px -8px rgba(0,0,0,0.75);
+-moz-box-shadow: 1px 0px 22px -8px rgba(0,0,0,0.75);
+box-shadow: 1px 0px 22px -8px rgba(0,0,0,0.75);
+}
+.border-round {
+  border-radius: 50%;
+  padding: 0px;
+  width: 20px;
+  height: 20px;
+  color: #fff!important;
+}
+#div-cart-list ul
+{
+  margin-bottom: 2px;
+}
+#div-cart-list ul.list-unstyled
+{
+  font-size:12px;
+  color:#000;
+}
+.color-black
+{
+  color:#000 !important;
+}
+.color-grey
+{
+  color:#808080 !important;
+}
+.no-padding-tb
+{
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+.cart-title
+{
+  color: #000;
+  font-size: 14px;
+  font-weight: bold;
+}
+.cart-delete
+{
+  color: #C82333;
+  font-size:9pt; 
+}
+.main-footer
+{
+  background-color: #E8D3AB;
+}
+
+@media (min-width: 768px)
+{
+  body.login-page:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .content-wrapper, body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-footer, body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header 
+  {
+    transition: margin-left .3s ease-in-out;
+    margin-left: 0px;
+   
+
+  }
+}
+
+
+  body.login-page .main-footer 
+  {
+   
+   width: 100%;
+  }
+  .login-page, .register-page 
+  {
+    
+    overflow: auto;
+    display: block;
+  }
+  .login-form
+  {
+    max-height: 600px;
+    overflow: auto;
+  }
+.background-bg-1
+{
+  background-color: #E8D3AB;
+}
+.background-white
+{
+  background-color: #FFFFFF;
+}
+.mt-10
+{
+  margin-top: 10px;
+}
+.mt-20
+{
+  margin-top: 20px;
+}
+.sign-up-icon
+{
+  background: white; 
+  padding: 10px; 
+  border-radius: 50%; 
+  width: 40px; 
+  height: 40px; 
+  margin: 20px auto 10px auto;
+}
+.sidebar .nav-item a, .sidebar .nav-item a p 
+{
+  color: #fff!important;
+  
+}
+.sidebar .nav-item a:hover
+{
+  color: #fff!important;
+  
+}
+.btn-info, .btn-info i, .btn-info a, .btn-primary i,  .btn-primary a, .btn-secondary i,  .btn-secondary a, .btn-secondary i,  .btn-secondary a
+{
+  color: #fff!important;
+}
+.btn-info .btn-tool 
+{
+  color: #17a2b8!important;
+}
+.fixme
+{
+  background-color: #b72925;
+  padding: 10px;
+  color: #fff;
+  width:100%;
+  z-index: 999!important;
+  border-radius: 5px;
+  margin: 10px 0px 30px 0px;
+}
+
+.fixme a
+{
+   color: #fff!important;
+}
+
+.p-30
+{
+  padding: 30px 0px;
+}
+
+/* Multistep */
+/* See below for SASS (allows you easily set dot radius and progress bar thickness and adjusts everything else! */
+.multistep .multistep-step {
+  padding: 0;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+  .multistep .multistep-step .multistep-stepname {
+      margin-bottom: 16px;
+      color: #595959;
+      font-size: 1.6rem;
+      white-space: nowrap;
+  }
+
+  .multistep .multistep-step .multistep-dot {
+      position: absolute;
+      right: 50%;
+      left: 50%;
+      width: 32px;
+      height: 32px;
+      display: block;
+      margin-top: -16px;
+      margin-left: -15.5px;
+      border-radius: 50%;
+      background: #f5f5f5;
+      /* Inner Dot */
+  }
+
+      .multistep .multistep-step .multistep-dot:after {
+          content: ' ';
+          border-radius: 50px;
+          position: absolute;
+          top: 8px;
+          bottom: 8px;
+          left: 8px;
+          right: 8px;
+          background: #e0e0e0;
+      }
+
+  .multistep .multistep-step .progress {
+      position: absolute;
+      width: 100%;
+      height: 10.56px;
+      margin-top: -5.28px;
+      box-shadow: none;
+      border-radius: 0;
+  }
+
+      .multistep .multistep-step .progress .progress-bar {
+          width: 0px;
+          box-shadow: none;
+          background: #808080;
+      }
+
+  .multistep .multistep-step:first-child > .progress {
+      left: 50%;
+      width: 50%;
+  }
+
+  .multistep .multistep-step:last-child > .progress {
+      width: 50%;
+  }
+
+  .multistep .multistep-step.complete .multistep-dot {
+      background: #808080;
+  }
+
+      .multistep .multistep-step.complete .multistep-dot:after {
+          /*  /* background: #fbbd19; */ */
+      }
+
+  .multistep .multistep-step.complete .progress > .progress-bar {
+      width: 100%;
+  }
+
+  .multistep .multistep-step.next:hover .multistep-dot {
+      background: #808080;
+  }
+
+      .multistep .multistep-step.next:hover .multistep-dot:after {
+           /* background: #fbbd19; */
+      }
+
+  .multistep .multistep-step.current .multistep-dot {
+      background: #808080;
+  }
+
+      .multistep .multistep-step.current .multistep-dot:after {
+           /* background: #fbbd19; */
+      }
+
+  .multistep .multistep-step.current .progress > .progress-bar {
+      width: 50%;
+  }
+
+  .multistep .multistep-step.current:first-child > .progress > .progress-bar {
+      width: 0%;
+  }
+
+  .multistep .multistep-step.current:last-child > .progress > .progress-bar {
+      width: 100%;
+  }
+
+  .multistep .multistep-step a.multistep-dot {
+      pointer-events: none;
+  }
+
+  .multistep .multistep-step.next a.multistep-dot {
+      pointer-events: all;
+  }
+.cke_notifications_area {
+    display: none!important;
+}
