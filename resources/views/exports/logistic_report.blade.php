@@ -7,6 +7,7 @@
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
+					<th>ID</th>
 					<th>Booking #</th>
                     <th>Service Date</th>
 					<th>Time Slot</th>
@@ -33,6 +34,8 @@
 					<th>TFR Supplier</th>
 					<th>TFR SP</th>
 					<th>TFR Net Cost</th>
+					<th>TFR Supplier2</th>
+					<th>TFR Net Cost2</th>
 					<th>Guest WA Group Name</th>
 					<th>Vouchered By</th>
                   </tr>
@@ -46,6 +49,7 @@
 					$vouchered_by = SiteHelpers::getUserName($record->voucher->vouchered_by);
 				 @endphp
                    <tr>
+					<td>{{$record->id}}</td>
 					<td>{{($record->voucher)?$record->voucher->code:''}}</td>
                     <td>
 					{{$record->tour_date}}
@@ -94,6 +98,8 @@
 					{{$record->original_trans_rate-$record->discount_sic_pvt_price}}
 					</td>
 					<td>{{$record->actual_transfer_cost}}</td>
+					<td>{{($record->suppliertransfer2)?$record->suppliertransfer2->company_name:''}}</td>
+					<td>{{$record->actual_transfer_cost2}}</td>
 					<td>{{($record->voucher)?$record->voucher->whatsapp_group:''}}</td>
 					<td>{{ $vouchered_by }}
                   </tr>

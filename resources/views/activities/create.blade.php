@@ -1,5 +1,19 @@
 @extends('layouts.app')
 @section('content')
+<style>
+  #dropdownList {
+      border: 1px solid #ddd;
+      background-color: #fff;
+  }
+
+  #dropdownList .list-group-item {
+      cursor: pointer;
+  }
+
+  #dropdownList .list-group-item:hover {
+      background-color: #f0f0f0;
+  }
+</style>
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -155,6 +169,12 @@
 				<option value="">--select--</option>
 				</select>
               </div>
+              <div class="form-group col-md-12">
+                <label for="searchInput">Select Tour:</label>
+                <input type="text" id="searchInput" class="form-control" name="tourName" placeholder="Type to search..." autocomplete="off">
+                <input type="hidden" id="hiddenInput" name="tourId"> <!-- Hidden input for ID -->
+                <ul id="dropdownList" class="list-group position-absolute w-100" style="display: none; max-height: 200px; overflow-y: auto; z-index: 1000;"></ul>
+          </div>
 			   <div class="form-group col-md-12">
                 <label for="inputName">Tags: <span class="red">*</span></label>
                <select name="tags[]" id="tags" class="form-control select2" multiple>
@@ -234,7 +254,7 @@
 					          <option value="0" @if(old('popularity') ==0) {{'selected="selected"'}} @endif >No</option>
                  </select>
               </div>
-			  
+              
 			 
 			  
 			 <div class="form-group col-md-6">
@@ -292,7 +312,79 @@
 		}
 	});
 });
-       
+$(document).ready(function () {
+    let debounceTimer;
+    $('#searchInput').on('focus', function () {
+        $.ajax({
+            url: "{{ route('search.dropdown') }}", // Laravel route for fetching top 5 records
+            method: 'GET',
+            success: function (data) {
+                let dropdownList = $('#dropdownList');
+                dropdownList.empty(); // Clear existing list
+
+                if (data.length > 0) {
+                    dropdownList.show(); // Show dropdown
+                    data.forEach(item => {
+                        dropdownList.append(
+                            `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName}</li>`
+                        );
+                    });
+                } else {
+                    dropdownList.hide(); // Hide dropdown if no results
+                }
+            },
+            error: function () {
+                console.error('Error fetching data');
+            }
+        });
+    });
+    // Search input keyup event with debounce
+    $('#searchInput').on('keyup', function () {
+        let query = $(this).val();
+
+        clearTimeout(debounceTimer); 
+
+        debounceTimer = setTimeout(() => {
+            if (query.length > 0) { 
+                $.ajax({
+                    url: "{{ route('search.dropdown') }}", 
+                    method: 'GET',
+                    data: { query: query },
+                    success: function (data) {
+                        let dropdownList = $('#dropdownList');
+                        dropdownList.empty(); 
+
+                        if (data.length > 0) {
+                            dropdownList.show(); 
+                            data.forEach(item => {
+                                dropdownList.append(
+                                    `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName}</li>`
+                                );
+                            });
+                        } else {
+                            dropdownList.hide(); 
+                        }
+                    },
+                    error: function () {
+                        console.error('Error fetching data');
+                    }
+                });
+            } else {
+                $('#dropdownList').hide(); 
+            }
+        }, 300); 
+    });
+
+    $(document).on('click', '#dropdownList .list-group-item', function () {
+        let selectedText = $(this).text();
+        let selectedId = $(this).data('id'); 
+
+        $('#searchInput').val(selectedText); 
+        $('#hiddenInput').val(selectedId); 
+        $('#dropdownList').hide(); 
+    });
+});
+
 
    
   </script>   

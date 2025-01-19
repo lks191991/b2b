@@ -63,6 +63,11 @@ class Voucher extends Model
     return $this->hasMany(VoucherActivity::class);
 }
 
+public function voucherActivities()
+    {
+        return $this->hasMany(VoucherActivity::class, 'voucher_id'); // assuming 'voucher_id' is the foreign key in VoucherActivity
+    }
+
 	public function getParent()
     {
         return $this->belongsTo(Voucher::class, 'parent_id');

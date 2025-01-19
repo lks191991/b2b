@@ -67,7 +67,13 @@ class VariantCanellationController extends Controller
 			
 		}
 		
-        return back()->with('success', 'Cancellation Chart saved Successfully.');
+		if($variant->slot_type < 3)
+		{
+			return redirect()->route('variant.slots',$variant->id)->with('success', 'Cancellation Chart saved Successfully.');
+		} else {
+			return back()->with('success', 'Cancellation Chart saved Successfully.');
+		}
+       
 
     }
 	

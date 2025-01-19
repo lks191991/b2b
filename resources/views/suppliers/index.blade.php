@@ -34,6 +34,11 @@
                       <i class="fas fa-plus"></i>
                       Create
                   </a> 
+
+                  <a href="{{ route('suppliers.export') . '?' . http_build_query(request()->query()) }}" class="btn btn-sm btn-info">
+                    <i class="fas fa-download"></i>
+                    Export To CSV
+                </a>
 				   </div>
               </div>
               <!-- /.card-header -->

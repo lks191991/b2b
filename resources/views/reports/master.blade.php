@@ -28,7 +28,15 @@
 
             <div class="card">
               <div class="card-header">
+                <div class="row align-items-center">
+                  <div class="col-md-8 text-left">
+                      <span style="color: #000;">
+                          Total Voucher: <b>{{ $totalVoucher }}</b> </br> Total Voucher Activity: <b>{{ $totalVoucherActivity }}</b>
+                      </span>
+                  </div>
+                </div>
 				<div class="card-tools">
+          
 				 <div class="row">
 				 @permission('list.masterreport.download') 
 				<a href="{{ route('masterReportExport', request()->input()) }}" class="btn btn-info btn-sm mb-2 mr-4">Export to CSV</a>
@@ -91,13 +99,40 @@
                   </div>
                  <select name="booking_status" id="booking_status" class="form-control">
 						<option value = "">All</option>
-						@foreach($voucherStatus as $vsk => $vs)
-						<option value = "{{$vsk}}" @if(request('booking_status')==$vsk) selected="selected" @endif>{{$vs}}</option>
+						@foreach($voucherActivityStatus as $vas => $vasa)
+            @if($vas >0)
+						<option value = "{{$vas}}" @if(request('booking_status')==$vas) selected="selected" @endif>{{$vasa}}</option>
+            @endif
 						@endforeach
                  </select>
                 </div>
               </div>
-               
+              <div class="col-auto col-md-4" >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">Voucher Status</div>
+                  </div>
+                 <select name="voucher_status" id="voucher_status" class="form-control">
+						<option value = "">All</option>
+						@foreach($voucherStatus as $vsk => $vs)
+						<option value = "{{$vsk}}" @if(request('voucher_status')==$vsk) selected="selected" @endif>{{$vs}}</option>
+						@endforeach
+                 </select>
+                </div>
+              </div>
+              <div class="col-auto col-md-3" >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">Zone</div>
+                  </div>
+                 <select name="zone" id="zone" class="form-control">
+						<option value = "">All</option>
+						@foreach($zones as $vsk => $zone)
+						<option value = "{{$vsk}}" @if(request('zone')==$zone) selected="selected" @endif>{{$zone}}</option>
+						@endforeach
+                 </select>
+                </div>
+              </div>
               <div class="col-auto col-md-2">
                 <button class="btn btn-info mb-2" type="submit">Filter</button>
                 <a class="btn btn-default mb-2  mx-sm-2" href="{{ route('masterReport') }}">Clear</a>
@@ -108,7 +143,7 @@
                 <table id="" class="table rounded-corners table-bordered">
                   <thead>
                   <tr>
-				
+                    <th>SN</th>
 					<th>Booking #</th>
           <th>Invoice No #</th>
           <th>Booking Date</th>
@@ -139,12 +174,12 @@
 				  
                   </thead>
                   <tbody>
-				  @foreach ($records as $record)
+                    @forelse ($records as $index => $record)
 				  @php
 				  $class = SiteHelpers::voucherActivityStatus($record->status);
 				  @endphp
                   <tr class="">
-				 
+                    <td>{{ $records->firstItem() + $index }}</td>
 					<td>{{($record->voucher)?$record->voucher->code:''}}</td>
           <td>{{($record->voucher)?$record->voucher->invoice_number:''}}</td>
           <td>{{($record->voucher)?$record->voucher->booking_date:''}}</td>
@@ -190,6 +225,7 @@
                   </tbody>
                 </table></div>
 				<div class="pagination pull-right mt-3"> 
+         @if(!empty($records)) {!! $records->appends(request()->query())->links() !!} @endif
 				</div> 
 				
               </div>

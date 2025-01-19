@@ -211,7 +211,6 @@ class QuotationsController extends Controller
         $record = new Voucher();
         $record->agent_id = $request->input('agent_id_select');
 		$record->zone = $agent->zone;
-		$record->is_quotation = "1";
 		$record->customer_id = $customer->id;
 		$record->country_id = $request->input('country_id');
 		$record->is_hotel = $request->input('is_hotel');
@@ -239,12 +238,13 @@ class QuotationsController extends Controller
 		$record->infants = $request->input('infants');
 		$record->parent_id = $request->input('parent_id');
 		$record->status = 1;
+		$record->is_quotation = 1;
 		$record->created_by = Auth::user()->id;
 		$record->updated_by = Auth::user()->id;
         $record->save();
 		
 		$no = sprintf("%03d",$record->id);	
-		$code = 'ABT-'.date("Y")."-8".$no;
+		$code = 'Q-'.date("Y")."-8".$no;
 		if($request->input('parent_id') > 0)
 		{
 			$voucherCount = Voucher::where('parent_id',$request->input('parent_id'))->count();
@@ -257,22 +257,8 @@ class QuotationsController extends Controller
 		
 		$recordUser->save();
 		
-		/* if ($request->has('save_and_hotel')) {
-			if($record->is_hotel == 1){
-			return redirect()->route('quotation.add.hotels',$record->id)->with('success', 'Voucher Created Successfully.');
-			}
-			else
-			{
-				return redirect()->route('quotations.index')->with('error', 'If select hotel yes than you can add hotel.');
-			}
-		} */
-			if($record->is_hotel == 1){
-			return redirect()->route('quotation.add.hotels',$record->id)->with('success', 'Voucher Created Successfully.');
-			} elseif($record->is_activity == 1){
-			return redirect()->route('quotation.add.activity',$record->id)->with('success', 'Voucher Created Successfully.');
-			} else {
-				return redirect()->route('quotations.index')->with('error', 'If select activity yes than you can add activity.');
-			}
+		
+		return redirect()->route('voucher.add.quick.activity',[$recordUser->id]);
 		
 		
     }
@@ -290,7 +276,7 @@ class QuotationsController extends Controller
 		$voucherActivity = VoucherActivity::where('voucher_id',$voucher->id)->orderBy("tour_date","ASC")->orderBy("serial_no","ASC")->get();
 		if($voucher->status_main  > 4)
 		{
-			return redirect()->route('voucherView',$voucher->id);
+			return redirect()->route('quoationView',$voucher->id);
 		}
 		$voucherStatus = config("constants.voucherStatus");
 	
@@ -460,7 +446,7 @@ class QuotationsController extends Controller
 		$voucherActivity = VoucherActivity::where('voucher_id',$record->id)->delete();
 		}
 		
-        return redirect('vouchers')->with('success','Voucher Updated.');
+        return redirect('quotations')->with('success','Voucher Updated.');
     }
 
     /**
@@ -479,7 +465,18 @@ class QuotationsController extends Controller
         $record->delete();
         return redirect('vouchers')->with('success', 'Voucher Deleted.');
     }
-	
+	public function quotationView($vid)
+    {
+		$voucher =  Voucher::where('id',$vid)->first();
+		if (empty($voucher)) {
+            return abort(404); //record not found
+        }
+		$voucherActivity = VoucherActivity::where('voucher_id',$voucher->id)->orderBy("tour_date","ASC")->orderBy("serial_no","ASC")->get();
+		$voucherHotel = VoucherHotel::where('voucher_id',$voucher->id)->get();
+		$childVoucher =  Voucher::where('parent_id',$vid)->get();
+		$voucherStatus = config("constants.voucherStatus");
+        return view('quotations.bookedview', compact('voucher','voucherActivity','voucherStatus','voucherHotel','childVoucher'));
+    }
 	public function statusChangeVoucher(Request $request,$id)
     {
 		$this->checkPermissionMethod('list.voucher');
@@ -1034,153 +1031,124 @@ class QuotationsController extends Controller
 		return $totalPrice;
     }
 	
-	
-	public function activitySaveInVoucher(Request $request)
+	public function addQuickActivitySave(Request $request)
     {
-		$activity_select = $request->input('activity_select');
-		
-	if(isset($activity_select))
-	{
-		
-		$voucher_id = $request->input('v_id');
-		$activity_id = $request->input('activity_id');
-		$activity_variant_id = $request->input('activity_variant_id');
-		$activity_variant_code = $request->input('activity_variant_code');
-		$voucher = Voucher::find($voucher_id);
-		$startDate = $voucher->travel_from_date;
-		$endDate = $voucher->travel_to_date;
-		$transfer_option = $request->input('transfer_option');
-		$tour_date = $request->input('tour_date');
-		$transfer_zone = $request->input('transfer_zone');
-		$adult = $request->input('adult');
-		$child = $request->input('child');
-		$infant = $request->input('infant');
-		$discount = $request->input('discount');
-		//dd($request->input('ucode'));
-		//dd($request->all());
+		$tourDate = $request->input('tourDate');
 		$data = [];
-		$total_activity_amount = 0;
-		$k  = $request->input('ucode');
-		$timeslot  = $request->input('timeslot');
-		//$activitySelectNew[$k] = $k;
-		$acodes = explode(",",$activity_variant_code[$k]);
-		$aids = explode(",",$activity_variant_id[$k]);
-		if(!empty($k)){
-			$adults= $childs = $infants = 0;
-			$transferoption = $transferzone = "";
-		foreach($acodes as $ik => $k)
+		if(isset($tourDate) && !empty($tourDate))
 		{
-
-			$avid = $aids[$ik];
-
-			$activityVariant = ActivityVariant::with('variant', 'activity')->find($avid);
-			$activity = $activityVariant->activity;
-			$variant = $activityVariant->variant;
-			if(isset($tour_date[$k]))
-				$tour_dt = date("Y-m-d",strtotime($tour_date[$k]));
-
-			$getAvailableDateList = SiteHelpers::getDateList($tour_dt,$variant->black_out,$variant->sold_out,$variant->availability);
-			if(isset($adult[$k]))
+			
+			$voucher_id = $request->input('v_id');
+			
+			$voucher = Voucher::find($voucher_id);
+			
+			
+			
+			$transfer_option = $request->input('transferOption');
+			$tour_date = $request->input('tourDate');
+			$serial_no = $request->input('serial_no');
+			$adult = $request->input('adult');
+			$child = $request->input('child');
+			$infant = $request->input('infant');
+			$transferCost = $request->input('transferCost');
+			$aticketCost = $request->input('aticketCost');
+			$cticketCost = $request->input('cticketCost');
+			$avid = $request->input('avid');
+			$totalPrice = $request->input('total');
+			$gtTotal = $request->input('gtTotal');
+			$adultMarkupPer = $request->input('adult_markup');
+			$totalMarkup = $request->input('markupValue');
+			$totalMarkupPer = $request->input('adult_markup');
+			$voucher->total_markup = $totalMarkup;
+			$voucher->total_markup_per = $totalMarkupPer;
+			$voucher->save();
+$record = VoucherActivity::where('voucher_id',$voucher_id)->delete();
+			foreach($tour_date as $ik => $k)
 			{
-				$adults = $adult[$k];
-				$childs = $child[$k];
-				$infants = $infant[$k];
-				$totalmember = $adult[$k] + $child[$k];
+				$activityVariantId = $avid[$ik];
+				if(!empty($activityVariantId)){
+				$activityVariant = ActivityVariant::with('variant', 'activity')->where("id",$activityVariantId)->first();
+				$activity = $activityVariant->activity;
+				$variant = $activityVariant->variant;
+				$total = $totalPrice[$ik];
+				$totalACCostRow = $aticketCost[$ik]+$cticketCost[$ik];
+				$discountTktRow = ((float)$totalACCostRow * (float)$adultMarkupPer) / 100;
+				$transferCostRow = $transferCost[$ik];
+				$discountTransferCostRow= ((float)$transferCostRow * (float)$adultMarkupPer) / 100;
+				$data[] = [
+					'voucher_id' => $voucher_id,
+					'activity_id' => $activity->id,
+					'activity_varaint_id' => $activityVariantId,
+					'variant_unique_code' => $activityVariant->ucode,
+					'variant_name' => $variant->title,
+					'variant_code' => $variant->ucode,
+					'activity_entry_type' => $activity->entry_type,
+					'activity_product_type' => $activity->product_type,
+					'variant_pvt_TFRS' => $variant->pvt_TFRS,
+					'variant_pick_up_required' => $variant->pick_up_required,
+					'activity_title' => $activity->title,
+					'variant_zones' => $variant->zones,
+					'variant_pvt_TFRS_text' => $variant->pvt_TFRS_text,
+					'transfer_option' => $transfer_option[$ik],
+					'tour_date' => $k,
+					'adult' => $adult[$ik],
+					'child' => $child[$ik],
+					'infant' => $infant[$ik],
+					'markup_p_ticket_only' => 0,
+					'markup_p_sic_transfer' => 0,
+					'markup_p_pvt_transfer' => 0,
+					'adultPrice' => $aticketCost[$ik],
+					'childPrice' => $cticketCost[$ik],
+					'infPrice' => 0,
+					'original_tkt_rate' => $totalACCostRow,
+					'original_trans_rate' => $transferCostRow,
+					'discount_tkt' => ($discountTktRow > 0) ? -$discountTktRow : $discountTktRow,
+					'discount_sic_pvt_price' => ($discountTransferCostRow > 0) ? -$discountTransferCostRow : $discountTransferCostRow,
+					'totalprice' => $total,
+					'discountPrice' => 0,
+					'created_by' => Auth::user()->id,
+					'updated_by' => Auth::user()->id,	
+						];
+					}
 			}
-			if(isset($transfer_option[$k]))
-				$transferoption = $transfer_option[$k];
 
-			if(isset($transfer_zone[$k]))
-				$transferzone = $transfer_zone[$k];
 			
-			
-			$priceCal = PriceHelper::getActivityPriceSaveInVoucher($transferoption,$avid,$voucher->agent_id,$adults,$childs,$infants,"0",$tour_dt);
-				
-			if($priceCal['totalprice'] > 0){
-				if(!in_array($tour_dt,$getAvailableDateList)){
-				return redirect()->back()->with('error', $variant->title.' Tour is not available for Selected Date.');
-				}
-			
-			if(empty($transfer_zone)){
-				$transfer_zone = [];
-			}
-			
-			$query = VariantCanellation::where('varidCode', $variant->ucode);
-			$cancellation = $query->get();
-			$data[] = [
-			'voucher_id' => $voucher_id,
-			'activity_id' => $activity_id,
-			'activity_vat' => $priceCal['activity_vat'],
-			'variant_price_id' => $priceCal['price_id'],
-			'variant_unique_code' => $activityVariant->ucode,
-			'variant_name' => $variant->title,
-			'variant_code' => $variant->ucode,
-			'activity_entry_type' => $activity->entry_type,
-			'activity_product_type' => $activity->product_type,
-			'variant_pvt_TFRS' => $variant->pvt_TFRS,
-			'variant_pick_up_required' => $variant->pick_up_required,
-			'variant_type' => $variant->type,
-			'activity_title' => $activity->title,
-			'variant_zones' => $variant->zones,
-			'variant_pvt_TFRS_text' => $variant->pvt_TFRS_text,
-			'transfer_option' => $transferoption,
-			'tour_date' => $tour_dt,
-			'pvt_traf_val_with_markup' => $priceCal['pvt_traf_val_with_markup'],
-			'transfer_zone' => $transferzone,
-			'zonevalprice_without_markup' => $priceCal['zonevalprice_without_markup'],
-			'adult' => $adults,
-			'child' => $childs,
-			'infant' => $infants,
-			'markup_p_ticket_only' => $priceCal['markup_p_ticket_only'],
-			'markup_p_sic_transfer' => $priceCal['markup_p_sic_transfer'],
-			'markup_p_pvt_transfer' => $priceCal['markup_p_pvt_transfer'],
-			'adultPrice' => $priceCal['adultPrice'],
-			'childPrice' => $priceCal['childPrice'],
-			'infPrice' => $priceCal['infPrice'],
-			'original_tkt_rate' => $priceCal['ticketPrice'],
-			'original_trans_rate' => $priceCal['transferPrice'],
-			'vat_percentage' => $priceCal['vat_per'],
-			'discountPrice' => "0",
-			'time_slot' => $timeslot,
-			'cancellation_chart' => json_encode($cancellation),
-			'totalprice' => number_format($priceCal['totalprice'], 2, '.', ''),
-			'created_by' => Auth::user()->id,
-			'updated_by' => Auth::user()->id,	
-                ];
-
-				$total_activity_amount += $priceCal['totalprice'];
-			}
 		}
-		
-		
-		
 		if(count($data) > 0)
 		{
 			VoucherActivity::insert($data);
-			$voucher = Voucher::find($voucher_id);
-			$voucher->total_activity_amount += $total_activity_amount;
-			$voucher->save();
-		}
 
-		} else {
+			$voucherActivity = VoucherActivity::where('voucher_id',$voucher_id)->orderBy("tour_date","ASC")->orderBy("serial_no","ASC")->get();
+			$voucherHotel = VoucherHotel::where('voucher_id',$voucher_id)->get();
+			$voucherStatus = config("constants.voucherStatus");
+			//return view('quotations.bookedview', compact('voucher','voucherActivity','voucherStatus','voucherHotel'));
+			return redirect()->route('quotationView',$voucher_id)->with('success', 'Variant Created Successfully.');
+
+			//return redirect('quotations')->with('success', 'Activity Added Successfully.');
+		} 
+		else 
+		{
 			return redirect()->back()->with('error', $variant->title.' Please Select Tour Option.');
 		}
-		
-		
-		if ($request->has('save_and_continue')) {
-			//return redirect()->back()->with('success', 'Activity added Successfully.');
-         return redirect()->route('quotation.add.activity',$voucher_id)->with('success', 'Activity added Successfully.');
-		} else {
-			return redirect()->back()->with('success', 'Activity added Successfully.');
-        //return redirect('vouchers')->with('success', 'Activity Added Successfully.');
-		}
 	}
+
+	public function addQuickActivityList(Request $request,$vid)
+    {
+		$this->checkPermissionMethod('list.voucher');
+       	$data = $request->all();
+		$typeActivities = config("constants.typeActivities"); 
+		$perPage = "1000";
+		$voucher = Voucher::find($vid);
+		$startDate = $voucher->travel_from_date;
+		$endDate = $voucher->travel_to_date;
 		
-       return redirect()->back()->with('error', 'Please select activity variant.');
-	   
+
+		$activityVariants = ActivityVariant::where('is_popular','2')->where('type','single')->paginate(20);
+		$voucherActivity = VoucherActivity::where('voucher_id',$voucher->id)->orderBy("tour_date","ASC")->orderBy("serial_no","ASC")->get();
+        return view('quotations.activities-add-quick', compact('startDate','vid','voucher','activityVariants','voucherActivity'));
     }
-	
-	public function destroyActivityFromVoucher($id,$aid=0)
+
+	public function destroyActivityFromQuotation($id,$aid=0)
     {
 		
 		if($aid == 0)
@@ -1195,85 +1163,9 @@ class QuotationsController extends Controller
 	
         return redirect()->back()->with('success', 'Activity Deleted Successfully.');
     }
-	
-	
-	
- public function voucherActivityItineraryPdf(Request $request, $vid)
-    {
-		
-		if(Auth::user()->role_id == '3'){
-		$voucher = Voucher::where('id',$vid)->where('agent_id',Auth::user()->id)->first();
-		}else{
-		$voucher = Voucher::find($vid);
-		}
-		
-		$voucherIds[$vid] = $vid;
-		$parentVoucher = $voucher->getParent;
-		$childVouchers = $voucher->getChild;
-			if(!empty($parentVoucher)){
-		$voucherIds[$parentVoucher->id] = $parentVoucher->id;
-		}
 
-		if(!empty($childVouchers)){
-			foreach ($childVouchers as $childVoucher) {
-				$voucherIds[$childVoucher->id] = $childVoucher->id;
-			}
-		}
-		
-		
-		
-		
-		if (empty($voucher)) {
-            return abort(404); //record not found
-        }
-		$voucherHotel = VoucherHotel::where('voucher_id',$voucher->id)->whereIn('status',[3])->orderBy("check_in_date","ASC")->get();
-		//$voucherActivity = VoucherActivity::where('voucher_id',$voucher->id)->whereIn('status',[0,3,4])->get();
-		$voucherActivity = VoucherActivity::whereIn('voucher_id',$voucherIds)->whereIn('status',[0,3,4])->orderBy("tour_date","ASC")->orderBy("serial_no","ASC")->get();
-		
-		$discountTotal = 0;
-		$subTotal = 0;
-		$dataArray = [
-				'adult' => 0,
-				'child' => 0,
-				'infant' => 0,
-				'adultP' => 0,
-				'childP' => 0,
-				'infantP' => 0,
-				'totalPrice' => 0,
-				];
-		
-	   if(!empty($voucherActivity)){
-					 foreach($voucherActivity as $kkh => $ap)
-					 {
-						
-					$vat =  1 + $ap->activity_vat;
-					$vatPrice = $ap->totalprice/$vat;
-					$total = $ap->totalprice;
-				$dataArray['adult'] += $ap->adult;
-				$dataArray['child'] += $ap->child;
-				$dataArray['infant'] += $ap->infant;
-				$dataArray['adultP'] += $ap->adultPrice;
-				$dataArray['childP'] += $ap->childPrice;
-				$dataArray['infantP'] += $ap->infPrice;
-				$dataArray['totalPrice'] += $total;
-					 }
-					
-			}
-			
-         //return view('quotations.ActivityItineraryPdf', compact('voucher','voucherHotel','voucherActivity','dataArray'));
-        
-		
 
-        $pdf = SPDF::loadView('quotations.ActivityItineraryPdf', compact('voucher','voucherHotel','voucherActivity','dataArray'));
-       $pdf->setPaper('A4')->setOrientation('portrait');
-        return $pdf->download($voucher->code.'-'.$voucher->guest_name.'.pdf');
-		
-	
-	
-	//return \Response::make($content,200, $headers);
-    }
-	
-	public function voucherInvoicePdf(Request $request, $vid)
+	public function quotationInvoiceSummaryPdf(Request $request, $vid)
     {
 		if(Auth::user()->role_id == '3'){
 		$voucher = Voucher::where('id',$vid)->where('agent_id',Auth::user()->id)->first();
@@ -1297,32 +1189,69 @@ class QuotationsController extends Controller
 		$grandTotalAmount = 0;
 		
 		if(!empty($voucherActivity)){
-					 foreach($voucherActivity as $kkh => $ap)
-					 {
-						
-					$activity = SiteHelpers::getActivity($ap->activity_id);
-					$vat =  1 + $activity->vat;
-					$vatPrice = $ap->totalprice/$vat;
-					//$total = ($ap->totalprice+$ap->discountPrice) - ($vatPrice);
-					$total = $ap->totalprice;
-					$discounTkt = $ap->discount_tkt;
-					$discountTrns = $ap->discount_sic_pvt_price;
-					$totalDiscount = $discounTkt + $discountTrns;
-					$totalPriceAfDis = $total - $totalDiscount;
-				$dataArray[$ap->variant_code.$kkh] = [
-				'hhotelActName' => $activity->title.'-'.$ap->variant_name,
-				'TouCheckInCheckOutDate' => $ap->tour_date,
-				'adult' => $ap->adult,
-				'child' => $ap->child,
-				'NoofPax' => 0,
-				'hotel' => 0,
-				'totalprice' => $totalPriceAfDis,
-				];
-				$discountTotal += $totalPriceAfDis;
-				$grandTotalAmount+= $totalPriceAfDis ;
-					 }
-					
+			foreach($voucherActivity as $kkh => $ap)
+			{
+			   
+		   $activity = SiteHelpers::getActivity($ap->activity_id);
+		   $vat =  1 + $activity->vat;
+		   $vatPrice = $ap->totalprice/$vat;
+		   //$total = ($ap->totalprice+$ap->discountPrice) - ($vatPrice);
+		   $total = $ap->totalprice;
+		   $discounTkt = $ap->discount_tkt;
+		   $discountTrns = $ap->discount_sic_pvt_price;
+		   $totalDiscount = $discounTkt + $discountTrns;
+		   $totalPriceAfDis = $total - $totalDiscount;
+
+		   $ar_code = $ap->variant_code.$kkh;
+		   
+		   
+		   if($ap->activity_product_type == 'Bundle_Same')
+		   {
+			   $ar_code = $ap->activity_id;
+			   $at_amount += $totalPriceAfDis;
+			   $dis = '1';
+			   $act_name = $activity->title.'-'.$ap->variant_name;
+		   $tour_dt = $ap->tour_date;
+
+		   }
+		   elseif(($ap->activity_product_type == 'Bundle_Diff') || ($ap->activity_product_type == 'Package'))
+		   {
+			   $at_amount  += $totalPriceAfDis;
+			   $ar_code = $ap->activity_id;
+			   $act_name = $act_name."<br/>".$activity->title.'-'.$ap->variant_name;
+			   $tour_dt = $tour_dt."<br/>".$ap->tour_date;
+		   }
+		   else
+		   {
+			   $at_amount = $totalPriceAfDis;
+			   $act_name = $activity->title.'-'.$ap->variant_name;
+			   $tour_dt = $ap->tour_date;
+		   }
+		   
+	   $dataArray[$ar_code] = [
+	   'hhotelActName' => $act_name,
+	   'TouCheckInCheckOutDate' => $tour_dt,
+	   'adult' => $ap->adult,
+	   'child' => $ap->child,
+	   'NoofPax' => 0,
+	   'hotel' => 0,
+	   'totalprice' => $at_amount,
+	   ];
+   
+	   // $dataArray[$ap->variant_code.$kkh] = [
+	   // 'hhotelActName' => $activity->title.'-'.$ap->variant_name,
+	   // 'TouCheckInCheckOutDate' => $ap->tour_date,
+	   // 'adult' => $ap->adult,
+	   // 'child' => $ap->child,
+	   // 'NoofPax' => 0,
+	   // 'hotel' => 0,
+	   // 'totalprice' => $totalPriceAfDis,
+	   // ];
+	   $discountTotal += $totalPriceAfDis;
+	   $grandTotalAmount+= $totalPriceAfDis ;
 			}
+		   
+   }
 			
 		if(!empty($voucherHotel)){
 					 foreach($voucherHotel as $kk => $vh)
@@ -1381,8 +1310,8 @@ class QuotationsController extends Controller
 			
 			
        
-//return view('quotations.invoicePdf', compact('dataArray','agent','customer','voucher','discountTotal','totalAmount','subTotal','vatTotal'));
-        $pdf = SPDF::loadView('quotations.invoicePdf', compact('dataArray','agent','customer','voucher','discountTotal','subTotal','vatTotal','totalAmount'));
+//return view('quotations.invoiceSummaryPdf', compact('dataArray','agent','customer','voucher','discountTotal','totalAmount','subTotal','vatTotal'));
+        $pdf = SPDF::loadView('quotations.invoiceSummaryPdf', compact('dataArray','agent','customer','voucher','discountTotal','subTotal','vatTotal','totalAmount'));
        $pdf->setPaper('A4')->setOrientation('portrait');
         return $pdf->download($voucher->invoice_number.'-'.$voucher->guest_name.'.pdf');
 		
@@ -1390,490 +1319,6 @@ class QuotationsController extends Controller
 	
 	return \Response::make($content,200, $headers);
     }
-
-	public function voucherHotelInputSave(Request $request)
-    {
-		$data = $request->all();
-		
-		$record = VoucherHotel::find($data['id']);
-        $record->{$data['inputname']} = $data['val'];
-        $record->save();
-		$response[] = array("status"=>1);
-        return response()->json($response);
-	}
-	
-	public function cancelActivityFromVoucher(Request $request,$id)
-	{
-		
-		$remark = $request->input("cancel_remark_data-{$id}");
-		
-		$record = VoucherActivity::find($id);
-		$recordV = Voucher::find($record->voucher_id);
-		$remarkNew = $record->internal_remark.'<br>'.$remark." -- By ".Auth::user()->name." on ".date('M, d: H:s');
-		$voucherActivity[0] = $record;
-		$agent = User::find($recordV->agent_id);
-		$refundAmt = PriceHelper::checkCancellation($id);
-		$cancellation = VariantCanellation::where('varidCode', $record->variant_code)->get();
-		//if($record->ticket_downloaded == '0'){
-		$record->status = 1;
-		$record->cancel_by = Auth::user()->id;
-		$record->canceled_date = Carbon::now()->toDateTimeString();
-		$record->org_refund_tkt_amt = $refundAmt['refundamt']['tkt'];
-		$record->org_refund_trans_amt = $refundAmt['refundamt']['trf'];
-		if(!empty($remark)){
-			$record->internal_remark = $remarkNew;
-		}
-		//$record->cancellation_time_data = json_encode($cancellation);
-		$record->save();
-		
-		$tickets = Ticket::where("voucher_activity_id",$record->id)->where("ticket_generated",'1')->get();
-		foreach($tickets as $tc){
-			if(!empty($tc))
-			{
-				$tc->voucher_activity_id = '0';
-				$tc->ticket_generated = '0';
-				$tc->ticket_generated_by = '';
-				$tc->generated_time = '';
-				$tc->voucher_id = 0;
-				$tc->save();
-			}
-		}
-		
-		$recordCount = VoucherActivity::where("voucher_id",$record->voucher_id)->where("status",'3')->count();
-		if($recordCount == '0'){
-			$voucher = Voucher::find($record->voucher_id);
-			$voucher->status_main = 6;
-			$voucher->save();		
-		}
-		
-		$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
-		Mail::to($agent->email,'Booking Cancellation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredCancelEmail($voucherActivity)); 
-		
-		return redirect()->back()->with('success', 'Activity Canceled Successfully.');
-		//}
-		//else{
-		//return redirect()->back()->with('error', "Ticket already downloaded you can not cancel this.");		
-		//}
-	}
-	
-	
-	public function invoiceStatusChange(Request $request,$id)
-    {
-		
-		$this->checkPermissionMethod('list.invoiceEditButton');
-		$data = $request->all();
-		$hotelPriceTotal = 0;
-		$grandTotal = 0;
-		$record = Voucher::where('id',$id)->first();
-		
-		if (empty($record)) {
-            return abort(404); //record not found
-        }
-
-		$voucherActivity = VoucherActivity::where('voucher_id',$record->id);
-		$voucherActivityRecord = $voucherActivity->get();
-		$agent = User::find($record->agent_id);
-		
-		$emailData = [
-		'invoiceNumber' =>$record->invoice_number ,
-		'requestedBy' => Auth::user()->name.' '.Auth::user()->lname,
-		];
-		
-		
-		
-		
-		if(!empty($agent))
-		{
-			$voucherCnt = Voucher::where('agent_id',$agent->id)->where('status_main',7)->count();
-			if($voucherCnt > 0)
-			{
-				return redirect()->back()->with('error', 'Booking is already in the process of being edited in an invoice. Please complete that process first before proceeding with this one.');
-			}
-			
-			$voucherActivity = VoucherActivity::where('voucher_id',$record->id)->get();
-			
-			$agentAmountBalance = $agent->agent_amount_balance;
-			$total_activity_amount = $record->voucheractivity->sum('totalprice');
-			$total_discountPrice = $record->voucheractivity->sum('discountPrice');
-			$discount_tkt = $record->voucheractivity->sum('discount_tkt');
-			$discount_sic_pvt_price = $record->voucheractivity->sum('discount_sic_pvt_price');
-			$total_discount = $discount_tkt + $discount_sic_pvt_price;
-			$grandTotal = $total_activity_amount - $total_discount;
-			
-			if($agentAmountBalance >= $grandTotal)
-			{
-			$record->status_main = 7;
-			$record->save();
-			$agent->agent_amount_balance += $grandTotal;
-			$agent->save();
-			
-			$agentAmount = new AgentAmount();
-			$agentAmount->agent_id = $record->agent_id;
-			$agentAmount->amount = $grandTotal;
-			$agentAmount->date_of_receipt = $record->booking_date;
-			$agentAmount->transaction_type = "Receipt";
-			$agentAmount->transaction_from = 5;
-			$agentAmount->role_user = 3;
-			$agentAmount->created_by = Auth::user()->id;
-			$agentAmount->updated_by = Auth::user()->id;
-			$agentAmount->receipt_no = $record->invoice_number;
-			$agentAmount->save();
-			/* $receipt_no = 'A-'.date("Y")."-00".$agentAmount->id;
-			$recordUser = AgentAmount::find($agentAmount->id);
-			$recordUser->receipt_no = $receipt_no;
-			$recordUser->save(); */
-		
-			foreach($voucherActivity as $vac){
-			SiteHelpers::voucherActivityLog($record->id,$vac->id,$vac->discountPrice,$vac->totalprice,$record->status_main);
-			}
-			
-			$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
-			Mail::to('payment@abaterab2b.com','Invoice Edit Request.')->cc($agent->email)->send(new InvoiceEditRequestEmail($emailData)); 
-			
-			 return redirect()->back()->with('success', 'Request processed successfully.');
-			}
-			else{
-				 return redirect()->back()->with('error', 'Agency amount balance not sufficient for this booking.');
-			}
-			
-			
-		}
-		else{
-				 return redirect()->back()->with('error', 'Agency  Name not found this quotation.');
-			}
-		
-		}
-		
-		
-	public function invoicePriceStatusList(Request $request)
-    {
-		
-		$this->checkPermissionMethod('list.invoiceEditList');
-		 $perPage = config("constants.ADMIN_PAGE_LIMIT");
-		 $data = $request->all();
-		$query = Voucher::where('id','!=', null);
-		if (isset($data['agent_id_select']) && !empty($data['agent_id_select'])) {
-            $query->where('agent_id', $data['agent_id_select']);
-        }
-		
-		if (isset($data['code']) && !empty($data['code'])) {
-            $query->where('code', 'like', '%' . $data['code'] . '%');
-        }
-		if (isset($data['guest_name']) && !empty($data['guest_name'])) {
-            $query->where('guest_name', 'like', '%' . $data['guest_name'] . '%');
-        }
-		
-		
-                $query->where('status_main', 7);
-        
-		
-		if (isset($data['is_hotel']) && !empty($data['is_hotel'])) {
-            if ($data['is_hotel'] == 1)
-                $query->where('is_hotel', 1);
-            if ($data['is_hotel'] == 2)
-                $query->where('is_hotel', 0);
-        }
-		
-		if (isset($data['is_flight']) && !empty($data['is_flight'])) {
-            if ($data['is_flight'] == 1)
-                $query->where('is_flight', 1);
-            if ($data['is_flight'] == 2)
-                $query->where('is_flight', 0);
-        }
-		
-		if (isset($data['is_activity']) && !empty($data['is_activity'])) {
-            if ($data['is_activity'] == 1)
-                $query->where('is_activity', 1);
-            if ($data['is_activity'] == 2)
-                $query->where('is_activity', 0);
-        }
-		
-        $records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
-		$agetid = '';
-		$agetName = '';
-		
-		if(old('agent_id')){
-		$agentTBA = User::where('id', old('agent_id_select'))->where('status', 1)->first();
-		$agetid = $agentTBA->id;
-		$agetName = $agentTBA->company_name;
-		}
-		
-        return view('quotations.invoice-price-status-list', compact('records','agetid','agetName'));
-
-    }
-	
-	
-	public function invoicePriceChangeView(Voucher $voucher)
-    {
-		
-		$this->checkPermissionMethod('list.invoiceEditList');
-		$this->checkPermissionMethod('list.voucher');
-		$voucherHotel = VoucherHotel::where('voucher_id',$voucher->id)->get();
-		$voucherActivity = VoucherActivity::where('voucher_id',$voucher->id)->whereNotIn('status',[1,2])->orderBy("tour_date","ASC")->orderBy("serial_no","ASC")->get();
-		
-		if($voucher->status_main != 7)
-		{
-			 return redirect()->back()->with('error', 'Something went wrong. please try again');
-		}
-		$voucherStatus = config("constants.voucherStatus");
-	
-		$name = explode(' ',$voucher->guest_name);
-		
-		$fname = '';
-		$lname = '';
-		if(!empty($name)){
-			$fname = trim($name[0]);
-			unset($name[0]);
-			$lname = trim(implode(' ', $name));
-		}
-
-        return view('quotations.invoice-price-change-view-from', compact('voucher','voucherHotel','voucherActivity','voucherStatus','fname','lname'));
-    }
-	
-	
-	public function invoicePriceChangeSave(Request $request,$id)
-    {
-		$this->checkPermissionMethod('list.invoiceEditList');
-		$data = $request->all();
-		
-		$hotelPriceTotal = 0;
-		$grandTotal = 0;
-		$grandTotalNet = 0;
-		$grandDis = 0;
-		$record = Voucher::where('id',$id)->first();
-		
-		if (empty($record)) {
-            return abort(404); //record not found
-        }
-
-		$voucherActivity = VoucherActivity::where('voucher_id',$record->id);
-		$voucherActivityRecord = $voucherActivity->get();
-		$agent = User::find($record->agent_id);
-		$aData = [];
-		if(!empty($agent))
-		{
-			$discountRecord = $data['discount_tkt'];
-			$discount_sic_pvt_price = $data['discount_sic_pvt_price'];
-			
-			foreach($voucherActivityRecord as $var){
-				
-				$dis1 = (array_key_exists($var->id,$discountRecord))?$discountRecord[$var->id]:0;
-				$dis2 = (array_key_exists($var->id,$discount_sic_pvt_price))?$discount_sic_pvt_price[$var->id]:0;
-				
-				$dis1 = (floatval($dis1)) ? $dis1 : 0;
-				$dis2 = (floatval($dis2)) ? $dis2 : 0;
-				$totalDis = $dis1+$dis2;
-				$tPrice = $var->totalprice;
-				if($totalDis > $tPrice){
-					 return redirect()->back()->with('error', 'Discount not greater than total amount.');
-				}
-				$tP= $tPrice;
-				$aData[] =[
-				"id" => $var->id,
-				"totalprice" => $tP,
-				"discount_tkt" => $dis1,
-				"discount_sic_pvt_price" => $dis2,
-				];
-				
-				
-				$grandTotal +=$tP;
-				$grandDis +=$totalDis;
-			}
-			//dd($aData);
-			$agentAmountBalance = $agent->agent_amount_balance;
-			$grandTotalNet = $grandTotal-$grandDis;
-			if($agentAmountBalance >= $grandTotalNet)
-			{
-			foreach($aData as $var1){
-				$vA = VoucherActivity::find($var1['id']);
-				$discount_tkt = $var1['discount_tkt'];
-				$discount_sic_pvt_price = $var1['discount_sic_pvt_price'];
-				//$vA->totalprice = $var1['totalprice'];
-				$vA->discount_tkt = $discount_tkt;
-				$vA->discount_sic_pvt_price = $discount_sic_pvt_price;
-				$vA->save();
-				SiteHelpers::voucherActivityLog($record->id,$var1['id'],$var1['discount_tkt']+$var1['discount_sic_pvt_price'],$var1['totalprice'],5);
-			}
-			
-		
-			$record->status_main = 5;
-			$record->invoice_edit_date = date("Y-m-d");
-			$record->invoice_edit_by = Auth::user()->id;
-			$record->save();
-			$agent->agent_amount_balance -= $grandTotalNet;
-			$agent->save();
-			
-			$discount_tkt = $record->voucheractivity->sum('discount_tkt');
-			$discount_sic_pvt_price = $record->voucheractivity->sum('discount_sic_pvt_price');
-			$total_discount = $discount_tkt + $discount_sic_pvt_price;
-			
-			$agentAmount = new AgentAmount();
-			$agentAmount->agent_id = $record->agent_id;
-			$agentAmount->amount = $grandTotal - $total_discount;
-			$agentAmount->date_of_receipt = $record->booking_date;
-			$agentAmount->transaction_type = "Payment";
-			$agentAmount->transaction_from = 5;
-			$agentAmount->role_user = 3;
-			$agentAmount->created_by = Auth::user()->id;
-			$agentAmount->updated_by = Auth::user()->id;
-			$agentAmount->receipt_no = $record->invoice_number;
-			$agentAmount->save();
-			/* $receipt_no = 'A-'.date("Y")."-00".$agentAmount->id;
-			$recordUser = AgentAmount::find($agentAmount->id);
-			$recordUser->receipt_no = $receipt_no;
-			$recordUser->save(); */
-			
-			foreach($voucherActivity as $vac){
-			SiteHelpers::voucherActivityLog($record->id,$vac->id,$vac->discountPrice,$vac->totalprice,$record->status_main);
-			}
-			
-			return redirect()->route('quotations.index')->with('success', 'Voucher '.$record->code.' Invoice Successfully Updated.');
-			}
-			else{
-				 return redirect()->back()->with('error', 'Agency amount balance not sufficient for this booking.');
-			}
-		}
-		else{
-				 return redirect()->back()->with('error', 'Agency  Name not found this quotation.');
-			}
-		
-		}
-
-		public function getVoucherActivityCanellation(Request $request)
-		{
-				$vaid = $request->input('formid');
-			
-				$voucherActivity = VoucherActivity::where('id',$vaid)->first();
-				$variant = Variant::where('ucode', $voucherActivity->variant_code)->first();
-				$cancellation = "";
-				$current_date_time = time();
-				$cancellation = json_decode($voucherActivity->cancellation_chart);
-				$timeSlot = $voucherActivity->time_slot;
-				if (!empty($timeSlot)) 
-				{
-					$tourDate = strtotime($voucherActivity->tour_date . ' ' . $timeSlot);
-				} 
-				elseif($variant->start_time != '')
-				{
-					$timeSlot = $variant->start_time;
-					$tourDate = strtotime($voucherActivity->tour_date . $variant->start_time); // Set time to the start of the day
-				}
-				else 
-				{
-					$timeSlot = "00:00:00";
-					$tourDate = strtotime($voucherActivity->tour_date . "00:00:00"); // Set time to the start of the day
-				}
-				$ticketDownloaded = $voucherActivity->ticket_downloaded;
-				$tkt_amt = $voucherActivity->original_tkt_rate-$voucherActivity->discount_tkt;
-				$trf = $voucherActivity->original_trans_rate-$voucherActivity->discount_sic_pvt_price;
-				if($ticketDownloaded == '1')
-				$tkt_amt = 0;
-				$total_amt = $trf+$tkt_amt;
-				
-				$cancellation_array = array();
-				if(!empty($cancellation))
-				{
-					foreach ($cancellation as $ar_key => $ca) 
-					{	
-						$ticket_refund_per = $ca->ticket_refund_value;
-						$trns_refund_per = $ca->transfer_refund_value;
-						
-						$startHours = $endHours = 0;
-						if($ca->duration =='72+')
-						{
-							$startHours ='72';
-							$endHours = 0;
-						}
-						else
-						{
-							$durationParts = explode('-', $ca->duration);
-							$startHours = intval($durationParts[0]);
-							$endHours = intval($durationParts[1] ?? PHP_INT_MAX);
-						}
-						$tkt_refund = ($tkt_amt * $ticket_refund_per) / 100;
-						
-			
-						$total_refund = round((($tkt_refund)+(($trf * $trns_refund_per)/ 100)),2);
-						$cancellation_array[$total_refund][] = $startHours;
-						if($endHours > 0)
-							$cancellation_array[$total_refund][] = $endHours;
-						$cancellation_array_val[$total_refund] = "1";
-						
-						if(($ticket_refund_per == 100) && ($trns_refund_per == 100))
-							break;
-
-					}
-				}
-				$rk = 0;
-				$cancellation_data = array();
-				krsort($cancellation_array_val);
-				$free_cancel_till = "";
-				foreach($cancellation_array_val as $v => $ak)
-				{
-					
-					$k = $cancellation_array[$v];
-					$startHours = intval($k[0]);
-					$endHours = intval(end($k));
-					if(($startHours == 0) || ($v == 0))
-					{
-						
-						$cancellation_data[$rk]['refund_amt'] = $v;
-						$cancellation_data[$rk]['start_time'] = date('M d,Y H:i',($tourDate-((($endHours)*60*60))));
-						$cancellation_data[$rk]['end_time'] = "or Later";
-							
-						
-					}
-					elseif(($v == $total_amt))
-					{
-						$cancellation_data[$rk]['refund_amt'] = $v;
-						$cancellation_data[$rk]['start_time'] = "Before of Upto";
-						$cancellation_data[$rk]['end_time'] = date('M d,Y H:i',($tourDate-((($startHours)*60*60))));
-						$free_cancel_till = $cancellation_data[$rk]['end_time'];
-					}
-					else
-					{
-						$cancellation_data[$rk]['start_time'] = date('M d,Y H:i',($tourDate-((($endHours)*60*60))));
-						if($free_cancel_till == '')
-							$cancellation_data[$rk]['start_time'] = "Before of Upto";
-						$cancellation_data[$rk]['refund_amt'] = $v;
-						
-						$cancellation_data[$rk]['end_time'] = date('M d,Y H:i',($tourDate-((($startHours)*60*60))));
-					
-					}
-					
-					$rk++;
-				}
-				
-				
-			if(!empty($cancellation_data)){
-				$response = array("status"=>1,'free_cancel_till'=>$free_cancel_till,'cancel_table'=>$cancellation_data,'cancellation'=>$cancellation,'cl'=>$cancellation_array);
-			} else {
-				$response = array("status"=>2,"vid"=>$vaid,'cancel_table'=>[],'cancellation'=>$cancellation,'cl'=>$cancellation_array);
-			}
-			
-			
-			return response()->json($response);
-		}
-
-		
-	public function cancelHotelFromVoucher($id)
-	{
-		$record = VoucherHotel::find($id);
-		
-		//if($record->ticket_downloaded == '0'){
-		$record->status = 1;
-		$record->cancelled_on = Carbon::now()->toDateTimeString();
-		$record->cancelled_by = Auth::user()->id;
-		//$record->cancellation_time_data = json_encode($cancellation);
-		$record->save();
-		
-		
-		return redirect()->back()->with('success', 'Hotel Canceled Successfully.');
-		//}
-		//else{
-		//return redirect()->back()->with('error', "Ticket already downloaded you can not cancel this.");		
-		//}
-	}
 	
 }
 

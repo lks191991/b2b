@@ -156,10 +156,10 @@ body
 					 
                                   <tr>
                                     <td style="border-bottom:1px solid #000!important;">
-                                      {{$ap['hhotelActName']}}
+                                      {!! $ap['hhotelActName'] !!}
                                     </td>
                                     <td  style="border-bottom:1px solid #000!important;">
-									{{$ap['TouCheckInCheckOutDate']}}
+									{!! $ap['TouCheckInCheckOutDate'] !!}
                                     </td>
                                    
                                     <td  style="border-bottom:1px solid #000!important;">

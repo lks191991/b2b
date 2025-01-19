@@ -235,6 +235,7 @@ class VouchersController extends Controller
 		$record->childs = $request->input('childs');
 		$record->infants = $request->input('infants');
 		$record->parent_id = $request->input('parent_id');
+		$record->summary_invoice = $request->input('summary_invoice');
 		$record->status = 1;
 		$record->created_by = Auth::user()->id;
 		$record->updated_by = Auth::user()->id;
@@ -344,8 +345,9 @@ class VouchersController extends Controller
 		$voucherActivity = VoucherActivity::where('voucher_id',$voucher->id)->orderBy("tour_date","ASC")->orderBy("serial_no","ASC")->get();
 		$voucherHotel = VoucherHotel::where('voucher_id',$voucher->id)->get();
 		$childVoucher =  Voucher::where('parent_id',$vid)->get();
+		$supplier_ticket = User::where("is_active",'1')->whereIn("service_type",['Ticket','Both'])->get();
 		$voucherStatus = config("constants.voucherStatus");
-        return view('vouchers.bookedview', compact('voucher','voucherActivity','voucherStatus','voucherHotel','childVoucher'));
+        return view('vouchers.bookedview', compact('voucher','voucherActivity','voucherStatus','voucherHotel','childVoucher','supplier_ticket'));
     }
 
     /**
@@ -445,6 +447,7 @@ class VouchersController extends Controller
 		$record->adults = $request->input('adults');
 		$record->childs = $request->input('childs');
 		$record->infants = $request->input('infants');
+		$record->summary_invoice = $request->input('summary_invoice');
 		$record->status = 1;
 		$record->updated_by = Auth::user()->id;
         $record->save();
@@ -1330,7 +1333,13 @@ class VouchersController extends Controller
 					{
 						$at_amount  += $totalPriceAfDis;
 						$ar_code = $ap->activity_id;
+						if($act_name == '')
+						$act_name = $activity->title.'-'.$ap->variant_name;
+						else 
 						$act_name = $act_name."<br/>".$activity->title.'-'.$ap->variant_name;
+						if($tour_dt == '')
+							$tour_dt = $ap->tour_date;
+						else
 						$tour_dt = $tour_dt."<br/>".$ap->tour_date;
 					}
 					else
@@ -1422,10 +1431,10 @@ class VouchersController extends Controller
 			
 			
        
-return view('vouchers.invoicePdf', compact('dataArray','agent','customer','voucher','discountTotal','totalAmount','subTotal','vatTotal'));
-    //     $pdf = SPDF::loadView('vouchers.invoicePdf', compact('dataArray','agent','customer','voucher','discountTotal','subTotal','vatTotal','totalAmount'));
-    //    $pdf->setPaper('A4')->setOrientation('portrait');
-    //     return $pdf->download($voucher->invoice_number.'-'.$voucher->guest_name.'.pdf');
+//return view('vouchers.invoicePdf', compact('dataArray','agent','customer','voucher','discountTotal','totalAmount','subTotal','vatTotal'));
+        $pdf = SPDF::loadView('vouchers.invoicePdf', compact('dataArray','agent','customer','voucher','discountTotal','subTotal','vatTotal','totalAmount'));
+       $pdf->setPaper('A4')->setOrientation('portrait');
+        return $pdf->download($voucher->invoice_number.'-'.$voucher->guest_name.'.pdf');
 		
 	
 	
@@ -1635,7 +1644,7 @@ return view('vouchers.invoicePdf', compact('dataArray','agent','customer','vouch
 			}
 		}
 		
-		$recordCount = VoucherActivity::where("voucher_id",$record->voucher_id)->where("status",'3')->count();
+		$recordCount = VoucherActivity::where("voucher_id",$record->voucher_id)->whereIn("status",['0','3','4'])->count();
 		if($recordCount == '0'){
 			$voucher = Voucher::find($record->voucher_id);
 			$voucher->status_main = 6;
@@ -2099,12 +2108,15 @@ return view('vouchers.invoicePdf', compact('dataArray','agent','customer','vouch
 			$child = $request->input('child');
 			$infant = $request->input('infant');
 			$transferCost = $request->input('transferCost');
-			$aticketCost = $request->input('aticketCost');
-			$cticketCost = $request->input('cticketCost');
+			$ticketCost = $request->input('ticketCost');
 			$total = $request->input('total');
 			
 			foreach($tour_date as $ik => $k)
 			{
+				if(!isset($ticketCost[$ik]))
+					$ticketCost[$ik] = 0;
+				if(!isset($transferCost[$ik]))
+					$transferCost[$ik] = 0;
 				$data[] = [
 					'voucher_id' => $voucher_id,
 					'activity_id' => $activity->id,
@@ -2129,8 +2141,8 @@ return view('vouchers.invoicePdf', compact('dataArray','agent','customer','vouch
 					'adultPrice' => 0,
 					'childPrice' => 0,
 					'infPrice' => 0,
-					'original_tkt_rate' => $aticketCost[$ik]+$cticketCost[$ik],
-					'original_trans_rate' => $transferCost[$ik],
+					'original_tkt_rate' => $transferCost[$ik],
+					'original_trans_rate' => $ticketCost[$ik],
 					'totalprice' => $total[$ik],
 					'discountPrice' => "0",
 					'created_by' => Auth::user()->id,
@@ -2157,14 +2169,14 @@ return view('vouchers.invoicePdf', compact('dataArray','agent','customer','vouch
 			return response()->json([]);
 		}
 
-		$activityVariants = ActivityVariant::where('code', 'LIKE', '%' . $search . '%')
+		$activityVariants = ActivityVariant::where('ActivityVariantName', 'LIKE', '%' . $search . '%')->where('type', 'LIKE', 'single')
 						->paginate(20);
 
 		$response = [];
 		foreach ($activityVariants as $variant) {
 			$response[] = [
 				"value" => $variant->id,
-				"label" => $variant->code,
+				"label" => $variant->ActivityVariantName,
 			];
 		}
 

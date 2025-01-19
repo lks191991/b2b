@@ -6,7 +6,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-12">
-            <h1>Booking Confirmation( {{$voucher->code}})</h1>
+            <h1>Quick Quotation ( {{$voucher->code}})</h1>
           </div>
 		 
 						
@@ -18,34 +18,7 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-      <div class="row">
-       
-		
-       <!-- left column -->
-       <div class="offset-md-2 col-md-8">
-              <div class="row multistep">
-                <div class="col-md-3 multistep-step complete">
-                    <div class="text-center multistep-stepname" style="font-size: 16px;">Add to Cart</div>
-                    <div class="progress"><div class="progress-bar"></div></div>
-                    <a href="#" class="multistep-dot"></a>
-                </div>
-
-                <div class="col-md-3 multistep-step complete">
-                    <div class="text-center multistep-stepname" style="font-size: 16px;">Payment</div>
-                    <div class="progress"><div class="progress-bar"></div></div>
-                    <a href="#" class="multistep-dot"></a>
-                </div>
-
-                <div class="col-md-3 multistep-step current">
-                    <div class="text-center multistep-stepname" style="font-size: 16px;">Confirmation</div>
-                    <div class="progress"><div class="progress-bar"></div></div>
-                    <a href="#" class="multistep-dot"></a>
-                </div>
-
-                
-            </div>
-</div>
-</div>
+     
 
         <div class="row" style="margin-top: 30px;">
        
@@ -59,36 +32,17 @@
               <div class="card-header">
                  <h3 class="card-title"><i class="nav-icon fas fa-user" style="color:black"></i> Agent Details</h3>
 				 <h3 class="card-title" style="float:right">
-				 @if(($voucher->status_main == 4) OR ($voucher->status_main == 5))
+         <a class="btn btn-info btn-sm" href="{{route('voucher.add.quick.activity',$voucher->id)}}">
+         Add More Service 
+                           
+                        </a>
 
-         <a class="btn btn-success btn-sm" href="{{route('voucherActivityItineraryPdf',$voucher->id)}}" >
-                              Itinerary <i class="fas fa-download">
-                              </i>
-                             
-                          </a>
-                          @if(($voucher->status_main == 4))
-          <a class="btn btn-info btn-sm" href="{{route('voucherInvoicePdf',$voucher->id)}}" >
-                              Proforma Invoice <i class="fas fa-download">
-                              </i>
-                             
-                          </a>
-                          @else
-
-                          <a class="btn btn-info btn-sm" href="{{route('voucherInvoicePdf',$voucher->id)}}" >
-                               Invoice <i class="fas fa-download">
-                              </i>
-                             
-                          </a>
-
-                          
-
-						  @endif
-              @endif
-              @if($voucher->parent_id > 0)
-						<a class="btn btn-danger btn-sm float-right" style=" margin-left: 10px;" href="{{ route('vouchers.show',[$voucher->parent_id]) }}" >View Parent Itinerary</a>
-					@else
-					<a class="btn btn-danger btn-sm float-right" style="margin-left: 10px;" href="{{ route('vouchers.create',['pid'=>$voucher->id]) }}" >Add More Services</a>
-					@endif
+                        <a class="btn btn-secondary btn-sm" href="{{route('quotationInvoiceSummaryPdf',$voucher->id)}}" >
+                            Payment Advise <i class="fas fa-download">
+                           </i>
+                        </a>
+        
+             
 						  </h3>
               </div>
               <!-- /.card-header -->
@@ -105,10 +59,7 @@
                 
                    
                    
-                    <div class="col-6">
-					  <label for="inputName">Mobile No.:</label>
-                     {{$voucher->mobile}}
-                    </div>
+                    
                     
                   </div>
 
@@ -130,19 +81,12 @@
                   </div>
                   <div class="row" style="margin-bottom: 15px;">
                     
-                    <div class="col-6">
-					<label for="inputName">Vouchered On:</label>
-          {{ $voucher->booking_date ? date("M d Y, H:i:s",strtotime($voucher->booking_date)) : null }}
-                    </div>
+                    
                    
                 
                    
                    
-                    <div class="col-6">
-					  <label for="inputName">Vouchered By.:</label>
-            {{ ($voucher->createdBy)?$voucher->updatedBy->name:''}}
-                    </div>
-                    
+                  
                   </div>
                  
                 </div>
@@ -151,58 +95,6 @@
                
             </div>
 
-            <div class="card card-default">
-              <div class="card-header">
-                 <h3 class="card-title"><i class="nav-icon fas fa-user" style="color:black"></i> Passenger Details</h3>
-				 <h3 class="card-title" style="float:right">
-				
-						  </h3>
-              </div>
-              <!-- /.card-header -->
-              <!-- form start -->
-            
-                <div class="card-body">
-                  <div class="row" style="margin-bottom: 15px;">
-                    
-                    <div class="col-6">
-					<label for="inputName">Guest Name:</label>
-                     {{$voucher->guest_name}}
-                    </div>
-                   
-                
-                    <div class="col-6">
-					<label for="inputName">Email:</label>
-                     {{$voucher->guest_email}}
-                    </div>
-                   
-                    <div class="col-6">
-					  <label for="inputName">Mobile No.:</label>
-                     {{$voucher->guest_phone}}
-                    </div>
-                    <div class="col-6">
-                      
-					   <label for="inputName">Agent Reference No.:</label>
-                     {{$voucher->agent_ref_no}}
-                    </div>
-					<div class="col-6">
-                      
-					   <label for="inputName">File Handling By:</label>
-                     {{$voucher->file_handling_by}}
-                    </div>
-                  </div>
-                  <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-12">
-					 <label for="inputName">Remark.:</label>
-                     {{$voucher->remark}}
-                     
-                    </div>
-                   
-                  </div>
-                </div>
-                <!-- /.card-body -->
-				
-               
-            </div>
            
           
 
@@ -217,576 +109,159 @@
             <!-- Horizontal Form -->
             
             <!-- /.card -->
-</form>
+
           </div>
           <!--/.col (left) -->
           <!-- right column -->
           <div class="offset-md-2 col-md-8">
-            <!-- Form Element sizes -->
-			@php
-				$totalGrand =0; 
-				$totalGrandDiscount =0; 
-			  @endphp
-			  @if(!empty($voucherActivity) && $voucher->is_activity == 1)
-					@if(!empty($voucherActivity))
-					  @foreach($voucherActivity as $ap)
-				  @php
-					$ticketCount = SiteHelpers::getTicketCountByCode($ap->variant_code);
-					
-					@endphp
-					@php
-				$tourDt = date("Y-m-d",strtotime($ap->tour_date));
-				$validTime = PriceHelper::checkCancellation($ap->id);
-				$activity = SiteHelpers::getActivity($ap->activity_id);
-      
-				@endphp
-            <div class="card card-default">
+            
+
+          <div class="card card-default">
               <div class="card-header">
                 <div class="row">
-				<div class="col-md-6 text-left">
-                    <h3 class="card-title">
-                      <strong> {{$ap->activity_title}}</strong></h3>
-
-                      
-  @if($ap->status == '1')
- <span class='badge bg-danger' style='margin-left: 5px;'>Cancellation Requested</span>
-  @elseif($ap->status == '2')
-  <span class='badge bg-danger' style='margin-left: 5px;'>Cancelled</span> 
-   @elseif($ap->status == '3')
-   <span class='badge bg-warning' style='margin-left: 5px;'>In Process</span> 
-   @elseif($ap->status == '4')
-   <span class='badge bg-success' style='margin-left: 5px;'>Confirm</span> 
-   @elseif($ap->status == '5')
-   <span class='badge bg-success' style='margin-left: 5px;'>Vouchered</span>
-     @endif 
-     </span> 
-                  </div>
-                  <div class="col-md-2 text-rihgt">
-                    <h6 class="card-title" style="font-size:10px">
-                  
-					@if($validTime['btm'] == '0')
-                      <strong> Non - Refundable</strong>
-          @elseif($validTime['btm'] == '2')
-                      <strong> Partial Refundable</strong>
-					@else
-						 <strong> Free Cancellation upto<br/>{{$validTime['validuptoTime']}}</strong>
-					@endif
-				  </h6>
-                  </div>
-				 
-				  
-                
-        
-     
-   
-
-        <div class="col-md-4 text-right ">
-         
-          @if($ap->status > 2)
-		@if((auth()->user()->role_id == '1'))
-						
-						<form id="cancel-form-{{$ap->id}}" method="post" action="{{route('voucher.activity.cancel',$ap->id)}}" >
-						{{csrf_field()}}
-						<input type="hidden" id="cancel_remark_data-{{$ap->id}}" name="cancel_remark_data-{{$ap->id}}" class="form-control cancel_remark" />
-						</form>
-						
-							<a class="btn btn-primary  float-right cancelAct btn-sm ml-2" data-variantcode="{{$ap->variant_code}}" data-apid="{{$ap->id}}" href="javascript:void(0)" ><i class="fas fa-times"></i> Cancel </a>
-					
-				@elseif(($ap->ticket_downloaded == '0') && ($validTime['btm'] == '1') || ($ap->status == '3'))
-						
-						<form id="cancel-form-{{$ap->id}}" method="post" action="{{route('voucher.activity.cancel',$ap->id)}}" style="display:none;">
-						{{csrf_field()}}
-						<input type="hidden" id="cancel_remark_data-{{$ap->id}}" name="cancel_remark_data-{{$ap->id}}" class="form-control cancel_remark" />
-						</form>
-						
-							<a class="btn btn-primary  float-right cancelAct btn-sm ml-2" data-variantcode="{{$ap->variant_code}}" href="javascript:void(0)" data-apid="{{$ap->id}}" ><i class="fas fa-times"></i> Cancel </a>
-						@endif
-          	@endif
-                    @if(($voucher->status_main == 5) and ($ap->ticket_generated == '0') and ($ticketCount > '0') and ($ap->status == '3'))
-						<form id="tickets-generate-form-{{$ap->id}}" method="post" action="{{route('tickets.generate',$ap->id)}}" style="display:none;">
-                                {{csrf_field()}}
-								<input type="hidden" id="statusv" value="2" name="statusv"  /> 
-								<input type="hidden" id="payment_date" name="payment_date"  /> 
-                            </form>
-						
-							<a class="btn btn-success float-right mr-3 btn-sm" href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')"><i class="fas fa-download"></i> Ticket</a>
-							
-							@elseif(($ap->ticket_generated == '1') and ($ap->status == '4'))
-							<a class="btn btn-success float-right  btn-sm  d-pdf" href="#" onclick='window.open("{{route('ticket.dwnload',$ap->id)}}");return false;'  ><i class="fas fa-download"></i> Ticket</a>
-							@endif
-							@if($ap->status == 1)
-							<span style="color:red"  >{{ config('constants.voucherActivityStatus')[$ap->status] }}</span>
-							@endif
+				
+               
+                <h3 class="card-title">Email Content</h3>
+                <h3 class="card-title" style="float:right">
+                     <a  class="btn btn-sm btn-info pull-right text-right" style="margin-left: 300px;float:right;" title="email" href="javascript:void(0)" onclick="copyDivContent();" id="copy_text">Click to Copy </a>
+                    
                    
                     
-                    
-                  </div>
-				  
-				   </div>
-              </div>
-              <div class="card-body">
+                    </h3>
+                    </div>
+                    </div>
+        <div class="card-body">
 			  
-			  <div class="">
+			
                 <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-5 text-left">
-                      <strong>Tour Option</strong>
-                    </div>
-                    <div class="col-md-7 text-right">
-                      {{$ap->variant_name}}
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Date</strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-                   {{$ap->tour_date}}
-                  </div>
-                </div>
-                @if($ap->time_slot != '')
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Time Slot</strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-                   {{$ap->time_slot}}
-                  </div>
-                </div>
-                @endif
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Transfer Type</strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-                   {{$ap->transfer_option}}
-                  </div>
-                </div>
-               @if($ap->transfer_option == 'Shared Transfer')
-					@php
-					$pickup_time = SiteHelpers::getPickupTimeByZone($ap->variant_zones,$ap->transfer_zone);
-					@endphp
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Pickup Timing</strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-                   {{$pickup_time}}
-                  </div>
-                </div>
-				@endif
-				@if(($ap->transfer_option == 'Pvt Transfer') && ($ap->variant_pick_up_required == '1')  && ($ap->variant_pvt_TFRS == '1'))
-					
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Pickup Timing</strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-                   {{$ap->variant_pvt_TFRS_text}}
-                  </div>
-                </div>
-				@endif
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Pax</strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-                  @if(($ap->activity_entry_type == 'Yacht') || ($ap->activity_entry_type == 'Limo'))
-							        {{$ap->adult}}  Hour(s)
-						    	@else
-                      {{$ap->adult}} Adult {{$ap->child}} Child
-                  @endif
-                  </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Amount Incl. VAT</strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-                   AED {{$ap->totalprice}}
-                  </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Ticket Discount/Makrup</strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-				  
-                   AED {{($ap->discount_tkt>0)?$ap->discount_tkt*-1:$ap->discount_tkt*-1}}
-                  </div>
-                </div>
-				<div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Transfer Discount / Markup</strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-                   AED {{($ap->discount_sic_pvt_price>0)?$ap->discount_sic_pvt_price*-1:$ap->discount_sic_pvt_price*-1}}
-                  </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-5 text-left">
-                    <strong>Invoice Amt </strong>
-                  </div>
-                  <div class="col-md-7 text-right">
-				  @php
-				  $totalDiscount = $ap->discount_tkt+ $ap->discount_sic_pvt_price;
-				  @endphp
-                  AED {{$ap->totalprice - $totalDiscount}}
-                  </div>
-                </div>
-				</div>
-				 @if(($ap->transfer_option == 'Shared Transfer') || ($ap->transfer_option == 'Pvt Transfer'))
-			   <div class="row" style="margin-bottom: 15px;">
-					@if($activity->entry_type=='Arrival')
-                    <div class="col-6">
-					<label for="inputName">Dropoff Location:</label>
-					{{$ap->dropoff_location}}
-                     
-                    </div>
-					 <div class="col-6">
-					<label for="inputName">Passenger Name:</label>
-					{{$ap->passenger_name}}
-                     
-                    </div>
-					<div class="col-6">
-					<label for="inputName">Arrival Time:</label>
-					{{$ap->actual_pickup_time}}
-                     
-                    </div>
-					<div class="col-6">
-					<label for="inputName">Flight Details:</label>
-					{{$ap->flight_no}}
-                     
-                    </div>
-                    <div class="col-8">
-					<label for="inputName">Remark:</label>
-					{{$ap->remark}}
-                    </div>
-				
-					@elseif($activity->entry_type=='Interhotel')
-					<div class="col-6">
-					<label for="inputName">Pickup Location:</label>
-					{{$ap->pickup_location}}
-                     
-                    </div>
-					 <div class="col-6">
-					<label for="inputName">Dropoff Location:</label>
-					{{$ap->dropoff_location}}
-                     
-                    </div>
-					<div class="col-6">
-					<label for="inputName">Pickup Time:</label>
-					{{$ap->actual_pickup_time}}
-                     
-                    </div>
-                    <div class="col-12 pt-3">
-					<label for="inputName">Remark:</label>
-					{{$ap->remark}}
-                    </div>
-					@elseif($activity->entry_type=='Departure')
-					<div class="col-6">
-					<label for="inputName">Pickup Location:</label>
-					{{$ap->pickup_location}}
-                     
-                    </div>
-					
-					<div class="col-6">
-					<label for="inputName">Pickup Time:</label>
-					{{$ap->actual_pickup_time}}
-                     
-                    </div>
-					<div class="col-6">
-					<label for="inputName">Flight Details:</label>
-					{{$ap->flight_no}}
-                     
-                    </div>
-                    <div class="col-12 pt-3">
-					<label for="inputName">Remark:</label>
-					{{$ap->remark}}
-                    </div>
-					@else
-					<div class="col-6">
-					<label for="inputName">Pickup Location:</label>
-					{{$ap->pickup_location}}
-                     
-                    </div>
-					
-					 
-					@if(($activity->pvt_TFRS=='1') && ($activity->pick_up_required=='1'))
-					<div class="col-6">
-					<label for="inputName">Pickup Time:</label>
-					{{$ap->actual_pickup_time}}
-                     
-                    </div>
-					
-					@endif
-					
-                    <div class="col-8">
-					<label for="inputName">Remark:</label>
-					{{$ap->remark}}
-                    </div>
-					
-					
-					@endif
-					
-                  </div>
-				  @endif
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+                    
+                    <div class="col-md-12" id="email_content">
+                    <p style="color: #000;">Dear Travel Partner,</p>
+                    <p style="color: #000;">  Greeting From Abatera Tourism LLC!</p>
+
+ 
+                    <p style="color: #000;"> 
+Thanks for your query, we are pleased to offer the below-</p>
+
+ 
+<p style="color: #000;"> 
+ 
+
+QUERY NO: {{$voucher->code}} </p>                 
+<p style="color: #000;"> 
+NO OF PAX: {{$voucher->adults}} Adult(s)  @if($voucher->childs > 0) / {{$voucher->childs}} Child(s) @endif   </p>            
+<p style="color: #000;"> 
 @php
-					$totalGrand += $ap->totalprice; 
-					$totalGrandDiscount += $totalDiscount; 
-				  @endphp
-				 @endforeach
+				$no_of_days = $no_of_nights =  0;
+					$no_of_days = SiteHelpers::dateDiffInDays($voucher->travel_from_date,$voucher->travel_to_date)
+					
+				@endphp
+				
+				
+				
+TRAVEL DATE : {{ $voucher->travel_from_date ? date(config('app.date_format'),strtotime($voucher->travel_from_date)) : null }} (@if(($no_of_days-1) > 0){{$no_of_days-1}} N @endif / {{$no_of_days}} D)       
+</p>
+<p style="color: #000;"> Option – 1 <br/><br/>Hotel 1: <br/><br/><br/><br/><br/><br/></p>
+<p style="color: #000;"> Option – 2 <br/><br/>Hotel 2: <br/><br/><br/><br/><br/><br/></p>
+<p style="color: #000;">
+<strong>Land Part Cost</strong>
+<br/>
+@php
+                $grant_total = $markup_amt = $markup_per = $per_adult = $per_child = $markup_per = 0;
+
+                $markup_amt = $grant_total = $voucher->total_markup;
+                $markup_per = $voucher->total_markup_per;
+                $i = 0;
+           @endphp
+@foreach($voucherActivity as $ap)
+@php 
+                      $per_child_cost = $per_adult_cost = 0;
+                      if($ap->adult > 0)
+                            $per_adult_cost = round(($ap->adultPrice/$ap->adult+(($ap->original_trans_rate/($ap->adult+$ap->child)))),2);
+                        if($ap->child > 0)
+                            $per_child_cost = round(($ap->childPrice/$ap->child+(($ap->original_trans_rate/($ap->adult+$ap->child)))),2);
+
+                        $per_adult_cost += round((($per_adult_cost*$markup_per)/100),2);
+                        $per_child_cost += round((($per_child_cost*$markup_per)/100),2);
+
+                        $grant_total += $ap->original_trans_rate+$ap->original_tkt_rate;
+                        $per_adult += $per_adult_cost;
+                        $per_child += $per_child_cost;
+                        $i++;
+                      @endphp
+          @endforeach
+          @php
+            $per_adult_usd = $per_adult/3.65;
+            $per_child_usd = $per_child/3.65;
+          @endphp
+Adult(s): AED  {{ $per_adult }} / Adult (USD {{ round($per_adult_usd,2) }})<br/>
+@if($voucher->childs > 0)
+Child(s): AED  {{ $per_child }} / Adult (USD  round($per_child_usd,2))<br/>
+@endif
+</p>
+<p style="color: #000;">
+@if(!empty($voucherActivity) && $voucher->is_activity == 1)
+					@if(!empty($voucherActivity))
+          INCLUSIONS<br/>
+        
+					  @foreach($voucherActivity as $ap)
+            -  {{$ap->variant_name}} - {{ $ap->transfer_option}}<br/>
+          
+            @endforeach
+
                  @endif
 				  @endif
-            <!-- /.startteldiv-->
-            @if(!empty($voucherHotel) && $voucher->is_hotel == 1)
-            @if(!empty($voucherHotel))
-              @foreach($voucherHotel as $vh)
-              @php
-              $room = SiteHelpers::hotelRoomsDetails($vh->hotel_other_details)
-              @endphp
-              <div class="card card-default">
-                <div class="card-header">
-                  <div class="row">
-          <div class="col-md-8 text-left">
-                      <h3 class="card-title">
-                        <strong> {{$vh->hotel->name}}</strong></h3>
-                                              
-  @if($vh->status == '1')
- <span class='badge bg-danger' style='margin-left: 5px;'>Cancellation Requested</span>
-  @elseif($vh->status == '2')
-  <span class='badge bg-danger' style='margin-left: 5px;'>Cancelled</span> 
-  
-     @endif 
-     </span> 
-                    </div>
-                    <div class="col-md-4 text-right ">
-        @if($vh->status > 2)
-		
-						
-						<form id="cancel--hotel-form-{{$vh->id}}" method="post" action="{{route('voucher.hotel.cancel',$vh->id)}}" style="display:none;">
-						{{csrf_field()}}
-						</form>
-						
-							<a class="btn btn-primary  float-right btn-sm ml-2" data-variantcode="{{$vh->id}}" data-apid="{{$vh->id}}" href="javascript:void(0)"  onclick="HotelCancelModel('{{$vh->id}}')" ><i class="fas fa-times"></i> Cancel </a>
-            @endif  
-            </div>
-             </div>
-                </div>
-                <div class="card-body">
-          
-          <div class="">
-            <div class="row" style="margin-bottom: 5px;">
-              <div class="col-md-5 text-left">
-                <strong>Hotel Category</strong>
-              </div>
-              <div class="col-md-7 text-right">
-                {{$vh->hotel->hotelcategory->name}}
-              </div>
-          </div>
-                  <div class="row" style="margin-bottom: 5px;">
-                      <div class="col-md-5 text-left">
-                        <strong>Check In</strong>
-                      </div>
-                      <div class="col-md-7 text-right">
-                        {{$vh->check_in_date}}
-                      </div>
-                  </div>
-                  <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-5 text-left">
-                      <strong>Check Out</strong>
-                    </div>
-                    <div class="col-md-7 text-right">
-                     {{$vh->check_out_date}}
-                    </div>
-                  </div>
-                  <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-5 text-left">
-                      <strong>Room Type</strong>
-                    </div>
-                    <div class="col-md-7 text-right">
-                      {{$room['room_type']}}
-                    </div>
-                  </div>
-                  <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-5 text-left">
-                      <strong>Number of Rooms</strong>
-                    </div>
-                    <div class="col-md-7 text-right">
-                      {{$room['number_of_rooms']}}
-                    </div>
-                  </div>
-                  <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-5 text-left">
-                      <strong>Occupancy</strong>
-                    </div>
-                    <div class="col-md-7 text-right">
-                      {{$room['occupancy']}}
-                    </div>
-                  </div>
-                  <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-5 text-left">
-                      <strong>Meal Plan</strong>
-                    </div>
-                    <div class="col-md-7 text-right">
-                      {{$room['mealplan']}}
-                    </div>
-                  </div>
-                  <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-5 text-left">
-                      <strong>Amount Incl. VAT</strong>
-                    </div>
-                    <div class="col-md-7 text-right">
-                     AED {{$room['price']}}
-                    </div>
-                  </div>
-                  <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-5 text-left">
-                      <strong>Total</strong>
-                    </div>
-                    <div class="col-md-7 text-right">
-                     AED {{$room['price']}}
-                    </div>
-                  </div>
-          </div>
-			<div class="row" style="margin-bottom: 15px;">
-                      <div class="col-6">
-                        <label for="inputName">Confirmation Number:</label>
-					{{$vh->confirmation_number}}
+</p>
+<p style="color: #000;">
+          EXCLUSIONS:<br/>
+- TOURISM DIRHAMS<br/>
 
-                       
-                      </div>
-                     <div class="col-12">
-                        <label for="inputName">Remark:</label>
-					{{$vh->remark}}
+- 30 DAYS VISA<br/>
 
-                       
-                      </div>
-                    </div>
-                </div>
-                <!-- /.card-body -->
-              </div>
-              <!-- /.card -->
-  @php
-            $totalGrand += $room['price']; 
+- ANY EXPENSE OF PERSONAL NATURE.<br/>
+
+- TIPS / GRATITUDE.<br/>
+
+- ANY MEALS / EXCURSIONS NOT MENTIONED IN THE INCLUSION.<br/>
+
+</p>
+@if(!empty($voucherActivity) && $voucher->is_activity == 1)
+					@if(!empty($voucherActivity))
+         
+<p style="color: #000;">
+<b>Remarks:</b><br/>
+
+					  @foreach($voucherActivity as $ap)
+            @php
+            $varaint_data = SiteHelpers::getVariant($ap->variant_code);
             @endphp
-           @endforeach
-                   @endif
-            @endif
+            @if($varaint_data->cancellation_policy != '')
+ - {!!$varaint_data->cancellation_policy!!} <br/>
+@endif
+@endforeach
+
+                 @endif
+				  @endif
+</p>
 
 
-            
-            <!-- /.startteldiv-->
-          
-         
-          
+<p style="color: #000;">
+<b>Notes:</b><br/>
+⁠- ⁠The above is only a quotation and we are not holding any confirmed reservation/services at the moment.<br/>
+⁠-  ⁠Any amendments in the dates of travel or number of passengers will attract a re-quote.<br/>
+⁠- ⁠Prices are subject to change unless booked and paid for in advance.<br/>
+⁠- ⁠Rates for arrival and departure transfers and coach tours are based on and valid for pax onwards in one vehicle with all passengers arriving / departing together (in the same flight).<br/>
+⁠- ⁠Airport transfer rates are not valid in case passengers are arriving / departing on different flights. Any change in pax numbers will result in change in rates.<br/>
+⁠- ⁠Rooms will be subject to availability at the time of confirming the reservation.<br/>
+</p>
+                    </div>
+                
 
-             <!-- /.endhoteldiv-->
-            <div class="card card-default">
-              <div class="card-header">
-                <h3 class="card-title"><strong>Total Payment</strong></h3>
-              </div>
-              <div class="card-body">
-                <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-6 text-left">
-                    <strong>Amount Incl. VAT</strong>
-                  </div>
-                  <div class="col-md-6 text-right">
-                   AED {{$totalGrand - $totalGrandDiscount}}
-                  </div>
-                </div>
-				 <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-6 text-left">
-                    <strong>Discount</strong>
-                  </div>
-                  <div class="col-md-6 text-right">
-                   AED {{$totalGrandDiscount}}
-                  </div>
-                </div>
-               <!-- <div class="row" style="margin-bottom: 15px;">
-                  <div class="col-md-6 text-left">
-                    <strong>Handling charges (2%)</strong>
-                  </div>
-                  <div class="col-md-6 text-right">
-                   AED 2.30
-                  </div>
-                </div> -->
-                 <div class="row" style="margin-bottom: 5px;">
-                  <div class="col-md-6 text-left">
-                    <h5>Final Amount</h5>
-                  </div>
-                  <div class="col-md-6 text-right">
-                   <h5>AED {{$totalGrand - $totalGrandDiscount}}</h5>
-                  </div>
-                </div>
-				
-              </div>
-			  
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-			
-            @if(count($childVoucher) > 0)
-             
-            
-             <div class="card card-default">
-               <div class="card-header">
-               <h3 class="card-title">
-                       <strong> Child Vouchers</strong></h3>
-     
-         
-               </div>
-               <div class="card-body">
-         
-         <div class="">
-          
-                 <div class="row" style="margin-bottom: 5px;">
-                     <div class="col-md-12 text-left">
-                       <table class="table table-condensed table-bordered">
-                               <tr>
-                                   <th>Voucher Code</th>
-                                   <th>Created On</th>
-                                   <th>Booked Code</th>
-                                   <th>Invoice No</th>
-                                   <th>Total Amount</th>
-                               </tr>
-                     @foreach($childVoucher as $vc)
-                     <tr>
-                                   <td>  <a class="btn btn-info btn-sm" target="_blank" href="{{route('voucherView',$vc->id)}}">
-                                   {{$vc->code}}
-                              
-                          </a></td>
-                                   <td> {{$vc->created_at}}</td>
-                                   <td> {{$vc->booking_date}}</td>
-                                   <td>
-                                   @if($vc->status_main >= 4)
-					 <a class="btn btn-secondary btn-sm" href="{{route('voucherInvoicePdf',$vc->id)}}" >
-           {{$vc->invoice_number}}
-                          </a>
-						  @endif 
-                                  </th>
-                                   <td>{{  SiteHelpers::getVoucherTotalPriceNew($vc->id);}}</th>
-                               </tr>
-                     @endforeach
-                             </table>
-                     </div>
-                   
-                      
-                  
-                 </div>
-                 
-         </div>
- 
-               </div>
-               <!-- /.card-body -->
-             </div>
-             <!-- /.card -->
+</div>
+</div>
+</div>
 
-       
-                  @endif
+      
           </div>
           <!--/.col (right) -->
         </div>
@@ -1007,4 +482,28 @@ var id = $('#hapid').val();
 
 
 </script>
+<script>
+    function copyDivContent() {
+      // Get the content of the div by id
+      const divContent = document.getElementById("email_content").innerText;
+
+      // Create a temporary textarea element to copy the text
+      const tempTextArea = document.createElement("textarea");
+      tempTextArea.value = divContent;
+
+      // Append the textarea to the body
+      document.body.appendChild(tempTextArea);
+
+      // Select the content and copy it to clipboard
+      tempTextArea.select();
+      document.execCommand("copy");
+
+      // Remove the temporary textarea
+      document.body.removeChild(tempTextArea);
+
+      // Alert the user that content has been copied
+      //alert("Content copied to clipboard!");
+      document.getElementById("copy_text").innerText = "copied";
+    }
+  </script>
 @endsection

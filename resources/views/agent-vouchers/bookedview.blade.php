@@ -247,12 +247,16 @@ $aid = 0;
                                                 @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff'))   
                                                
                                                 {{$voucher->currency_code}} {{$aPrice*$voucher->currency_value}}
+                                                <small class="clear"><br/>Inclusive of taxes</small>
+
                     @elseif($caid != $ap->activity_id)
                     {{$voucher->currency_code}} {{$total_sp*$voucher->currency_value}}
-                    @endif
+                 
                                                 
                                             </span>
                                                 <small class="clear"><br/>Inclusive of taxes</small>
+
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -321,11 +325,20 @@ $aid = 0;
                                       </div>
                                       <div class="row">
                                     <div class="col-md-4">
+                                        
 				@if(($validTime['btm'] > 0) && ($ap->status > 2))
+
+                @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff'))
                   <form id="cancel-form-{{$ap->id}}" method="post" action="{{route('agent-voucher.activity.cancel',$ap->id)}}" style="display:none;">
                   {{csrf_field()}}
                   </form>
                       <a class="btn-danger  float-right cancelAct  btn-sm ml-2" href="javascript:void(0)" data-variantcode="{{$ap->variant_code}}" href="javascript:void(0)" data-apid="{{$ap->id}}"> Cancel</a>
+                      @elseif($caid != $ap->activity_id)
+
+                      <form id="cancel-form-{{$ap->id}}" method="post" action="{{route('agent-voucher.activity.cancel',$ap->id)}}" style="display:none;">
+                  {{csrf_field()}}
+                  </form>
+                      <a class="btn-danger  float-right cancelActBB  btn-sm ml-2" href="javascript:void(0)" data-variantcode="{{$ap->variant_code}}" href="javascript:void(0)" data-apid="{{$ap->id}}"> Cancel</a>
 					  @endif
                    
                   </div>
@@ -341,7 +354,7 @@ $aid = 0;
                     
                     @elseif(($ap->ticket_generated == '1') and ($ap->status == '4'))
                     <a class=""  href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')" >Download Ticket</a>
-                   
+                    @endif
                     @endif
                                     </div>
 <!--                     
@@ -452,6 +465,40 @@ Do you want proceed with the Download ?             </div>
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" id="cancelModalBB" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabelBB" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabelBB">Cancellation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" id="dataCancelBB">
+                  <div id="cancel-headerBB"></div>
+                   <table id="cancellationTableBB" class="table table-striped" style="display: none;">
+					<thead>
+						
+					</thead>
+					<tbody>
+						<!-- Table rows will be dynamically added here -->
+					</tbody>
+				</table>
+        <div id="cancel-footerBB"></div>
+                </div>
+            </div>
+           <div class="modal-footer d-flex justify-content-between">
+			
+           
+		</div>
+
+        </div>
+    </div>
+</div>
+
 @endsection
 
 
@@ -536,6 +583,29 @@ $(document).ready(function() {
 	
 	
  });
+
+ $(document).on('click', '.cancelActBB', function(evt) {
+	 variantcode = $(this).data('variantcode');
+	 formid = $(this).data('apid');
+	  evt.preventDefault();
+	
+		
+				  
+           $('#cancellationTableBB tbody').empty();
+           $('#cancel-headerBB').html("");
+            $('#cancel-footerBB').html("");
+				
+						 var row = '<tr>' +
+                '<td colspan="3" style="text-align: center;"><p>To cancel a Combo Deal, please send an email to bookings@abaterab2b.com.</p><p>Our team will respond within 24 hours.</p><p>For urgent cancellation requests, feel free to contact us at +9714 2989992 or reach out to your account manager directly..</p></td>' +
+                '</tr>';
+            $('#cancellationTableBB tbody').append(row);
+			$('#cancellationTableBB').show();
+			openModalBB();
+					
+				//console.log(data);
+			 
+	
+ });
  });
 function openModal(cancel,formid) {
         $('#cancelModal').modal('show');
@@ -545,6 +615,15 @@ function openModal(cancel,formid) {
 		
         $('#cancelModal .close').on('click', function() {
             $('#cancelModal').modal('hide');
+        });
+   
+}
+
+function openModalBB() {
+        $('#cancelModalBB').modal('show');
+        
+        $('#cancelModalBB .close').on('click', function() {
+            $('#cancelModalBB').modal('hide');
         });
    
 }

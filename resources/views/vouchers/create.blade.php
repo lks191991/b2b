@@ -147,7 +147,7 @@
                     <span class="text-danger">{{ $errors->first('travel_to_date') }}</span>
                 @endif
               </div>
-			   <div class="form-group col-md-3">
+			   <div class="form-group col-md-1">
                 <label for="inputName">Vat Invoice:</label>
                <select name="vat_invoice" id="vat_invoice" class="form-control">
                @if(!old('vat_invoice'))
@@ -163,7 +163,22 @@
                     <span class="text-danger">{{ $errors->first('vat_invoice') }}</span>
                 @endif
               </div>
-			  
+              <div class="form-group col-md-2">
+                <label for="inputName">Summary Invoice:</label>
+               <select name="summary_invoice" id="summary_invoice" class="form-control">
+               @if(!old('summary_invoice'))
+				<option value="1" selected="selected">Yes</option>
+				<option value="0" >No</option>
+				@else
+				<option value="1" @if(old('summary_invoice') ==1) {{'selected="selected"'}} @endif >Yes</option>	
+				 <option value="0" @if(old('summary_invoice') ==0) {{'selected="selected"'}} @endif >No</option>
+                   @endif
+                 
+                 </select>
+				  @if ($errors->has('summary_invoice'))
+                    <span class="text-danger">{{ $errors->first('summary_invoice') }}</span>
+                @endif
+              </div>
 			  <div class="form-group col-md-12 hide">
                 <label for="inputName">Flight: <span class="red">*</span></label>
                 <select name="is_flight" id="is_flight" class="form-control">

@@ -559,17 +559,20 @@ $zonePriceAr = [];
 	}
 	
 	public static function getTotalCostTicketOnly($vid) 
-	{
-		$voucherActivity = VoucherActivity::where('id',$vid)->first();
-		$returnTotalPrice = 0;
-		if(!empty($voucherActivity)){
-			$totalPrice = $voucherActivity->original_tkt_rate;
-			$discounTkt = $voucherActivity->discount_tkt;
-			$returnTotalPrice = $totalPrice - $discounTkt;
-		}
-		
-		return $returnTotalPrice;
-	}
+{
+    $voucherActivity = VoucherActivity::where('id', $vid)->first();
+    $returnTotalPrice = 0;
+    if (!empty($voucherActivity)) {
+        // Ensure the values are numeric
+        $totalPrice = (float) $voucherActivity->original_tkt_rate;
+        $discounTkt = (float) $voucherActivity->discount_tkt;
+
+        $returnTotalPrice = $totalPrice - $discounTkt;
+    }
+    
+    return $returnTotalPrice;
+}
+
 
 	public static function getTotalActivitySP($vid,$aid) 
 	{
@@ -825,9 +828,17 @@ public static function checkCancellation($voucherActivityId)
 		$data['debug'] = $cancellation_data;
 		$data['c_debug'] = $voucherActivity->cancellation_chart;
 		$data['refundamt'] =$refundAmt;
-		if(!empty($cancellation_array_val))
-			$data['refundamt'] = $cancellation_array_val[$refundAmt];
-
+		if (!empty($cancellation_array_val)) {
+			if (isset($cancellation_array_val[$refundAmt])) {
+				$data['refundamt'] = $cancellation_array_val[$refundAmt];
+			} else {
+				$data['refundamt'] = [
+					"tkt" => 0,
+					"trf" => 0.0
+				];
+			}
+		}
+		
 		return $data;
 	}
 }

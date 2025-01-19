@@ -215,14 +215,14 @@ class AgentVouchersController extends Controller
 		
 		if ($request->has('save_and_activity')) {
 			if($record->is_activity == 1){
-			return redirect()->route('agent-vouchers.add.activity',$record->id)->with('success', 'Voucher Created Successfully.');
+			return redirect()->route('agent-vouchers.add.activity',$record->id);
 			}
 			else
 			{
 				return redirect()->route('agent-vouchers.index')->with('error', 'If select hotel yes than you can add hotel.');
 			}
 		} else {
-        return redirect()->route('agent-vouchers.index')->with('success', 'Voucher Created Successfully.');
+        return redirect()->route('agent-vouchers.index');
 		}
 		
     }
@@ -276,7 +276,7 @@ class AgentVouchersController extends Controller
 		if($entries > 0)
         	return view('agent-vouchers.view', compact('voucher','voucherHotel','voucherActivity','voucherStatus','fname','lname'));
 		else
-		return redirect()->route('agent-vouchers.add.activity',$id)->with('success', 'Voucher Created Successfully.');
+		return redirect()->route('agent-vouchers.add.activity',$id);
     }
 	
    
@@ -905,7 +905,8 @@ class AgentVouchersController extends Controller
 		$record->currency_code = $currency['code'];
 		$record->currency_value = $currency['value'];
 		
-		if ($request->has('btn_paynow')) {
+		if ($request->has('btn_paynow')) 
+		{
 		$agent = User::find($record->agent_id);
 		
 		
@@ -941,6 +942,8 @@ class AgentVouchersController extends Controller
 			
 			$record->booking_date = date("Y-m-d H:i:s");
 			$record->invoice_number = $code;
+			$record->vouchered_by = Auth::user()->id;
+			$record->updated_by = Auth::user()->id;
 			$record->status_main = 5;
 			$record->zone = Auth::user()->zone;
 			$record->save();
@@ -963,6 +966,8 @@ class AgentVouchersController extends Controller
 			$recordUser->receipt_no = $code;
 			$recordUser->is_vat_invoice = $record->vat_invoice;
 			$recordUser->save(); 
+
+			VoucherActivity::where('voucher_id', $record->id)->update(['booking_date' => Carbon::now(),'status' => '3']);
 			
 			$emailData = [
 			'voucher'=>$record,
@@ -1021,7 +1026,7 @@ class AgentVouchersController extends Controller
 		
 	
 		
-		return redirect()->route('agentVoucherView',$record->id)->with('success', 'Voucher Created Successfully.');
+		return redirect()->route('agentVoucherView',$record->id);
         
     }
 	

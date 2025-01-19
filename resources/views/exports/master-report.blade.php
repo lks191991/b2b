@@ -64,7 +64,7 @@
 					<td>{{$record->actual_transfer_cost}}</td>
           <td>@if($record->supplier_transfer2 > 0) {{ SiteHelpers::getSupplierName($record->supplier_transfer2) }} @endif</td>
 					<td>{{$record->actual_transfer_cost2}}</td>
-          <td>{{$record->original_trans_rate-$record->discount_sic_pvt_price}}</td>
+          <td>{{(float)$record->original_trans_rate- (float)$record->discount_sic_pvt_price}}</td>
           <td>{{$record->remark}}</td>
           <td>@if($record->status == '1')
 				Cancellation Requested

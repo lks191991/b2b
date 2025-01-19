@@ -10,6 +10,7 @@ use Laravel\Passport\HasApiTokens;
 use Emadadly\LaravelUuid\Uuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {   
@@ -21,6 +22,15 @@ class User extends Authenticatable
 	protected $keyType = 'string';
 	public $incrementing = false;
 
+	protected static function booted()
+    {
+        static::saving(function ($model) {
+            if (!$model->slug) {  
+                $model->slug = Str::slug($model->name . '-' . $model->id);
+            }
+        });
+    }
+	
     /**
      * The attributes that are mass assignable.
      *

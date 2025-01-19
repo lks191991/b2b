@@ -68,12 +68,26 @@ class ActivityVariantController extends Controller
     ]);
 
     $variantIds = $request->input('variant_id');
+
+  
+
     $code = $request->input('code');
     $is_popular = $request->input('is_popular');
 
     $activityId = $request->input('activity_id');
 
+    $activity = Activity::find($activityId);
+   
+    $type = 'bundle';
+    if($activity->product_type == 'Standalone')
+        $type = 'single';
     foreach ($variantIds as $variantId) {
+
+        $variant = Variant::find($variantId);
+        $avname = array();
+        $avname[$activity->title] = $activity->title;
+        $avname[$variant->title] = $variant->title;
+
 		$existingRecord = ActivityVariant::where('activity_id', $activityId)
         ->where('variant_id', $variantId)
         ->count();
@@ -83,6 +97,8 @@ class ActivityVariantController extends Controller
             'is_popular' => $is_popular,
             'activity_id' => $activityId,
             'variant_id' => $variantId,
+            'type' => $type,
+            'ActivityVariantName' => implode(" ",$avname)
         ]);
 
         $record->update(['ucode' => 'AV'.$record->id]);
@@ -120,6 +136,14 @@ class ActivityVariantController extends Controller
     $variantIds = $request->input('variant_id');
     $code = $request->input('code');
     $activityId = $request->input('activity_id');
+    $activity = Activity::find($activityId);
+    $variant = Variant::find($variantIds);
+    $avname = array();
+    $avname[$activity->title] = $activity->title;
+    $avname[$variant->title] = $variant->title;
+    $type = 'bundle';
+    if($activity->product_type == 'Standalone')
+        $type = 'single';
     $is_popular = $request->input('is_popular');
 		$existingRecord = ActivityVariant::where('activity_id', $activityId)
         ->where('variant_id', $variantIds)->where('id', '!=',$id)
@@ -130,6 +154,8 @@ class ActivityVariantController extends Controller
             'is_popular' => $is_popular,
             'activity_id' => $activityId,
             'variant_id' => $variantIds,
+            'type' => $type,
+            'ActivityVariantName' => implode(" ",$avname)
         ]);
 
 		}

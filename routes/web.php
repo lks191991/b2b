@@ -116,6 +116,7 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
         Route::post('suppliers-markup-activity-save', [SuppliersController::class, 'priceMarkupActivitySave'])->name('suppliers.markup.activity.save');
         Route::get('suppliers-markup-price/{id?}', [SuppliersController::class, 'markupPriceList'])->name('suppliers.markup.price');
         Route::post('suppliers-markup-price-save', [SuppliersController::class, 'markupPriceSave'])->name('suppliers.markup.price.save');
+        Route::get('suppliers-export/{id?}', [SuppliersController::class, 'supplierExport'])->name('suppliers.export');
         Route::resource('agents', AgentsController::class);
 		//Route::get('httpRequest', [AgentsController::class, 'sendApiRequest']);
 		Route::post('passwordResetAdmin/{id?}', [AgentsController::class, 'passwordResetAdmin'])->name('passwordResetAdmin');
@@ -176,14 +177,15 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
         //Route::get('activity-view-vouchers/{aid?}/{vid?}', [VouchersController::class, 'addActivityView'])->name('voucher.activity.view');
         Route::get('activity-view-vouchers/{aid?}/{vid?}/{d?}/{a?}/{c?}/{i?}/{tt?}', [VouchersController::class, 'addActivityView'])->name('voucher.activity.view');
 
-
+        Route::get('quotations', [QuotationsController::class, 'index'])->name('quotations.index');
         Route::get('quotation-view/{vid?}', [QuotationsController::class, 'quotationView'])->name('quotationView');
 		
 		Route::get('add-activity-quotation/{vid?}', [QuotationsController::class, 'addActivityList'])->name('quotation.add.activity');
         //Route::get('activity-view-vouchers/{aid?}/{vid?}', [QuotationsController::class, 'addActivityView'])->name('voucher.activity.view');
         Route::get('activity-view-quotation/{aid?}/{vid?}/{d?}/{a?}/{c?}/{i?}/{tt?}', [QuotationsController::class, 'addActivityView'])->name('quotation.activity.view');
 		Route::post('quotation-activity-save', [QuotationsController::class, 'activitySaveInVoucher'])->name('quotation.activity.save');
-
+        Route::get('quotation-activity-delete/{id?}', [QuotationsController::class, 'destroyActivityFromQuotation'])->name('quotation.activity.delete');
+        Route::get('quotation-invoice-summary-Pdf/{vid?}', [QuotationsController::class, 'quotationInvoiceSummaryPdf'])->name('quotationInvoiceSummaryPdf');
 
         Route::post('get-pvt-transfer-amount', [VouchersController::class, 'getPVTtransferAmount'])->name('voucher.getPVTtransferAmount');
 		Route::post('voucher-activity-save', [VouchersController::class, 'activitySaveInVoucher'])->name('voucher.activity.save');
@@ -205,6 +207,9 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
         Route::get('voucher-report', [ReporsController::class, 'voucherReport'])->name('voucherReport');
         Route::get('voucher-report-export', [ReporsController::class, 'voucherReportExport'])->name('voucherReportExport');
         Route::post('voucher-report-save', [ReporsController::class, 'voucherReportSave'])->name('voucherReportSave');
+
+        Route::get('logistic-record-csv-upload', [ReporsController::class, 'uploadLogisticRecordCsvView'])->name('logistic.record.csv.upload');
+        Route::post('logistic-record-csv-upload-save', [ReporsController::class, 'uploadLogisticRecordCsvSave'])->name('logistic.record.csv.upload.save');
        
 		 Route::post('voucher-report-save-voucher', [ReporsController::class, 'voucherReportSaveInVoucher'])->name('voucherReportSaveInVoucher');
         Route::post('voucher-hotel-input-save', [VouchersController::class, 'voucherHotelInputSave'])->name('voucherHotelInputSave');
@@ -242,8 +247,8 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
         Route::get('agent-add-activity-vouchers/{vid?}', [AgentVouchersController::class, 'addActivityList'])->name('agent-vouchers.add.activity');
         Route::get('agent-activity-view-vouchers/{aid?}/{vid?}', [AgentVouchersController::class, 'addActivityView'])->name('agent-vouchers.activity.view');
        
-        Route::get('add-quick-activity-vouchers/{vid?}', [VouchersController::class, 'addQuickActivityList'])->name('voucher.add.quick.activity');
-        Route::post('add-quick-activity-vouchers-save', [VouchersController::class, 'addQuickActivitySave'])->name('voucher.add.quick.activity.save');
+        Route::get('add-quick-activity-vouchers/{vid?}', [QuotationsController::class, 'addQuickActivityList'])->name('voucher.add.quick.activity');
+        Route::post('add-quick-activity-vouchers-save', [QuotationsController::class, 'addQuickActivitySave'])->name('voucher.add.quick.activity.save');
         Route::get('auto.activityvariantname', [VouchersController::class, 'autocompleteActivityvariantname'])->name('auto.activityvariantname');
 
        
@@ -300,6 +305,10 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
 		Route::get('tour-option-static-data/{id?}', [APITourDataController::class, 'tourOptionStaticData'])->name('tourOptionStaticData');
         Route::get('voucher-log/{id}', [VouchersController::class, 'voucherLog'])->name('voucherLog');
 		
+
+        Route::get('/search-dropdown', [ActivitiesController::class, 'searchDropdown'])->name('search.dropdown');
+        Route::get('/search/prefill', [ActivitiesController::class, 'prefill'])->name('search.prefill');
+
     });
 });
 

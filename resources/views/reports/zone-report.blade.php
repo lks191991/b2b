@@ -88,50 +88,129 @@
             </form>
           </div>
         </div><div class="col-md-12" style="overflow-x:auto">
-                <table id="" class="table rounded-corners table-bordered">
-                  <thead>
-                  <tr>
-				
-					<th>Zone</th>
-					<th>Total Agents</th>
-					<th>Total Vouchers Agents</th>
-					<th>Total Vouchers</th>
-          <th>Total Entries</th>
-					<th >Total Ticket SP (After Discount)</th>
-					<th>Total Tranfer SP (After Discount)</th>
-					<th>Total Voucher Amount</th>
-					<th>Total Ticket Cost</th>
-					<th>Total Transfer Cost</th>
-					<th>Total Cost</th>
-					<th>Profit / Loss</th>
-					<th>Total Hotel SP</th>
-					<th>Net Cost</th>
-					<th>Hotel - Profit / Loss</th>
-				  </tr>
-				  
-                  </thead>
-                  <tbody>
-				  @foreach ($data as $k => $record)
-				 
-                  <tr class="">
-					<td>{{$k}}</td>
-					<td>{{$record['totalAgents']}}</td>
-					<td>{{$record['totalVoucherAgents']}}</td>
-					<td>{{$record['totalVoucherCs']}}</td>
-          <td>{{$record['totalVouchers']}}</td>
-					<td>{{$record['totalTicketSPAfterDiscount']}}</td>
-					<td>{{$record['totalTransferSPAfterDiscount']}}</td>
-					<td>{{$record['totalVoucherAmount']}}</td>
-					<td>{{$record['totalTicketCost']}}</td>
-					<td>{{$record['totalTransferCost']}}</td>
-					<td>{{$record['totalCost']}}</td>
-					<td>@if($record['PL'] > 0) <span style="color: white;font-weight:bold;background-color: green;padding: 8px;display: inline-block;width: 100%;">{{ @$record['PL']}}</span> @elseif($record['PL'] < 0) <span style="color: white;font-weight:bold;background-color: red;padding: 8px;display: inline-block;width: 100%;">{{ @$record['PL']}} </span>@else 0 @endif</td>
-					<td>{{$record['totalHotelSP']}}</td>
-					<td>{{$record['totalHotelCost']}}</td>
-					<td>@if($record['PLHotel'] > 0) <span style="color: white;font-weight:bold;background-color: green;padding: 8px;display: inline-block;width: 100%;">{{ @$record['PLHotel']}}</span> @elseif($record['PLHotel'] < 0) <span style="color: white;font-weight:bold;background-color: red;padding: 8px;display: inline-block;width: 100%;">{{ @$record['PLHotel']}} </span>@else 0 @endif</td>
-                  @endforeach
-                  </tbody>
-                </table></div>
+          <table id="" class="table rounded-corners table-bordered">
+            <thead>
+                <tr>
+                    <th>Zone</th>
+                    <th>Active Agents</th>
+                    <th>No. of Bkgs.</th>
+                    <th>No. of Services</th>
+                    <th>Accounted Sells</th>
+                    <th>UnAccounted Sells</th>
+                    <th>Total Sales</th>
+                    <th>Total Cost</th>
+                    <th>Accounted Profit</th>
+                    <th>Accounted Transfer Sales</th>
+                    <th>UnAccounted Transfer Sales</th>
+                    <th>Total Transfer Sales</th>
+                    <th>Total Transfer Cost</th>
+                    <th>Accounted Transfer Profit</th>
+                    <th>Hotel Sales</th>
+                    <th>Hotel Cost</th>
+                    <th>Hotel - Profit</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    // Initialize totals
+                    $totals = [
+                        'activeAgents' => 0,
+                        'no_ofBkgs' => 0,
+                        'no_ofServices' => 0,
+                        'totalAccountedSell' => 0,
+                        'totalUnAccountedSell' => 0,
+                        'totalSells' => 0,
+                        'totalCost' => 0,
+                        'totalAccountedProfit' => 0,
+                        'totalAccountedTransSell' => 0,
+                        'totalUnAccountedTransSell' => 0,
+                        'totalTransSells' => 0,
+                        'totalTransCost' => 0,
+                        'totalAccountedTransProfit' => 0,
+                        'totalHotelSP' => 0,
+                        'totalHotelCost' => 0,
+                        'PLHotel' => 0,
+                    ];
+                @endphp
+        
+                @foreach ($data as $k => $record)
+                    <tr>
+                        <td>{{$k}}</td>
+                        <td>{{$record['activeAgents']}}</td>
+                        <td>{{$record['no_ofBkgs']}}</td>
+                        <td>{{$record['no_ofServices']}}</td>
+                        <td>{{$record['totalAccountedSell']}}</td>
+                        <td>{{$record['totalUnAccountedSell']}}</td>
+                        <td>{{$record['totalSells']}}</td>
+                        <td>{{$record['totalCost']}}</td>
+                        <td>
+                            @if($record['totalAccountedProfit'] > 0)
+                                <span style="color: white;font-weight:bold;background-color: green;padding: 8px;display: inline-block;width: 100%;">{{ @$record['totalAccountedProfit']}}</span>
+                            @elseif($record['totalAccountedProfit'] < 0)
+                                <span style="color: white;font-weight:bold;background-color: red;padding: 8px;display: inline-block;width: 100%;">{{ @$record['totalAccountedProfit']}}</span>
+                            @else
+                                0
+                            @endif
+                        </td>
+                        <td>{{$record['totalAccountedTransSell']}}</td>
+                        <td>{{$record['totalUnAccountedTransSell']}}</td>
+                        <td>{{$record['totalTransSells']}}</td>
+                        <td>{{$record['totalTransCost']}}</td>
+                        <td>
+                            @if($record['totalAccountedTransProfit'] > 0)
+                                <span style="color: white;font-weight:bold;background-color: green;padding: 8px;display: inline-block;width: 100%;">{{ @$record['totalAccountedTransProfit']}}</span>
+                            @elseif($record['totalAccountedTransProfit'] < 0)
+                                <span style="color: white;font-weight:bold;background-color: red;padding: 8px;display: inline-block;width: 100%;">{{ @$record['totalAccountedTransProfit']}}</span>
+                            @else
+                                0
+                            @endif
+                        </td>
+                        <td>{{$record['totalHotelSP']}}</td>
+                        <td>{{$record['totalHotelCost']}}</td>
+                        <td>
+                            @if($record['PLHotel'] > 0)
+                                <span style="color: white;font-weight:bold;background-color: green;padding: 8px;display: inline-block;width: 100%;">{{ @$record['PLHotel']}}</span>
+                            @elseif($record['PLHotel'] < 0)
+                                <span style="color: white;font-weight:bold;background-color: red;padding: 8px;display: inline-block;width: 100%;">{{ @$record['PLHotel']}}</span>
+                            @else
+                                0
+                            @endif
+                        </td>
+                    </tr>
+        
+                    @php
+                        // Add values to totals with validation
+                        foreach ($totals as $key => $value) {
+        $totals[$key] += (float)str_replace(',', '', $record[$key]); // String ko numeric me convert karen
+    }
+                    @endphp
+                @endforeach
+        
+                <!-- Grand Total Row -->
+                <tr style="font-weight: bold; background-color: #f1f1f1;">
+                  <td>Grand Total</td>
+                  <td>{{ number_format($totals['activeAgents'], 0) }}</td> <!-- Agents ke liye integer format -->
+                  <td>{{ number_format($totals['no_ofBkgs'], 2) }}</td>
+                  <td>{{ number_format($totals['no_ofServices'], 2) }}</td>
+                  <td>{{ number_format($totals['totalAccountedSell'], 2) }}</td>
+                  <td>{{ number_format($totals['totalUnAccountedSell'], 2) }}</td>
+                  <td>{{ number_format($totals['totalSells'], 2) }}</td>
+                  <td>{{ number_format($totals['totalCost'], 2) }}</td>
+                  <td>{{ number_format($totals['totalAccountedProfit'], 2) }}</td>
+                  <td>{{ number_format($totals['totalAccountedTransSell'], 2) }}</td>
+                  <td>{{ number_format($totals['totalUnAccountedTransSell'], 2) }}</td>
+                  <td>{{ number_format($totals['totalTransSells'], 2) }}</td>
+                  <td>{{ number_format($totals['totalTransCost'], 2) }}</td>
+                  <td>{{ number_format($totals['totalAccountedTransProfit'], 2) }}</td>
+                  <td>{{ number_format($totals['totalHotelSP'], 2) }}</td>
+                  <td>{{ number_format($totals['totalHotelCost'], 2) }}</td>
+                  <td>{{ number_format($totals['PLHotel'], 2) }}</td>
+              </tr>
+              
+            </tbody>
+        </table>
+        
+        </div>
 				<div class="pagination pull-right mt-3"> 
 				</div> 
 				

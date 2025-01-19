@@ -539,7 +539,7 @@ $dates = $disabledDay = "";
 				 
 				  @endphp
 				   <tr>
-                    <td style="width: 200px;">
+                    <td style="width: 300px;">
 					
 					<input type="hidden"  name="variant_dis_dates[{{$ap->ucode}}]" id="variant_dis_dates{{$kk}}" value="{{$disabledDay}}" data-inputnumber="{{$kk}}" /> 
 					<input type="hidden"  name="variant_dis_days[{{$ap->ucode}}]" id="variant_dis_days{{$kk}}" value="{{$dates}}" data-inputnumber="{{$kk}}" /> 
@@ -588,7 +588,7 @@ $(function() {
 					
 					</td>
 
-					<td> <select name="transfer_option[{{$ap->ucode}}]" id="transfer_option{{$kk}}" class="form-control priceChange priceChangeTT" data-inputnumber="{{$kk}}" @if($kk > 0) disabled="disabled" @endif >
+					<td> <select name="transfer_option[{{$ap->ucode}}]" id="transfer_option{{$kk}}" class="form-control priceChange" data-inputnumber="{{$kk}}" @if($kk > 0) disabled="disabled" @endif >
 					@if(($activity->entry_type == 'Yacht') || ($activity->entry_type == 'Limo'))
 					<option value="Ticket Only" data-id="1">Ticket Only</option>
 					@else

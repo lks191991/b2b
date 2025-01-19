@@ -7,21 +7,23 @@
                 <table id="" class="table rounded-corners table-bordered">
                   <thead>
                   <tr>
-				
 					<th>Zone</th>
-					<th>Total Agents</th>
-					<th>Total Vouchers Agents</th>
-					<th>Total Vouchers</th>
-					<th >Total Ticket SP (After Discount)</th>
-					<th>Total Tranfer SP (After Discount)</th>
-					<th>Total Voucher Amount</th>
-					<th>Total Ticket Cost</th>
-					<th>Total Transfer Cost</th>
-					<th>Total Cost</th>
-					<th>Profit / Loss</th>
-					<th>Total Hotel SP</th>
-					<th>Net Cost</th>
-					<th>Hotel - Profit / Loss</th>
+					<th>Active Agents</th>
+					<th>No. of Bkgs.</th>
+					<th>No. of  Services</th>
+          <th>Accounted Sells</th>
+          <th>UnAccounted Sells</th>
+          <th>Total Sales</th>
+          <th>Total Cost</th>         
+          <th>Accounted Profit</th>
+					<th>Accounted Transfer Sales</th>
+					<th>UnAccounted Transfer Sales</th>
+					<th>Total Transfer Sales</th>
+					<th>Total Transfer Cost</th>         
+					<th>Accounted Transfer Profit</th>
+					<th>Hotel Sales</th>
+					<th>Hotel  Cost</th>
+					<th>Hotel - Profit</th>
 				  </tr>
 				  
                   </thead>
@@ -30,19 +32,24 @@
 				 
                   <tr class="">
 					<td>{{$k}}</td>
-					<td>{{$record['totalAgents']}}</td>
-					<td>{{$record['totalVoucherAgents']}}</td>
-					<td>{{$record['totalVouchers']}}</td>
-					<td>{{$record['totalTicketSPAfterDiscount']}}</td>
-					<td>{{$record['totalTransferSPAfterDiscount']}}</td>
-					<td>{{$record['totalVoucherAmount']}}</td>
-					<td>{{$record['totalTicketCost']}}</td>
-					<td>{{$record['totalTransferCost']}}</td>
+					<td>{{$record['activeAgents']}}</td>
+					<td>{{$record['no_ofBkgs']}}</td>
+					<td>{{$record['no_ofServices']}}</td>
+					<td>{{$record['totalAccountedSell']}}</td>
+					<td>{{$record['totalUnAccountedSell']}}</td>
+					<td>{{$record['totalSells']}}</td>
 					<td>{{$record['totalCost']}}</td>
-					<td>{{ @$record['PL']}}</td>
-						<td>{{$record['totalHotelSP']}}</td>
+          			<td>{{ @$record['totalAccountedProfit']}}</td>
+					
+					<td>{{$record['totalAccountedTransSell']}}</td>
+					<td>{{$record['totalUnAccountedTransSell']}}</td>
+					<td>{{$record['totalTransSells']}}</td>
+					<td>{{$record['totalTransCost']}}</td>
+					<td>{{ @$record['totalAccountedTransProfit']}}</td>
+
+					<td>{{$record['totalHotelSP']}}</td>
 					<td>{{$record['totalHotelCost']}}</td>
-					<td>{{ @$record['PLHotel']}}</td>
+					<td>@if($record['PLHotel'] > 0) <span style="color: white;font-weight:bold;background-color: green;padding: 8px;display: inline-block;width: 100%;">{{ @$record['PLHotel']}}</span> @elseif($record['PLHotel'] < 0) <span style="color: white;font-weight:bold;background-color: red;padding: 8px;display: inline-block;width: 100%;">{{ @$record['PLHotel']}} </span>@else 0 @endif</td>
                   @endforeach
                   </tbody>
                 </table>

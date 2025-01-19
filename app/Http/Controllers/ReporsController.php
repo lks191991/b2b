@@ -167,11 +167,68 @@ class ReporsController extends Controller
 		});
 		
         $records = $query->orderBy('created_at', 'DESC')->get();
-   // return Excel::download(new LogisticReportExport(['records' => $records]), 'users.xlsx');
 
-return Excel::download(new LogisticReportExport($records), 'logistic_records'.date('d-M-Y s').'.csv');        //return Excel::download(new LogisticReportExport($records), 'records.csv');
+		return Excel::download(new LogisticReportExport($records), 'logistic_records'.date('d-M-Y s').'.csv');    
     }
-	
+
+	public function uploadLogisticRecordCsvView()
+	{
+		return view('reports.csv-logistic_record_upload');
+	}
+	public function uploadLogisticRecordCsvSave(Request $request)
+	{
+		$request->validate([
+			'logistic_record_upload' => 'required|mimes:csv,txt',
+		]);
+
+		$file = $request->file('logistic_record_upload');
+		$csvData = file_get_contents($file);
+		$rows = array_map('str_getcsv', explode("\n", $csvData));
+		$header = array_shift($rows);
+
+		foreach ($rows as $row) {
+			if (isset($row[0])) { 
+				$id = $row[0];
+				
+				$record = VoucherActivity::find($id);
+				
+				if ($record) {
+					if (isset($row[0]) && !empty(array_filter($row))) {
+					if (empty($record->supplier_transfer)) {
+						// TFR Supplier code
+						$tpsc = $row[22];
+						$supplierTransfer = User::select("id")->where("code",$tpsc)->where("role_id",9)->first();
+						if(!empty($supplierTransfer)){
+							$record->supplier_transfer = $supplierTransfer->id;
+						}
+						
+					}
+					if (empty($record->actual_transfer_cost)  || $record->actual_transfer_cost == '0.00' || $record->actual_transfer_cost == '0') {
+						$record->actual_transfer_cost = $row[24];
+					}
+					if (empty($record->supplier_transfer2)) {
+						// TFR Supplier 2 code
+						$tpsc2 = $row[25];
+						$supplierTransfer2 = User::select("id")->where("code",$tpsc2)->where("role_id",9)->first();
+						if(!empty($supplierTransfer2)){
+							$record->supplier_transfer2 = $supplierTransfer2->id;
+						}
+						
+					}
+					if (empty($record->actual_transfer_cost2) || $record->actual_transfer_cost2 == '0.00'  || $record->actual_transfer_cost2 == '0') {
+						$record->actual_transfer_cost2 = $row[26];
+					}
+
+					$record->save();
+				}
+				}
+			}
+		}
+
+	return redirect()->route("voucherReport")->with('success', 'Record Updated.');
+	}
+
+
 	public function voucherTicketOnlyReport(Request $request)
     {
 		$this->checkPermissionMethod('list.voucherTicketOnlyReport');
@@ -1138,6 +1195,7 @@ public function voucherActivtyRefundedReport(Request $request)
 		//$perPage = config("constants.ADMIN_PAGE_LIMIT");
 		$perPage = "1000";
 		$voucherStatus = config("constants.voucherStatus");
+		$voucherAStatus = config("constants.voucherActivityStatus");
 		$supplier_ticket = User::where("service_type",'Ticket')->orWhere('service_type','=','Both')->get();
 		$supplier_transfer = User::where("service_type",'Transfer')->orWhere('service_type','=','Both')->get();
 		
@@ -1213,7 +1271,7 @@ public function voucherActivtyRefundedReport(Request $request)
 		$agetName = $agentTBA->company_name;
 		}
 		
-        return view('reports.invoice-report', compact('records','voucherStatus','supplier_ticket','supplier_transfer','agetid','agetName'));
+        return view('reports.invoice-report', compact('records','voucherStatus','voucherAStatus','supplier_ticket','supplier_transfer','agetid','agetName'));
 
     }
 	
@@ -1297,7 +1355,8 @@ public function voucherActivtyRefundedReport(Request $request)
 		$data = $request->all();
 		$perPage = config("constants.ADMIN_PAGE_LIMIT");
 		$twoDaysAgo = date("Y-m-d", strtotime(date("Y-m-d") . " -2 days"));
-		
+		$zones = config("constants.agentZone");
+		$voucherStatus = config("constants.voucherStatus");
 		$query = VoucherHotel::where('id','!=', null);
 		$supplier_hotel = User::where("service_type",'Hotel')->get();
 
@@ -1311,6 +1370,13 @@ public function voucherActivtyRefundedReport(Request $request)
 				$q->where('invoice_number', 'like', '%' . $data['invoicecode']);
 			});
 		}
+
+		if(isset($data['zone']) && !empty($data['zone'])) {
+			$query->whereHas('voucher', function($q)  use($data){
+				$q->where('zone', $data['zone']);
+			});
+		}
+
 		if(isset($data['booking_type']) && !empty($data['booking_type'])) {
 			
 			if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
@@ -1334,10 +1400,16 @@ public function voucherActivtyRefundedReport(Request $request)
 				$query->whereDate('check_in_date', '>=', $twoDaysAgo);
 			}
 
-		$query->whereHas('voucher', function($q)  use($data,$twoDaysAgo){
+			$query->whereHas('voucher', function($q)  use($data,$twoDaysAgo){
 				$q->whereIn('status_main',[4,5]);
 				$q->orderBy('booking_date', 'DESC');
 			});
+			if(isset($data['voucher_status']) && !empty($data['voucher_status'])) {
+				$query->whereHas('voucher', function($q)  use($data){
+					$q->where('status_main', $data['voucher_status']);
+				});
+			}
+
 			if(!empty(Auth::user()->zone)){
 				$query->whereHas('voucher', function($q)  use($data){
 					$q->where('zone', '=', Auth::user()->zone);
@@ -1345,7 +1417,7 @@ public function voucherActivtyRefundedReport(Request $request)
 	}
 		
 		$records = $query->get();
-        return view('reports.voucher_hotel_report', compact('records','supplier_hotel'));
+        return view('reports.voucher_hotel_report', compact('records','supplier_hotel','zones','voucherStatus'));
 
     }
 
@@ -1371,6 +1443,13 @@ public function voucherActivtyRefundedReport(Request $request)
 				$q->where('invoice_number', 'like', '%' . $data['invoicecode']);
 			});
 		}
+
+		if(isset($data['zone']) && !empty($data['zone'])) {
+			$query->whereHas('voucher', function($q)  use($data){
+				$q->where('zone', $data['zone']);
+			});
+		}
+
 		if(isset($data['booking_type']) && !empty($data['booking_type'])) {
 			
 			if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
@@ -1392,6 +1471,17 @@ public function voucherActivtyRefundedReport(Request $request)
 			else
 			{
 				$query->whereDate('check_in_date', '>=', $twoDaysAgo);
+			}
+
+			$query->whereHas('voucher', function($q)  use($data,$twoDaysAgo){
+				$q->whereIn('status_main',[4,5]);
+				$q->orderBy('booking_date', 'DESC');
+			});
+
+			if(isset($data['voucher_status']) && !empty($data['voucher_status'])) {
+				$query->whereHas('voucher', function($q)  use($data){
+					$q->where('status_main', $data['voucher_status']);
+				});
 			}
 		$records = $query->get();
 		
@@ -1430,15 +1520,19 @@ public function voucherActivtyRefundedReport(Request $request)
     {
 		$this->checkPermissionMethod('list.masterreport');
 		$data = $request->all();
+		$filter = 0;
 		$perPage = config("constants.ADMIN_PAGE_LIMIT");
+		$voucherActivityStatus = config("constants.voucherActivityStatus");
 		$voucherStatus = config("constants.voucherStatus");
+		$zones = config("constants.agentZone");
 		$twoDaysAgo = date("Y-m-d", strtotime(date("Y-m-d") . " -2 days"));
 		$twoDaysNull = date("Y-m-d", strtotime(date("Y-m-d") . " +2 days"));
 
 				$supplier_ticket = User::where("service_type",'Ticket')->orWhere('service_type','=','Both')->get();
 		$supplier_transfer = User::where("service_type",'Transfer')->orWhere('service_type','=','Both')->get();
 		
-		$query = VoucherActivity::where('id','!=', null)->whereIn('status',[3,4]);
+		//$query = VoucherActivity::where('id','!=', null)->whereIn('status',[0,3,4,9]);
+		$query = VoucherActivity::where('id','!=', null)->whereNotIn('status',[1,2,11,12]);
 		if(Auth::user()->role_id == '3')
 		{
 			$query->whereHas('voucher', function($q)  use($data){
@@ -1448,6 +1542,7 @@ public function voucherActivtyRefundedReport(Request $request)
 		else
 		{
 			if(isset($data['agent_id_select']) && !empty($data['agent_id_select'])) {
+				$filter = 1;
 				$query->whereHas('voucher', function($q)  use($data){
 				$q->where('agent_id', '=',$data['agent_id_select']);
 			});
@@ -1457,6 +1552,7 @@ public function voucherActivtyRefundedReport(Request $request)
 		if(isset($data['booking_type']) && !empty($data['booking_type'])) {
 			
 			if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
+				$filter = 1;
 			$startDate = $data['from_date'];
 			$endDate =  $data['to_date'];
 				if($data['booking_type'] == 2) {
@@ -1475,20 +1571,31 @@ public function voucherActivtyRefundedReport(Request $request)
 			}
 			
         if(isset($data['vouchercode']) && !empty($data['vouchercode'])) {
+			$filter = 1;
 			$query->whereHas('voucher', function($q)  use($data){
 				$q->where('code', 'like', '%' . $data['vouchercode']);
 			});
 		}
-		if(isset($data['booking_status']) && !empty($data['booking_status'])) {
+		// if(isset($data['booking_status']) && !empty($data['booking_status'])) {
+		// 	$filter = 1;
+		// 		$query->where('status',$data['booking_status']);
 			
-				$query->where('status',$data['booking_status']);
-			
-		}
-		
+		// }
+		// if(isset($data['voucher_status']) && !empty($data['voucher_status'])) {
+		// 	$filter = 1;
+		// $query->whereHas('voucher', function($q)  use($data){
+		// 		$q->where('status_main', '=', $data['voucher_status']);
+		// 	});
+		// }	
 		$query->whereHas('voucher', function($q)  use($data){
-				$q->where('status_main', '=', 5);
+			$q->where('status_main', '=', 5);
+		});
+		if(isset($data['zone']) && !empty($data['zone'])) {
+			$filter = 1;
+		$query->whereHas('voucher', function($q)  use($data){
+				$q->where('zone', '=', $data['zone']);
 			});
-
+		}	
 			$query->whereHas('voucher', function($q)  use($data){
 				$q->orderBy('booking_date', 'DESC');
 			});
@@ -1506,8 +1613,20 @@ public function voucherActivtyRefundedReport(Request $request)
 		$agetName = $agentTBA->company_name;
 		}
 		
-		$records = $query->get();
-        return view('reports.master', compact('records','voucherStatus','supplier_ticket','supplier_transfer','agetid','agetName'));
+		$records = [];
+		$vouchers = Voucher::withCount('voucherActivities')
+		->where("status_main", 5)
+		->get();
+
+		$totalVoucher = $vouchers->count();
+		$totalVoucherActivity = $vouchers->sum('voucher_activities_count');
+
+		$records = [];
+		if($filter == 1){
+			$records = $query->paginate(50);
+		}
+		
+        return view('reports.master', compact('records','voucherStatus','supplier_ticket','supplier_transfer','agetid','agetName','voucherActivityStatus','zones','totalVoucher','totalVoucherActivity'));
 
     }
 	public function masterReportExport(Request $request)
@@ -1516,13 +1635,21 @@ public function voucherActivtyRefundedReport(Request $request)
 		$data = $request->all();
 		$perPage = config("constants.ADMIN_PAGE_LIMIT");
 		$voucherStatus = config("constants.voucherStatus");
+		
 		$twoDaysAgo = date("Y-m-d", strtotime(date("Y-m-d") . " -2 days"));
 		$twoDaysNull = date("Y-m-d", strtotime(date("Y-m-d") . " +2 days"));
 		$supplier_ticket = User::where("service_type",'Ticket')->orWhere('service_type','=','Both')->get();
 		$supplier_transfer = User::where("service_type",'Transfer')->orWhere('service_type','=','Both')->get();
 		
-		$query = VoucherActivity::where('id','!=', null)->whereNotIn('status',[1,2]);
-		
+		$query = VoucherActivity::where('id','!=', null)->whereNotIn('status',[1,2,11,12]);
+		//$query = VoucherActivity::where('id','!=', null)->whereIn('status',[0,3,4,9]);
+
+		if(isset($data['agent_id_select']) && !empty($data['agent_id_select'])) {
+			$filter = 1;
+			$query->whereHas('voucher', function($q)  use($data){
+			$q->where('agent_id', '=',$data['agent_id_select']);
+		});
+	}
 		if(isset($data['booking_type']) && !empty($data['booking_type'])) {
 			
 			if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
@@ -1549,9 +1676,27 @@ public function voucherActivtyRefundedReport(Request $request)
 			});
 		}
 		
+		// if(isset($data['booking_status']) && !empty($data['booking_status'])) {
+		// 	$filter = 1;
+		// 		$query->where('status',$data['booking_status']);
+			
+		// }
+		// if(isset($data['voucher_status']) && !empty($data['voucher_status'])) {
+		// 	$filter = 1;
+		// $query->whereHas('voucher', function($q)  use($data){
+		// 		$q->where('status_main', '=', $data['voucher_status']);
+		// 	});
+		// }	
 		$query->whereHas('voucher', function($q)  use($data){
-				$q->where('status_main', '=', 5);
+			$q->where('status_main', '=', 5);
+		});
+
+		if(isset($data['zone']) && !empty($data['zone'])) {
+			$filter = 1;
+		$query->whereHas('voucher', function($q)  use($data){
+				$q->where('zone', '=', $data['zone']);
 			});
+		}	
 
 			$query->whereHas('voucher', function($q)  use($data){
 				$q->orderBy('booking_date', 'DESC');
@@ -1568,270 +1713,257 @@ public function voucherActivtyRefundedReport(Request $request)
 	
 	
 	
-public function zoneReport(Request $request)
+	public function zoneReport(Request $request)
 {
     $this->checkPermissionMethod('list.zonereport');
     $input = $request->all();
-    
-    $data = [];
-    $s = 0;
-    
-    // Check if specific zone is provided, otherwise use default zones from config
+
+    // Determine zones to process
     if (isset($input['zone']) && !empty($input['zone'])) {
         $zones = [$input['zone'] => $input['zone']];
-        $s = 1;
     } else {
         $zones = config("constants.agentZone");
     }
-    
-    foreach ($zones as $zone) {
-        // Count active agents for the zone
-        $activeAgents = User::where('role_id', 3)
-                            ->where('zone', $zone)
-                            ->count();
-        
-        // Base queries for VoucherActivities with status 4 (Completed) and 3 (In Process)
-        $query = VoucherActivity::with('voucher')
-                                ->whereHas('voucher', function($q) use($zone) {
-                                    $q->where('status_main', 5)
-                                      ->where('zone', $zone);
-                                })
-                                ->where('status', 4); // Completed vouchers
 
-        $queryInprocess = VoucherActivity::with('voucher')
-                                ->whereHas('voucher', function($q) use($zone) {
-                                    $q->where('status_main', 5)
-                                      ->where('zone', $zone);
-                                })
-                                ->where('status', 3); // In process vouchers
-        
-        // Query for Hotel data
-        $queryHotel = DB::table('voucher_hotels as vh')
-                        ->join('vouchers as v', 'vh.voucher_id', '=', 'v.id')
-                        ->where('v.zone', $zone)
-                        ->select(
-                            'v.agent_id',
-                            'v.booking_date',
-                            'vh.check_in_date',
-                            'vh.check_out_date',
-                            'vh.net_cost',
-                            'vh.total_price'
-                        );
-        
-        // Filter by booking type and date range
-        if (isset($input['booking_type']) && !empty($input['booking_type'])) {
-            if (isset($input['from_date']) && !empty($input['from_date']) && isset($input['to_date']) && !empty($input['to_date'])) {
-                $startDate = $input['from_date'];
-                $endDate = $input['to_date'];
-                
-                if ($input['booking_type'] == 2) {
-                    // Tour booking type
-                    $query->whereDate('tour_date', '>=', $startDate)
-                          ->whereDate('tour_date', '<=', $endDate);
-                    $queryHotel->whereDate('vh.check_in_date', '>=', $startDate)
-                               ->whereDate('vh.check_out_date', '<=', $endDate);
-                    $queryInprocess->whereDate('tour_date', '>=', $startDate)
-                                   ->whereDate('tour_date', '<=', $endDate);
-                } elseif ($input['booking_type'] == 1) {
-                    // Voucher booking type
-                    $query->whereHas('voucher', function($q) use($startDate, $endDate) {
-                        $q->whereDate('booking_date', '>=', $startDate)
-                          ->whereDate('booking_date', '<=', $endDate);
-                    });
-                    $queryInprocess->whereHas('voucher', function($q) use($startDate, $endDate) {
-                        $q->whereDate('booking_date', '>=', $startDate)
-                          ->whereDate('booking_date', '<=', $endDate);
-                    });
-                }
+    // Start the query for voucher activity
+    $result = DB::table('voucher_activity as va')
+	->select(
+		'v.zone',
+		DB::raw('COUNT(DISTINCT va.voucher_id) AS no_ofBkgs'),
+		DB::raw('COUNT(*) AS no_ofServices'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost > 0 AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalAccountedSell'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost > 0 AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalAccountedSellDis'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost = 0 AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalUnAccountedSell'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost = 0 AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalUnAccountedSellDis'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalSells'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalSellsDis'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.actual_total_cost ELSE 0 END) AS totalCost'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) > 0 AND va.original_trans_rate IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalAccountedTransSell'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) = 0 AND va.original_trans_rate IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalUnAccountedTransSell'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalTransSells'),
+
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) > 0 AND va.discount_sic_pvt_price IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalAccountedTransSellDis'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) = 0 AND va.discount_sic_pvt_price IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalUnAccountedTransSellDis'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalTransSellsDis'),
+		DB::raw('SUM(CASE WHEN va.actual_transfer_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.actual_transfer_cost ELSE 0 END) AS totalTransCost')
+	)
+	
+        ->leftJoin('vouchers as v', 'va.voucher_id', '=', 'v.id')
+        ->leftJoin('voucher_hotels as vh', 'v.id', '=', 'vh.voucher_id')
+        ->where('v.status_main', 5)
+        ->where('v.zone', '!=', '')
+        ->groupBy('v.zone');
+
+    // Apply zone filter if zones are set
+    if (isset($zones) && !empty($zones)) {
+        $result->whereIn('v.zone', array_keys($zones)); // This filters based on zones
+    }
+
+    // Apply date filter if booking_type and date range are set
+    if (isset($input['booking_type']) && !empty($input['booking_type'])) {
+        if (isset($input['from_date'], $input['to_date']) && !empty($input['from_date']) && !empty($input['to_date'])) {
+            $startDate = $input['from_date'];
+            $endDate = $input['to_date'];
+
+            if ($input['booking_type'] == 2) {
+                // Apply date filter for tour_date
+                $result->whereDate('va.tour_date', '>=', $startDate)
+                    ->whereDate('va.tour_date', '<=', $endDate);
+            } elseif ($input['booking_type'] == 1) {
+                // Apply date filter for booking_date
+                $result->whereDate('v.booking_date', '>=', $startDate)
+                    ->whereDate('v.booking_date', '<=', $endDate);
             }
         }
-
-        // Fetch results
-        $resultInprocess = $queryInprocess->get();
-        $result = $query->get();
-        $resultHotel = $queryHotel->get();
-
-        // Count unique vouchers and services
-        $no_ofBkgs = $query->distinct('voucher_id')->count('voucher_id');
-        $no_ofServices = $result->count();
-        
-        // Calculate sales and costs for vouchers
-        $totalTicketSPAfterDiscount = $result->sum(fn($item) => floatval($item->original_tkt_rate ?? 0) - floatval($item->discount_tkt ?? 0));
-        $totalTransferSPAfterDiscount = $result->sum(fn($item) => floatval($item->original_trans_rate ?? 0) - floatval($item->discount_sic_pvt_price ?? 0));
-        $totalVoucherAmount = $totalTicketSPAfterDiscount + $totalTransferSPAfterDiscount;
-
-        $totalTicketCost = $result->sum(fn($item) => floatval($item->actual_total_cost ?? 0));
-        $totalTransferCost = $result->sum(fn($item) => floatval($item->actual_transfer_cost ?? 0));
-        $totalCost = $totalTicketCost + $totalTransferCost;
-
-        // Profit/Loss calculation for vouchers
-        $PL = $totalVoucherAmount - $totalCost;
-
-        // In process sales (unaccounted)
-        $totalTicketSPInprocess = $resultInprocess->sum(fn($item) => floatval($item->original_tkt_rate ?? 0));
-        $totalTransferSPInprocess = $resultInprocess->sum(fn($item) => floatval($item->original_trans_rate ?? 0));
-        $unAccountedSales = $totalTicketSPInprocess + $totalTransferSPInprocess;
-
-        // Hotel sales and costs
-        $totalHotelSP = $resultHotel->sum(fn($item) => floatval($item->total_price ?? 0));
-        $totalHotelCost = $resultHotel->sum(fn($item) => floatval($item->net_cost ?? 0));
-        $PLHotel = $totalHotelSP - $totalHotelCost;
-
-        // Build the data array for the zone
-        $data[$zone] = [
-            'activeAgents' => $activeAgents,
-            'no_ofBkgs' => $no_ofBkgs,
-            'no_ofServices' => $no_ofServices,
-            'unAccountedSales' => $unAccountedSales,
-            'totalTicketSPAfterDiscount' => $totalTicketSPAfterDiscount,
-            'totalTransferSPAfterDiscount' => $totalTransferSPAfterDiscount,
-            'totalVoucherAmount' => $totalVoucherAmount,
-            'totalTicketCost' => $totalTicketCost,
-            'totalTransferCost' => $totalTransferCost,
-            'totalCost' => $totalCost,
-            'totalSales' => $totalVoucherAmount,
-            'PL' => $PL,
-            'totalHotelSP' => $totalHotelSP,
-            'totalHotelCost' => $totalHotelCost,
-            'PLHotel' => $PLHotel,
-        ];
     }
-	
-	$zones = config("constants.agentZone");
+
+    // Execute the voucher activity query
+    $result = $result->get();
+
+    // Prepare data for report
+    $data = [];
+    foreach ($zones as $zone) {
+        $zoneResult = $result->firstWhere('zone', $zone);
+
+        // Fetch hotel data with check_in_date filter
+        $hotelData = DB::table('voucher_hotels as vh')
+            ->join('vouchers as v', 'vh.voucher_id', '=', 'v.id')
+            ->where('v.zone', $zone)
+            ->select(
+                DB::raw('COALESCE(sum(vh.total_price), 0) as totalHotelSP'),
+                DB::raw('COALESCE(sum(vh.net_cost), 0) as totalHotelCost')
+            );
+
+        // Apply date range filter for hotel check-in date
+        if (isset($input['from_date'], $input['to_date']) && !empty($input['from_date']) && !empty($input['to_date'])) {
+            $startDate = $input['from_date'];
+            $endDate = $input['to_date'];
+            $hotelData->whereBetween('vh.check_in_date', [$startDate, $endDate]);
+        }
+
+        // Execute the hotel query
+        $hotelData = $hotelData->first();
+
+        // Prepare the data for the report
+		$data[$zone] = [
+			'activeAgents' => User::where('role_id', 3)->where('zone', $zone)->count(),
+			'no_ofBkgs' => $zoneResult ? number_format($zoneResult->no_ofBkgs, 2) : '0.00',
+			'no_ofServices' => $zoneResult ? number_format($zoneResult->no_ofServices, 2) : '0.00',
+			'totalAccountedSell' => $zoneResult ? number_format($zoneResult->totalAccountedSell-$zoneResult->totalAccountedSellDis, 2) : '0.00',
+			'totalUnAccountedSell' => $zoneResult ? number_format($zoneResult->totalUnAccountedSell-$zoneResult->totalUnAccountedSellDis, 2) : '0.00',
+			'totalSells' => $zoneResult ? number_format($zoneResult->totalSells-$zoneResult->totalSellsDis, 2) : '0.00',
+			'totalAccountedSellDis' => $zoneResult ? number_format($zoneResult->totalAccountedSellDis, 2) : '0.00',
+			'totalUnAccountedSellDis' => $zoneResult ? number_format($zoneResult->totalUnAccountedSellDis, 2) : '0.00',
+			'totalSellsDis' => $zoneResult ? number_format($zoneResult->totalSellsDis, 2) : '0.00',
+			'totalCost' => isset($zoneResult->totalCost) ? number_format($zoneResult->totalCost, 2) : '0.00',
+			'totalAccountedProfit' => $zoneResult ? number_format($zoneResult->totalAccountedSell - $zoneResult->totalCost-$zoneResult->totalAccountedSellDis, 2) : '0.00',
+			'totalAccountedTransSell' => $zoneResult ? number_format($zoneResult->totalAccountedTransSell-$zoneResult->totalAccountedTransSellDis, 2) : '0.00',
+			'totalUnAccountedTransSell' => $zoneResult ? number_format($zoneResult->totalUnAccountedTransSell-$zoneResult->totalUnAccountedTransSellDis, 2) : '0.00',
+			'totalTransSells' => $zoneResult ? number_format($zoneResult->totalTransSells-$zoneResult->totalTransSellsDis, 2) : '0.00',
+
+			'totalAccountedTransSellDis' => $zoneResult ? number_format($zoneResult->totalAccountedTransSellDis, 2) : '0.00',
+			'totalUnAccountedTransSellDis' => $zoneResult ? number_format($zoneResult->totalUnAccountedTransSellDis, 2) : '0.00',
+			'totalTransSellsDis' => $zoneResult ? number_format($zoneResult->totalTransSellsDis, 2) : '0.00',
+
+			'totalTransCost' => isset($zoneResult->totalCost) ? number_format($zoneResult->totalTransCost, 2) : '0.00',
+			'totalAccountedTransProfit' => $zoneResult ? number_format($zoneResult->totalAccountedTransSell - $zoneResult->totalTransCost, 2) : '0.00',
+			'totalHotelSP' => $hotelData ? number_format($hotelData->totalHotelSP, 2) : '0.00',
+			'totalHotelCost' => $hotelData ? number_format($hotelData->totalHotelCost, 2) : '0.00',
+			'PLHotel' => $hotelData ? number_format($hotelData->totalHotelSP - $hotelData->totalHotelCost, 2) : '0.00',
+		];
+		
+    }
+
+    // Return the view with the data
+    $zones = config("constants.agentZone");
     return view('reports.zone-report', compact('data', 'zones'));
 }
+
+
 
 
 	public function zoneReportExport(Request $request)
 	{
 		$this->checkPermissionMethod('list.zonereport');
 		$input = $request->all();
-    
-    $data = [];
-    $s = 0;
-    
-    // Check if specific zone is provided, otherwise use default zones from config
+
+    // Determine zones to process
     if (isset($input['zone']) && !empty($input['zone'])) {
         $zones = [$input['zone'] => $input['zone']];
-        $s = 1;
     } else {
         $zones = config("constants.agentZone");
     }
-    
-    foreach ($zones as $zone) {
-        // Count active agents for the zone
-        $activeAgents = User::where('role_id', 3)
-                            ->where('zone', $zone)
-                            ->count();
-        
-        // Base queries for VoucherActivities with status 4 (Completed) and 3 (In Process)
-        $query = VoucherActivity::with('voucher')
-                                ->whereHas('voucher', function($q) use($zone) {
-                                    $q->where('status_main', 5)
-                                      ->where('zone', $zone);
-                                })
-                                ->where('status', 4); // Completed vouchers
 
-        $queryInprocess = VoucherActivity::with('voucher')
-                                ->whereHas('voucher', function($q) use($zone) {
-                                    $q->where('status_main', 5)
-                                      ->where('zone', $zone);
-                                })
-                                ->where('status', 3); // In process vouchers
-        
-        // Query for Hotel data
-        $queryHotel = DB::table('voucher_hotels as vh')
-                        ->join('vouchers as v', 'vh.voucher_id', '=', 'v.id')
-                        ->where('v.zone', $zone)
-                        ->select(
-                            'v.agent_id',
-                            'v.booking_date',
-                            'vh.check_in_date',
-                            'vh.check_out_date',
-                            'vh.net_cost',
-                            'vh.total_price'
-                        );
-        
-        // Filter by booking type and date range
-        if (isset($input['booking_type']) && !empty($input['booking_type'])) {
-            if (isset($input['from_date']) && !empty($input['from_date']) && isset($input['to_date']) && !empty($input['to_date'])) {
-                $startDate = $input['from_date'];
-                $endDate = $input['to_date'];
-                
-                if ($input['booking_type'] == 2) {
-                    // Tour booking type
-                    $query->whereDate('tour_date', '>=', $startDate)
-                          ->whereDate('tour_date', '<=', $endDate);
-                    $queryHotel->whereDate('vh.check_in_date', '>=', $startDate)
-                               ->whereDate('vh.check_out_date', '<=', $endDate);
-                    $queryInprocess->whereDate('tour_date', '>=', $startDate)
-                                   ->whereDate('tour_date', '<=', $endDate);
-                } elseif ($input['booking_type'] == 1) {
-                    // Voucher booking type
-                    $query->whereHas('voucher', function($q) use($startDate, $endDate) {
-                        $q->whereDate('booking_date', '>=', $startDate)
-                          ->whereDate('booking_date', '<=', $endDate);
-                    });
-                    $queryInprocess->whereHas('voucher', function($q) use($startDate, $endDate) {
-                        $q->whereDate('booking_date', '>=', $startDate)
-                          ->whereDate('booking_date', '<=', $endDate);
-                    });
-                }
+	$result = DB::table('voucher_activity as va')
+	->select(
+		'v.zone',
+		DB::raw('COUNT(DISTINCT va.voucher_id) AS no_ofBkgs'),
+		DB::raw('COUNT(*) AS no_ofServices'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost > 0 AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalAccountedSell'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost > 0 AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalAccountedSellDis'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost = 0 AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalUnAccountedSell'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost = 0 AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalUnAccountedSellDis'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalSells'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalSellsDis'),
+		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.actual_total_cost ELSE 0 END) AS totalCost'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) > 0 AND va.original_trans_rate IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalAccountedTransSell'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) = 0 AND va.original_trans_rate IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalUnAccountedTransSell'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalTransSells'),
+
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) > 0 AND va.discount_sic_pvt_price IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalAccountedTransSellDis'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) = 0 AND va.discount_sic_pvt_price IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalUnAccountedTransSellDis'),
+		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalTransSellsDis'),
+		DB::raw('SUM(CASE WHEN va.actual_transfer_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.actual_transfer_cost ELSE 0 END) AS totalTransCost')
+	)
+        ->leftJoin('vouchers as v', 'va.voucher_id', '=', 'v.id')
+        ->leftJoin('voucher_hotels as vh', 'v.id', '=', 'vh.voucher_id')
+        ->where('v.status_main', 5)
+        ->where('v.zone', '!=', '')
+        ->groupBy('v.zone');
+
+    // Apply zone filter if zones are set
+    if (isset($zones) && !empty($zones)) {
+        $result->whereIn('v.zone', array_keys($zones)); // This filters based on zones
+    }
+
+    // Apply date filter if booking_type and date range are set
+    if (isset($input['booking_type']) && !empty($input['booking_type'])) {
+        if (isset($input['from_date'], $input['to_date']) && !empty($input['from_date']) && !empty($input['to_date'])) {
+            $startDate = $input['from_date'];
+            $endDate = $input['to_date'];
+
+            if ($input['booking_type'] == 2) {
+                // Apply date filter for tour_date
+                $result->whereDate('va.tour_date', '>=', $startDate)
+                    ->whereDate('va.tour_date', '<=', $endDate);
+            } elseif ($input['booking_type'] == 1) {
+                // Apply date filter for booking_date
+                $result->whereDate('v.booking_date', '>=', $startDate)
+                    ->whereDate('v.booking_date', '<=', $endDate);
             }
         }
-
-        // Fetch results
-        $resultInprocess = $queryInprocess->get();
-        $result = $query->get();
-        $resultHotel = $queryHotel->get();
-
-        // Count unique vouchers and services
-        $no_ofBkgs = $query->distinct('voucher_id')->count('voucher_id');
-        $no_ofServices = $result->count();
-        
-        // Calculate sales and costs for vouchers
-        $totalTicketSPAfterDiscount = $result->sum(fn($item) => floatval($item->original_tkt_rate ?? 0) - floatval($item->discount_tkt ?? 0));
-        $totalTransferSPAfterDiscount = $result->sum(fn($item) => floatval($item->original_trans_rate ?? 0) - floatval($item->discount_sic_pvt_price ?? 0));
-        $totalVoucherAmount = $totalTicketSPAfterDiscount + $totalTransferSPAfterDiscount;
-
-        $totalTicketCost = $result->sum(fn($item) => floatval($item->actual_total_cost ?? 0));
-        $totalTransferCost = $result->sum(fn($item) => floatval($item->actual_transfer_cost ?? 0));
-        $totalCost = $totalTicketCost + $totalTransferCost;
-
-        // Profit/Loss calculation for vouchers
-        $PL = $totalVoucherAmount - $totalCost;
-
-        // In process sales (unaccounted)
-        $totalTicketSPInprocess = $resultInprocess->sum(fn($item) => floatval($item->original_tkt_rate ?? 0));
-        $totalTransferSPInprocess = $resultInprocess->sum(fn($item) => floatval($item->original_trans_rate ?? 0));
-        $unAccountedSales = $totalTicketSPInprocess + $totalTransferSPInprocess;
-
-        // Hotel sales and costs
-        $totalHotelSP = $resultHotel->sum(fn($item) => floatval($item->total_price ?? 0));
-        $totalHotelCost = $resultHotel->sum(fn($item) => floatval($item->net_cost ?? 0));
-        $PLHotel = $totalHotelSP - $totalHotelCost;
-
-        // Build the data array for the zone
-        $data[$zone] = [
-            'activeAgents' => $activeAgents,
-            'no_ofBkgs' => $no_ofBkgs,
-            'no_ofServices' => $no_ofServices,
-            'unAccountedSales' => $unAccountedSales,
-            'totalTicketSPAfterDiscount' => $totalTicketSPAfterDiscount,
-            'totalTransferSPAfterDiscount' => $totalTransferSPAfterDiscount,
-            'totalVoucherAmount' => $totalVoucherAmount,
-            'totalTicketCost' => $totalTicketCost,
-            'totalTransferCost' => $totalTransferCost,
-            'totalCost' => $totalCost,
-            'totalSales' => $totalVoucherAmount,
-            'PL' => $PL,
-            'totalHotelSP' => $totalHotelSP,
-            'totalHotelCost' => $totalHotelCost,
-            'PLHotel' => $PLHotel,
-        ];
     }
+
+    // Execute the voucher activity query
+    $result = $result->get();
+
+    // Prepare data for report
+    $data = [];
+    foreach ($zones as $zone) {
+        $zoneResult = $result->firstWhere('zone', $zone);
+
+        // Fetch hotel data with check_in_date filter
+        $hotelData = DB::table('voucher_hotels as vh')
+            ->join('vouchers as v', 'vh.voucher_id', '=', 'v.id')
+            ->where('v.zone', $zone)
+            ->select(
+                DB::raw('COALESCE(sum(vh.total_price), 0) as totalHotelSP'),
+                DB::raw('COALESCE(sum(vh.net_cost), 0) as totalHotelCost')
+            );
+
+        // Apply date range filter for hotel check-in date
+        if (isset($input['from_date'], $input['to_date']) && !empty($input['from_date']) && !empty($input['to_date'])) {
+            $startDate = $input['from_date'];
+            $endDate = $input['to_date'];
+            $hotelData->whereBetween('vh.check_in_date', [$startDate, $endDate]);
+        }
+
+        // Execute the hotel query
+        $hotelData = $hotelData->first();
+
+        // Prepare the data for the report
+		$data[$zone] = [
+			'activeAgents' => User::where('role_id', 3)->where('zone', $zone)->count(),
+			'no_ofBkgs' => $zoneResult ? number_format($zoneResult->no_ofBkgs, 2) : '0.00',
+			'no_ofServices' => $zoneResult ? number_format($zoneResult->no_ofServices, 2) : '0.00',
+			'totalAccountedSell' => $zoneResult ? number_format($zoneResult->totalAccountedSell-$zoneResult->totalAccountedSellDis, 2) : '0.00',
+			'totalUnAccountedSell' => $zoneResult ? number_format($zoneResult->totalUnAccountedSell-$zoneResult->totalUnAccountedSellDis, 2) : '0.00',
+			'totalSells' => $zoneResult ? number_format($zoneResult->totalSells-$zoneResult->totalSellsDis, 2) : '0.00',
+			'totalAccountedSellDis' => $zoneResult ? number_format($zoneResult->totalAccountedSellDis, 2) : '0.00',
+			'totalUnAccountedSellDis' => $zoneResult ? number_format($zoneResult->totalUnAccountedSellDis, 2) : '0.00',
+			'totalSellsDis' => $zoneResult ? number_format($zoneResult->totalSellsDis, 2) : '0.00',
+			'totalCost' => isset($zoneResult->totalCost) ? number_format($zoneResult->totalCost, 2) : '0.00',
+			'totalAccountedProfit' => $zoneResult ? number_format($zoneResult->totalAccountedSell - $zoneResult->totalCost-$zoneResult->totalAccountedSellDis, 2) : '0.00',
+			'totalAccountedTransSell' => $zoneResult ? number_format($zoneResult->totalAccountedTransSell-$zoneResult->totalAccountedTransSellDis, 2) : '0.00',
+			'totalUnAccountedTransSell' => $zoneResult ? number_format($zoneResult->totalUnAccountedTransSell-$zoneResult->totalUnAccountedTransSellDis, 2) : '0.00',
+			'totalTransSells' => $zoneResult ? number_format($zoneResult->totalTransSells-$zoneResult->totalTransSellsDis, 2) : '0.00',
+
+			'totalAccountedTransSellDis' => $zoneResult ? number_format($zoneResult->totalAccountedTransSellDis, 2) : '0.00',
+			'totalUnAccountedTransSellDis' => $zoneResult ? number_format($zoneResult->totalUnAccountedTransSellDis, 2) : '0.00',
+			'totalTransSellsDis' => $zoneResult ? number_format($zoneResult->totalTransSellsDis, 2) : '0.00',
+
+			'totalTransCost' => isset($zoneResult->totalCost) ? number_format($zoneResult->totalTransCost, 2) : '0.00',
+			'totalAccountedTransProfit' => $zoneResult ? number_format($zoneResult->totalAccountedTransSell - $zoneResult->totalTransCost, 2) : '0.00',
+			'totalHotelSP' => $hotelData ? number_format($hotelData->totalHotelSP, 2) : '0.00',
+			'totalHotelCost' => $hotelData ? number_format($hotelData->totalHotelCost, 2) : '0.00',
+			'PLHotel' => $hotelData ? number_format($hotelData->totalHotelSP - $hotelData->totalHotelCost, 2) : '0.00',
+		];
+		
+    }
+	$zones = config("constants.agentZone");
 		return Excel::download(new ZoneReportExport($data), 'zone_report'.date('d-M-Y s').'.csv');
 	}
+
 
 
 	public function voucherHotelCanceledReport(Request $request)

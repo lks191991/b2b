@@ -49,8 +49,8 @@
               <div class="form-group col-md-2">
                 <label for="inputName">Type:</label>
                 <select name="type" id="type" class="form-control">
-                    <option value="1" @if($record->type ==1) {{'selected="selected"'}} @endif>Ticket</option>
-					          <option value="2" @if($record->type ==2) {{'selected="selected"'}} @endif >No Ticket</option>
+                    <option value="1" @if(old('type') ==1) {{'selected="selected"'}} @endif>Ticket</option>
+					          <option value="2" @if(old('type') ==2) {{'selected="selected"'}} @endif >No Ticket</option>
                  </select>
               </div>
 			 <div class="form-group col-md-2">
@@ -382,7 +382,7 @@
                 <select name="parent_code" id="parent_code" class="form-control">
                 <option value="0" @if(old('parent_code') ==0) {{'selected="selected"'}} @endif >Parent</option>
                 @foreach($varaints as $varaint)
-                    <option value="{{$varaint->ucode}}" @if($record->parent == $varaint->ucode) {{'selected="selected"'}} @endif>{{$varaint->title}}</option>
+                    <option value="{{$varaint->ucode}}" @if(old('parent_code') == $varaint->ucode) {{'selected="selected"'}} @endif>{{$varaint->title}}</option>
 				@endforeach
                  </select>
               </div>

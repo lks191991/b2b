@@ -44,7 +44,20 @@
 			  
             <form id="filterForm" class="form-inline" method="get" action="{{ route('voucherHotelReport') }}" >
               <div class="form-row align-items-center">
-			   <div class="col-auto col-md-4">
+				<div class="col-md-2">
+					<div class="input-group mb-2">
+					  <div class="input-group-prepend">
+						<div class="input-group-text">Zone</div>
+					  </div>
+					 <select name="zone" id="zone" class="form-control">
+					 <option value = "" @if(request('zone')=='') selected="selected" @endif>Select</option>
+					 @foreach($zones as $zone)
+						<option value = "{{$zone}}" @if(request('zone')==$zone) selected="selected" @endif>{{$zone}}</option>
+						@endforeach
+					 </select>
+					</div>
+				  </div>
+			   <div class="col-auto col-md-2">
                 <div class="input-group mb-2">
                   <div class="input-group-prepend">
                     <div class="input-group-text">Search Result</div>
@@ -56,13 +69,13 @@
                  </select>
                 </div>
               </div>
-			  <div class="col-auto col-md-4">
+			  <div class="col-auto col-md-2">
                   <div class="input-group mb-2">
                     <div class="input-group-prepend"><div class="input-group-text">From Date</div></div>
                     <input type="text" name="from_date" value="{{ request('from_date') }}" autocomplete ="off" class="form-control datepicker"  placeholder="From Date" />
                   </div>
                 </div>
-				<div class="col-auto col-md-4">
+				<div class="col-auto col-md-2">
                   <div class="input-group mb-2">
                     <div class="input-group-prepend"><div class="input-group-text">To Date</div></div>
                     <input type="text" name="to_date" value="{{ request('to_date') }}" class="form-control datepicker" autocomplete ="off"  placeholder="To Date" />
@@ -74,7 +87,7 @@
                     <input type="text" name="vouchercode" value="{{ request('vouchercode') }}" class="form-control"  placeholder="Booking No" />
                   </div>
                 </div>
-                <div class="col-auto col-md-4">
+                <div class="col-auto col-md-2">
                   <div class="input-group mb-2">
                     <div class="input-group-prepend"><div class="input-group-text">Invoice No</div></div>
                     <input type="text" name="invoicecode" value="{{ request('invoicecode') }}" class="form-control"  placeholder="Invoice No" />
@@ -82,7 +95,7 @@
                 </div>
              
              
-			  <div class="col-auto col-md-3">
+			  <div class="col-auto col-md-4">
                 <div class="input-group mb-2">
                   <div class="input-group-prepend">
                     <div class="input-group-text">Agency/Supplier</div>
@@ -91,11 +104,25 @@
 					<input type="hidden" id="agent_id_select" name="agent_id_select" value="{{ request('agent_id_select')}}"  />
                 </div>
               </div>
-			  
+			  <div class="col-auto col-md-2" >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">Payment Status</div>
+                  </div>
+                 <select name="voucher_status" id="voucher_status" class="form-control">
+						<option value = "">All</option>
+						@foreach($voucherStatus as $vsk => $vs)
+						@if($vsk==4 or $vsk==5)
+						<option value = "{{$vsk}}" @if(request('voucher_status')==$vsk) selected="selected" @endif>{{$vs}}</option>
+            @endif
+						@endforeach
+                 </select>
+                </div>
+              </div>
                
               <div class="col-auto col-md-2">
                 <button class="btn btn-info mb-2" type="submit">Filter</button>
-                <a class="btn btn-default mb-2  mx-sm-2" href="{{ route('voucherActivityReport') }}">Clear</a>
+                <a class="btn btn-default mb-2  mx-sm-2" href="{{ route('voucherHotelReport') }}">Clear</a>
               </div>
             </form>
           </div>

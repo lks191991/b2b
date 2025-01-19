@@ -10,7 +10,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="{{ route('quotations.index') }}">Vouchers</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('quotations.index') }}">Quotations</a></li>
               <li class="breadcrumb-item active">Quotation Add</li>
             </ol>
           </div>
@@ -260,7 +260,7 @@
       </div>
       <div class="row">
         <div class="col-12 mb-3">
-          <a href="{{ route('vouchers.index') }}" class="btn btn-secondary">Cancel</a>
+          <a href="{{ route('quotations.index') }}" class="btn btn-secondary">Cancel</a>
          
 		   <button type="submit" name="save_and_view" class="btn btn-success float-right">Save</button>
         </div>
@@ -514,7 +514,52 @@
   
 });
 
+$(document).on('change', '.inputsaveSp', function(evt) {
+		$("#loader-overlay").show();
+		var id = $(this).find(':selected').data('id');
+		var inputname = $(this).find(':selected').data('name');
+    var spInput = $(this).attr('id');
+		//alert(inputname);
+    if((spInput == 'status'+id) && ($(this).val() =='4')){
+			 var cost = parseFloat($('#actual_total_cost' + id).val());
+			var cost = $('#actual_total_cost' + id).val().trim(); // Get and trim the input value
 
+					if (cost === '' || isNaN(parseFloat(cost)) || parseFloat(cost) <= 0) {
+						alert("Please enter a valid Ticket Net Cost greater than or equal to 0");
+						$('#' + spInput).val('3');  // Reset the value to an empty string or a default value
+						$("#loader-overlay").hide();
+						return false;
+					}
+		}
+		$.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+		$.ajax({
+            url: "{{route('voucherReportSave')}}",
+            type: 'POST',
+            dataType: "json",
+            data: {
+               id: id,
+			   inputname: inputname,
+			   val: $(this).val(),
+			   type: "Report",
+			   report_type: "Ticket Only"
+            },
+            success: function( data ) {
+            if(inputname == 'supplier_ticket')
+            {
+              
+              $("#actual_total_cost"+id).val(data[0].cost);
+              $("#supplier_email"+id).val(data[0].email);
+              $("#adult_cost"+id).val(data[0].adult);
+              $("#child_cost"+id).val(data[0].child);
+            }
+			        $("#loader-overlay").hide();
+            }
+          });
+	 });
 
 </script>
 

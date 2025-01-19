@@ -601,13 +601,15 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
     $("body .priceChange").prop('required',false);
 	//$("body .priceChange").prop('disabled',true);
 	//$("body .addToCart").prop('disabled',true);
+  $("body .note").addClass('d-none');
+
 	$("body #ucode").val('');
 	$('#timeslot').val('');
 	//$("body .priceclass").text(0);
    if ($(this).is(':checked')) {
        $("body #transfer_option"+inputnumber).prop('required',true);
 		$("body #tour_date"+inputnumber).prop('required',true);
-     
+    $("body #note_"+inputnumber).removeClass('d-none');
      $("body #transfer_option"+inputnumber).prop('disabled',false);
      $("body #tour_date"+inputnumber).prop('disabled',false);
 	 $("body #addToCart"+inputnumber).prop('disabled',false);

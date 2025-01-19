@@ -52,6 +52,11 @@ class VoucherActivity extends Model
     {
         return $this->belongsTo(Variant::class,'variant_code','ucode');
     }
+
+    public function suppliertransfer2()
+    {
+        return $this->belongsTo(User::class,'supplier_transfer2','id');
+    }
 	
 	
 }

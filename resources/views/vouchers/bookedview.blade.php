@@ -73,18 +73,20 @@
                              
                           </a>
                           @else
-
+                          @if(($voucher->summary_invoice == 1))
+                          <a class="btn btn-secondary btn-sm" href="{{route('voucherInvoiceSummaryPdf',$voucher->id)}}" >
+                            Invoice (Summary) <i class="fas fa-download">
+                           </i>
+                          
+                       </a>
+                       @else
                           <a class="btn btn-info btn-sm" href="{{route('voucherInvoicePdf',$voucher->id)}}" >
                                Invoice <i class="fas fa-download">
                               </i>
                              
                           </a>
-
-                          <a class="btn btn-secondary btn-sm" href="{{route('voucherInvoiceSummaryPdf',$voucher->id)}}" >
-                               Invoice (Summary) <i class="fas fa-download">
-                              </i>
-                             
-                          </a>
+                          @endif
+                        
                           
 
 						  @endif
@@ -237,9 +239,9 @@
 					  @foreach($voucherActivity as $ap)
 				  @php
           if($ap->parent_code == 0)
-            $ticketCount = SiteHelpers::getTicketCountByCode($ap->parent_code);
+            $ticketCount = SiteHelpers::getTicketCountByCode($ap->variant_code);
           else
-					  $ticketCount = SiteHelpers::getTicketCountByCode($ap->variant_code);
+					  $ticketCount = SiteHelpers::getTicketCountByCode($ap->parent_code);
 					
 					@endphp
 					@php
@@ -422,7 +424,7 @@
                 </div>
                 <div class="row" style="margin-bottom: 5px;">
                   <div class="col-md-5 text-left">
-                    <strong>Ticket Discount/Makrup</strong>
+                    <strong>Ticket Discount/Markup</strong>
                   </div>
                   <div class="col-md-7 text-right">
 				  
@@ -545,6 +547,53 @@
 					
                   </div>
 				  @endif
+				  @if($ap->status < '4' && $ap->transfer_option == 'Ticket Only')
+				  <div class="row">
+				  <div class="col-4">
+					<label for="inputName">TKT Supplier:</label>
+					<select name="supplier_ticket{{$ap->id}}" @if($ap->status == '4') disabled @endif id="supplier_ticket{{$ap->id}}" class="form-control inputsaveSp">
+						<option data-name="supplier_ticket"  data-id="{{$ap->id}}" value="">All</option>
+						@foreach($supplier_ticket as  $stv)
+						
+						<option data-name="supplier_ticket"  data-id="{{$ap->id}}" value = "{{$stv->id}}" @if($ap->supplier_ticket==$stv->id) selected="selected" @endif >{{$stv->company_name}}</option>
+						@endforeach
+                 </select>
+                    </div>
+					<div class="col-2">
+					<label for="inputName">TKT Supplier Ref #:</label>
+					<input type="text" class="form-control inputsave" @if($ap->status == '4') disabled @endif id="ticket_supp_ref_no{{$ap->id}}" data-name="ticket_supp_ref_no"  data-id="{{$ap->id}}" value="{{$ap->ticket_supp_ref_no}}" />
+                    </div>
+					<div class="col-2">
+					<label for="inputName">TKT Net Cost:</label>
+					<input type="text" class="form-control inputsave" @if($ap->status == '4') disabled @endif  id="actual_total_cost{{$ap->id}}" data-name="actual_total_cost"  data-id="{{$ap->id}}" value="{{$ap->actual_total_cost}}" />
+           
+                    </div>
+					<div class="col-2">
+					<label for="inputName">Status:</label>
+					@if($ap->status == '4')
+              Confirmed
+            @else
+					@php
+					$actStatus = config('constants.voucherActivityStatus');
+					@endphp
+					<select name="status{{$ap->id}}" id="status{{$ap->id}}" class="form-control inputsaveSp">
+						@foreach($actStatus as $k => $status)
+						@if($k > 2)
+						<option data-name="status"  data-id="{{$ap->id}}" value = "{{$k}}" @if($ap->status==$k) selected="selected" @endif >{{$status}}</option>
+						@endif
+						@endforeach
+						</select>
+            @endif
+			  
+                    </div>
+					<div class="col-1 offset-md-1">
+					<label for="inputName">Ticket:</label></br>
+					@if($ap->ticket_generated=='1')
+					 <a class="btn btn-info btn-sm uploadTicketbtn" href="javascript:void(0)" data-vaid="{{$ap->id}}" data-vid="{{$ap->voucher_id}}" ><i class="fas fa-upload"></i></a>
+					@endif
+                    </div>
+					 </div>
+					 @endif
               </div>
               <!-- /.card-body -->
             </div>
@@ -885,7 +934,31 @@ Do you want proceed with the Download ?             </div>
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="ticketUploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	 <form id="ticketUploadForm" method="post" action="{{route('uploadTicketFromReport')}}" enctype="multipart/form-data">
+	 @csrf
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Ticket Upload</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="file"  class="form-control" name="ticketFile" accept=".pdf" />
+		 <input type="hidden"  id="vaid" name="vaid"   value="" />
+	  <input type="hidden"  id="vid" name="vid"   value="" />
+      </div>
+	  
+	 
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 
@@ -970,6 +1043,94 @@ Do you want proceed with the Download ?             </div>
 	
 	
  });
+ 
+ 
+$(document).on('change', '.inputsaveSp', function(evt) {
+		$("#loader-overlay").show();
+		var id = $(this).find(':selected').data('id');
+		var inputname = $(this).find(':selected').data('name');
+    var spInput = $(this).attr('id');
+		//alert(inputname);
+    if((spInput == 'status'+id) && ($(this).val() =='4')){
+			 var cost = parseFloat($('#actual_total_cost' + id).val());
+			var cost = $('#actual_total_cost' + id).val().trim(); // Get and trim the input value
+
+					if (cost === '' || isNaN(parseFloat(cost)) || parseFloat(cost) <= 0) {
+						alert("Please enter a valid Ticket Net Cost greater than or equal to 0");
+						$('#' + spInput).val('3');  // Reset the value to an empty string or a default value
+						$("#loader-overlay").hide();
+						return false;
+					}
+		}
+		$.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+		$.ajax({
+            url: "{{route('voucherReportSave')}}",
+            type: 'POST',
+            dataType: "json",
+            data: {
+               id: id,
+			   inputname: inputname,
+			   val: $(this).val(),
+			   type: "Report",
+			   report_type: "Ticket Only"
+            },
+            success: function( data ) {
+            if(inputname == 'supplier_ticket')
+            {
+              
+              $("#actual_total_cost"+id).val(data[0].cost);
+              $("#supplier_email"+id).val(data[0].email);
+              $("#adult_cost"+id).val(data[0].adult);
+              $("#child_cost"+id).val(data[0].child);
+            }
+			        $("#loader-overlay").hide();
+            }
+          });
+	 });
+$(document).on('change', '.inputsave', function(evt) {
+		$("#loader-overlay").show();
+    var id= $(this).data('id');
+    var txt_name =  $(this).data('name');
+    var txt_var =  $(this).val();
+    if(txt_name == 'internal_remark')
+    {
+      txt_var =  $("body #remark_old"+id).val()+"<br/>"+txt_var;
+    }
+		$.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+		$.ajax({
+            url: "{{route('voucherReportSave')}}",
+            type: 'POST',
+            dataType: "json",
+            data: {
+				id: $(this).data('id'),
+				inputname: $(this).data('name'),
+        val: txt_var,
+				type: "Report",
+				report_type: "Ticket Only"
+            },
+            success: function( data ) {
+               //console.log( data );
+			  $("#loader-overlay").hide();
+            }
+          });
+	 });
+
+ $(".uploadTicketbtn").click(function () {
+            $("#ticketUploadModal").modal("show");
+			var vid= $(this).data('vid');
+			var vaid= $(this).data('vaid');
+			$("#vaid").val(vaid);
+			$("#vid").val(vid);
+        });	 
+	 
  });
 function openModal(cancel,formid) {
         $('#cancelModal').modal('show');
@@ -1017,8 +1178,6 @@ var id = $('#hapid').val();
  event.preventDefault();
  document.getElementById('cancel--hotel-form-'+id).submit();
 }
-
-
 
 
 </script>

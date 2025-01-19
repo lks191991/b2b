@@ -51,6 +51,7 @@ $controller = preg_replace('/.*\\\/', '', $controller);
               </p>
             </a>
           </li>
+         
 		  @if(auth()->user()->role_id == '3')
 		@permission('agency.voucher.booking') 
 
@@ -516,6 +517,24 @@ $controller = preg_replace('/.*\\\/', '', $controller);
             </a>
           </li>
 		   @endpermission
+
+       @permission('list.voucher')
+       @php
+        $class=''; $active='';
+        if($controller == 'QuotationsController' and in_array($action,array('index','create','edit','addQuickActivityList','quotationView'))){
+          $class = 'menu-open';
+          $active = 'active';
+        }
+        @endphp     
+      <li class="nav-item ">
+              <a href="{{ route('quotations.index') }}" class="nav-link {{$active}}">
+             <i class="nav-icon fas fa-gift"></i>
+            <p>
+              Quotation
+            </p>
+          </a>
+        </li>
+     @endpermission
 		   @permission('list.invoiceEditList')
 		   @php
           $class=''; $active='';

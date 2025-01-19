@@ -111,6 +111,16 @@
                     <span class="text-danger">{{ $errors->first('vat_invoice') }}</span>
                 @endif
               </div>
+              <div class="form-group col-md-3">
+                <label for="inputName">Summary Invoice:</label>
+                <select name="summary_invoice"  id="summary_invoice" class="form-control">
+                    <option value="1" @if($record->summary_invoice ==1) {{'selected="selected"'}} @endif>Yes</option>
+					          <option value="0" @if($record->summary_invoice ==0) {{'selected="selected"'}} @endif >No</option>
+                 </select>
+				  @if ($errors->has('summary_invoice'))
+                    <span class="text-danger">{{ $errors->first('summary_invoice') }}</span>
+                @endif
+              </div>
 			    <div class="form-group col-md-3">
                 <label for="inputName">Default Adults: <span class="red">*</span></label>
                 <input type="text" id="adults" name="adults" value="{{ old('adults') ?: $record->adults }}" class="form-control"  placeholder="Adults" />

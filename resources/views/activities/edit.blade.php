@@ -154,6 +154,12 @@
 				@endforeach
 				</select>
               </div>
+              <div class="form-group col-md-12">
+                <label for="searchInput">Search and Select:</label>
+        <input type="text" id="searchInput" class="form-control" name="tourName" placeholder="Type to search..." autocomplete="off" value=""> <!-- Pre-fill name -->
+        <input type="hidden" id="hiddenInput" name="tourId" value="{{ $record->tourstaticdata_id }}"> <!-- Pre-fill ID -->
+        <ul id="dropdownList" class="list-group position-absolute w-100" style="display: none; max-height: 200px; overflow-y: auto; z-index: 1000;"></ul>
+          </div>
 			  <div class="form-group col-md-12">
                 <label for="inputName">Tags: <span class="red">*</span></label>
                <select name="tags[]" id="tags" class="form-control select2" multiple>
@@ -336,6 +342,108 @@ $(document).on('input', '.onlynumbrf', function() {
 	});
 });
        
+$(document).ready(function () {
+    let debounceTimer;
+
+    // Show top 5 records on focus
+    $('#searchInput').on('focus', function () {
+        $.ajax({
+          url: "{{ route('search.dropdown') }}",
+            method: 'GET',
+            success: function (data) {
+                let dropdownList = $('#dropdownList');
+                dropdownList.empty();
+
+                if (data.length > 0) {
+                    dropdownList.show();
+                    data.forEach(item => {
+                        dropdownList.append(
+                            `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName}</li>`
+                        );
+                    });
+                } else {
+                    dropdownList.hide();
+                }
+            },
+            error: function () {
+                console.error('Error fetching top records');
+            }
+        });
+    });
+
+    // On keyup, fetch filtered results
+    $('#searchInput').on('keyup', function () {
+        let query = $(this).val();
+
+        clearTimeout(debounceTimer);
+
+        debounceTimer = setTimeout(() => {
+            if (query.length > 1) {
+                $.ajax({
+                    url: "{{ route('search.dropdown') }}",
+                    method: 'GET',
+                    data: { query: query },
+                    success: function (data) {
+                        let dropdownList = $('#dropdownList');
+                        dropdownList.empty();
+
+                        if (data.length > 0) {
+                            dropdownList.show();
+                            data.forEach(item => {
+                                dropdownList.append(
+                                    `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName}</li>`
+                                );
+                            });
+                        } else {
+                            dropdownList.hide();
+                        }
+                    },
+                    error: function () {
+                        console.error('Error fetching filtered data');
+                    }
+                });
+            } else {
+                $('#dropdownList').hide();
+            }
+        }, 300);
+    });
+
+    // Select dropdown item
+    $(document).on('click', '#dropdownList .list-group-item', function () {
+        let selectedText = $(this).text();
+        let selectedId = $(this).data('id');
+
+        $('#searchInput').val(selectedText); // Show name in input
+        $('#hiddenInput').val(selectedId); // Set ID in hidden input
+        $('#dropdownList').hide();
+    });
+
+    // Hide dropdown when clicking outside
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#searchInput, #dropdownList').length) {
+            $('#dropdownList').hide();
+        }
+    });
+
+    // Pre-fill input and hidden fields on page load (Edit Mode)
+    if ($('#hiddenInput').val()) {
+        let selectedId = $('#hiddenInput').val();
+
+        $.ajax({
+            url: "{{ route('search.prefill') }}",
+            method: 'GET',
+            data: { id: selectedId },
+            success: function (data) {
+                if (data) {
+                    $('#searchInput').val(data.tourName); // Pre-fill name
+                }
+            },
+            error: function () {
+                console.error('Error pre-filling data');
+            }
+        });
+    }
+});
 
    
   </script>   

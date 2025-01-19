@@ -253,9 +253,9 @@
                              @role(1)
                             <a class="btn btn-info btn-sm" href="{{route('voucherLog',$record->id)}}">
                              <i class="fas fa-info-circle"></i>
-                             @endrole 
+                            
                           </a>
-							
+                          @endrole 
                          </td>
                   </tr>
 				 

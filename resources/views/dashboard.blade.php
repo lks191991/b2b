@@ -94,6 +94,16 @@
 	
 		</div>
 		@if(Auth::user()->role_id == '1')
+
+		@php
+		$totalSellsRaw = $vouchersCurrentDate ? ($vouchersCurrentDate->totalSells - $vouchersCurrentDate->totalSellsDis) : 0;
+		$totalTransSellsRaw = $vouchersCurrentDate ? ($vouchersCurrentDate->totalTransSells - $vouchersCurrentDate->totalTransSellsDis) : 0;
+		$currentDateSellRaw = $totalSellsRaw + $totalTransSellsRaw;
+		$currentDateSell = number_format($currentDateSellRaw, 2);
+	@endphp
+	
+
+
 		<div class="row"> 
 		<div class="col-12 col-sm-6 col-md-3">
             <div class="info-box">
@@ -102,7 +112,9 @@
               <div class="info-box-content">
                 <span class="info-box-text">Total Amount (Today)</span>
                 <span class="info-box-number">
-					AED {{number_format(($vouchersCurrentDate->totalVoucherActivityAmount)?($vouchersCurrentDate->totalVoucherActivityAmount-($vouchersCurrentDate->totalTktDis+$vouchersCurrentDate->totalTrfDis)):0,2)}}
+					AED {{$currentDateSell}}
+
+					
                 </span>
               </div>
               <!-- /.info-box-content -->
@@ -129,11 +141,17 @@
 		<div class="col-12 col-sm-6 col-md-3">
             <div class="info-box">
 			<span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+			@php
+    $totalSellsMonthRaw = $vouchersMonth ? ($vouchersMonth->totalSells - $vouchersMonth->totalSellsDis) : 0;
+    $totalTransSellsMonthRaw = $vouchersMonth ? ($vouchersMonth->totalTransSells - $vouchersMonth->totalTransSellsDis) : 0;
+    $monthTotalSellRaw = $totalSellsMonthRaw + $totalTransSellsMonthRaw;
+    $monthTotalSell = number_format($monthTotalSellRaw, 2);
+@endphp
 
               <div class="info-box-content">
                 <span class="info-box-text">Total Amount (MTD)</span>
                 <span class="info-box-number">
-					AED {{number_format(($vouchersMonth->totalVoucherActivityAmount)?($vouchersMonth->totalVoucherActivityAmount-($vouchersMonth->totalTktDis+$vouchersMonth->totalTrfDis)):0,2)}}
+					AED {{$monthTotalSell}}
                 </span>
               </div>
               <!-- /.info-box-content -->
@@ -158,11 +176,20 @@
 		<div class="col-12 col-sm-6 col-md-3">
             <div class="info-box">
 			<span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+				@php
+			
+
+				$totalSellsYear = $vouchersYear ? ($vouchersYear->totalSells - $vouchersYear->totalSellsDis) : 0;
+    $totalTransSellsYear = $vouchersYear ? ($vouchersYear->totalTransSells - $vouchersYear->totalTransSellsDis) : 0;
+    $totalSellYear = $totalSellsYear + $totalTransSellsYear;
+    $yearTotalSale = number_format($totalSellYear, 2);
+
+				@endphp
 
               <div class="info-box-content">
                 <span class="info-box-text">Total Amount (YTD)</span>
                 <span class="info-box-number">
-					AED {{number_format(($vouchersYear->totalVoucherActivityAmount)?($vouchersYear->totalVoucherActivityAmount-($vouchersYear->totalTktDis+$vouchersYear->totalTrfDis)):0,2)}}
+					AED {{$yearTotalSale}}
                 </span>
               </div>
               <!-- /.info-box-content -->
@@ -195,6 +222,7 @@
 					<th>Zone</th>
                     <th>Status</th>
                     <th>Travel Date</th>
+					<th>Booking Date</th>
                     <th>Created On</th>
 					<th>Created By</th>
                     <th width="4%"></th>
@@ -211,6 +239,7 @@
 					<td>{{ ($record->zone)}}</td>
                      <td>{!! SiteHelpers::voucherStatus($record->status_main) !!}</td>
 					   <td>{{ $record->travel_from_date ? date("M d Y, H:i:s",strtotime($record->travel_from_date)) : null }} <b>To</b> {{ $record->travel_to_date ? date(config('app.date_format'),strtotime($record->travel_to_date)) : null }}</td>
+					   <td>{{ $record->booking_date ? date("M d Y",strtotime($record->booking_date)) : null }} </td>
                     <td>{{ $record->created_at ? date("M d Y, H:i:s",strtotime($record->created_at)) : null }}</td>
 					<td>{{ ($record->createdBy)?$record->createdBy->name:''}}</td>
                   

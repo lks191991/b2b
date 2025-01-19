@@ -315,15 +315,12 @@ if(($request->input('country_id') == '94') && (strlen($request->input('mobile'))
 				$totalActivityRecords = Activity::select('count(*) as allcount')->count();
                 $totalHotelRecords = Hotel::select('count(*) as allcount')->count();
 				$currentDate = Carbon::now();
-				$currentMonthStartDate = Carbon::now()->startOfMonth();
-				$currentYear = Carbon::now()->year;
-
-				$startDateOfApril = Carbon::createFromDate($currentYear, 4, 1);
-				$endDateOfMarchNextYear = Carbon::createFromDate($currentYear + 1, 4, 1)->subDay();
-
-				//$dateOneMonth = $currentDate->copy()->subMonth();
+                $currentYear = $currentDate->year;
+                $currentMonthStartDate = Carbon::now()->startOfMonth();
+                $startDateOfYear = Carbon::createFromDate($currentYear, 1, 1)->startOfDay();
+                $endDateOfYear = Carbon::createFromDate($currentYear, 12, 31)->endOfDay();
 				$dateOneYearAgo = $currentDate->copy()->subYear();
-
+                
 				$vouchersCurrentDate = Voucher::select(
         DB::raw('COUNT(*) as totalVouchers'),
         DB::raw('SUM((SELECT SUM(totalprice) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2))) as totalVoucherActivityAmount'),
@@ -331,7 +328,12 @@ if(($request->input('country_id') == '94') && (strlen($request->input('mobile'))
 		DB::raw('SUM((SELECT SUM(child) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2))) as totalChild'),
 		DB::raw('SUM((SELECT COUNT(id) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2))) as totalActivity'),
         DB::raw('SUM((SELECT SUM(discount_tkt) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2)))  as totalTktDis'),
-        DB::raw('SUM((SELECT SUM(discount_sic_pvt_price) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2)))  as totalTrfDis')
+        DB::raw('SUM((SELECT SUM(discount_sic_pvt_price) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2)))  as totalTrfDis'),
+         // New fields
+        DB::raw('SUM((SELECT SUM(original_tkt_rate) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalSells'),
+    DB::raw('SUM((SELECT SUM(discount_tkt) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalSellsDis'),
+    DB::raw('SUM((SELECT SUM(original_trans_rate) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalTransSells'),
+    DB::raw('SUM((SELECT SUM(discount_sic_pvt_price) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalTransSellsDis')
     )
     ->where('status_main', '5')
     ->whereDate('booking_date',  $currentDate)
@@ -344,12 +346,18 @@ if(($request->input('country_id') == '94') && (strlen($request->input('mobile'))
 		DB::raw('SUM((SELECT SUM(child) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2))) as totalChild'),
 		DB::raw('SUM((SELECT COUNT(id) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2))) as totalActivity'),
         DB::raw('SUM((SELECT SUM(discount_tkt) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2)))  as totalTktDis'),
-        DB::raw('SUM((SELECT SUM(discount_sic_pvt_price) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2)))  as totalTrfDis')
+        DB::raw('SUM((SELECT SUM(discount_sic_pvt_price) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2)))  as totalTrfDis'),
+        // New fields
+        DB::raw('SUM((SELECT SUM(original_tkt_rate) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalSells'),
+    DB::raw('SUM((SELECT SUM(discount_tkt) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalSellsDis'),
+    DB::raw('SUM((SELECT SUM(original_trans_rate) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalTransSells'),
+    DB::raw('SUM((SELECT SUM(discount_sic_pvt_price) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalTransSellsDis')
     )
     ->where('status_main', '5')
     ->whereDate('booking_date', '>=', $currentMonthStartDate)
     ->whereDate('booking_date', '<=', $currentDate)
     ->first();
+
 			
 			 $vouchersYear = Voucher::select(
         DB::raw('COUNT(*) as totalVouchers'),
@@ -358,15 +366,19 @@ if(($request->input('country_id') == '94') && (strlen($request->input('mobile'))
 		DB::raw('SUM((SELECT SUM(child) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2))) as totalChild'),
 		DB::raw('SUM((SELECT COUNT(id) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2))) as totalActivity'),
         DB::raw('SUM((SELECT SUM(discount_tkt) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2)))  as totalTktDis'),
-        DB::raw('SUM((SELECT SUM(discount_sic_pvt_price) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2)))  as totalTrfDis')
+        DB::raw('SUM((SELECT SUM(discount_sic_pvt_price) FROM  voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2)))  as totalTrfDis'),
+         // New fields
+         DB::raw('SUM((SELECT SUM(original_tkt_rate) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalSells'),
+    DB::raw('SUM((SELECT SUM(discount_tkt) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalSellsDis'),
+    DB::raw('SUM((SELECT SUM(original_trans_rate) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalTransSells'),
+    DB::raw('SUM((SELECT SUM(discount_sic_pvt_price) FROM voucher_activity WHERE voucher_id = vouchers.id AND status NOT IN (1,2,11,12))) AS totalTransSellsDis')
     )
     ->where('status_main', '5')
-    ->whereDate('booking_date', '>=', $startDateOfApril)
-    ->whereDate('booking_date', '<=', $endDateOfMarchNextYear)
+    ->whereDate('booking_date', '>=', $startDateOfYear)
+    ->whereDate('booking_date', '<=', $endDateOfYear)
     ->first();
 			
-			  //print_r($vouchersCurrentDate);
-			  //exit;
+			 
 				
 				if(Auth::user()->role_id == '3'){
 					 return view('dashboard-agent', compact('totalUserRecords','totalAgentRecords','totalSupplierRecords','totalCustomerRecords','totalActivityRecords','totalHotelRecords'));
@@ -383,7 +395,7 @@ if(($request->input('country_id') == '94') && (strlen($request->input('mobile'))
                     
         }
           
-					$vouchers = $query->orderBy('booking_date', 'DESC')->paginate(10);
+					$vouchers = $query->orderBy('booking_date', 'DESC')->paginate(50);
                 return view('dashboard', compact('totalUserRecords','totalAgentRecords','totalSupplierRecords','totalCustomerRecords','totalActivityRecords','totalHotelRecords','vouchers','vouchersCurrentDate','vouchersMonth','vouchersYear'));
 				}
            

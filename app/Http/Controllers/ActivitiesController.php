@@ -9,6 +9,7 @@ use App\Models\Country;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Currency;
+use App\Models\Tourstaticdata;
 use App\Models\Tag;
 use DB;
 use Image;
@@ -138,6 +139,7 @@ class ActivitiesController extends Controller
         $record->status = $request->input('status');
 		$record->popularity = $request->input('popularity');
 		$record->created_by = Auth::user()->id;
+		$record->tourstaticdata_id = $request->input('tourId');
 		$record->save();
 		
 		//Upload Additional images
@@ -276,6 +278,7 @@ class ActivitiesController extends Controller
         $record->status = $request->input('status');
 		$record->popularity = $request->input('popularity');
 		$record->updated_by = Auth::user()->id;
+		$record->tourstaticdata_id = $request->input('tourId');
 		if($request->has('tags') && !empty($request->tags)){
            $tags = implode(",",$request->tags);
 			$record->tags = $tags;
@@ -523,5 +526,26 @@ class ActivitiesController extends Controller
 
     return redirect('activities')->with('success', 'Activity Cloned Successfully.');
 	}
+
+
+public function searchDropdown(Request $request)
+{
+    $query = $request->get('query', '');
+	if($query == '')
+	{
+		$data = Tourstaticdata::orderBy('created_at', 'desc')->take(5)->get();
+		return response()->json($data);
+	}
+    $data = Tourstaticdata::where('tourName', 'like', "%$query%")
+                     ->get(['tourId', 'tourName']); // Adjust fields based on your requirements
+
+    return response()->json($data);
+}
+public function prefill(Request $request)
+{
+    $id = $request->get('id');
+    $tour = Tourstaticdata::where('tourId', $id)->first(['tourId', 'tourName']); // Find the selected record by ID
+    return response()->json($tour);
+}
 
 }

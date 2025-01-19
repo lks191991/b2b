@@ -32,6 +32,7 @@
 				 <div class="row">
 				 @permission('list.logisticreport.download') 
 				<a href="{{ route('voucherReportExport', request()->input()) }}" class="btn btn-info btn-sm mb-2 mr-4">Export to CSV</a>
+        <a href="{{ route('logistic.record.csv.upload', request()->input()) }}" class="btn btn-info btn-sm mb-2 mr-4">Upload Record From CSV</a>
         @endpermission
 				   </div></div>
 				   

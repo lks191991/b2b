@@ -259,9 +259,9 @@ class VariantsController extends Controller
         }
 		
 		//if ($request->has('save_and_continue')) {
-        //return redirect()->route('variants.prices.create',$record->id)->with('success', 'Variant Created Successfully.');
+        return redirect()->route('variant.canellation',$record->id)->with('success', 'Variant Created Successfully.');
 		//} else {
-        return redirect('variants')->with('success', 'Variant Created Successfully.');
+        //return redirect('variants')->with('success', 'Variant Created Successfully.');
 		//}
     }
 

@@ -30,18 +30,18 @@ class APITourOptionStaticData extends Command
     public function handle()
     {
         $sourceData = DB::table('tourstaticdata')->get();
-
+        $url = env('TOUR_STATIC_OPTION_DATA_URL');
+        $token = env('RAYNA_TOKEN');
         foreach ($sourceData as $data) {
             $postData = [
                 'tourId' => $data->tourId,
                 'contractId' => $data->contractId,
             ];
 
-              $token = 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkNWU4YWZhMC1mNGJhLTQ2NWUtYTAzOS1mZGJiYzMxZWZlZGUiLCJVc2VySWQiOiIzNzU0NSIsIlVzZXJUeXBlIjoiQWdlbnQiLCJQYXJlbnRJRCI6IjAiLCJFbWFpbElEIjoidHJhdmVsZ2F0ZXhAcmF5bmF0b3Vycy5jb20iLCJpc3MiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20iLCJhdWQiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20ifQ.i6GaRt-RVSlJXKPz7ZVx-axAPLW_hkl7usI_Dw8vP5w';
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
-            ])->post('http://sandbox.raynatours.com/api/Tour/touroptionstaticdata', $postData);
+            ])->post($url, $postData);
 
             if ($response->successful()) {
                 $apiData = $response->json();
