@@ -27,9 +27,6 @@ class APITourData extends Command
         ];
 
         
-       
-        
-        
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
