@@ -26,7 +26,6 @@ class APITourData extends Command
             "cityId" => 13668
         ];
 
-        
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
