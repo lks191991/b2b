@@ -238,9 +238,9 @@ class ReporsController extends Controller
 		$supplier_ticket = User::where("is_active",'1')->whereIn("service_type",['Ticket','Both'])->get();
 		$supplier_transfer = User::where("is_active",'1')->whereIn("service_type",['Transfer','Both'])->get();
 		
-		$query = VoucherActivity::with("activity")->where('id','!=', null)->whereNotIn('status',[1,2])->where('variant_type',1)->whereHas('activity', function ($query)  {
-           $query->whereIn('variant_type',  ["1"]);
-       });
+		$query = VoucherActivity::with("activity")
+		->where('id','!=', null)
+		->whereNotIn('status',[1,2]);
 	   
 	   
 		$twoDaysAgo = date("Y-m-d", strtotime(date("Y-m-d") . " -2 days"));

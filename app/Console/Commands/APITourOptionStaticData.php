@@ -30,7 +30,7 @@ class APITourOptionStaticData extends Command
     public function handle()
     {
         $sourceData = DB::table('tourstaticdata')->get();
-        $url = env('TOUR_STATIC_OPTION_DATA_URL');
+        $url = 'http://sandbox.raynatours.com/api/Tour/touroptionstaticdata';
         $token = env('RAYNA_TOKEN');
         foreach ($sourceData as $data) {
             $postData = [

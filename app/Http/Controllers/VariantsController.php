@@ -5,6 +5,7 @@ use App\Models\Variant;
 use App\Models\Slot;
 use App\Models\VariantCanellation;
 use App\Models\Transfer;
+use App\Models\tourOptionStaticData;
 use App\Models\Zone;
 use App\Models\Files;
 use Illuminate\Http\Request;
@@ -239,6 +240,7 @@ class VariantsController extends Controller
 		$ucode = 'UV'.$record->id;
 		$vrt = Variant::find($record->id);
 		$vrt->ucode = $ucode;
+		$record->touroption_id = $request->input('tourOptionId');
 		$vrt->save();
 		
 		//Upload Additional images
@@ -509,7 +511,7 @@ class VariantsController extends Controller
 		$record->sell_price = $request->input('sell_price');
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
-		
+		$record->touroption_id = $request->input('tourOptionId');
         $record->save();
 		
 		//Upload Additional images
@@ -585,5 +587,23 @@ class VariantsController extends Controller
 
 		return redirect('variants')->with('success', 'Variant Cloned Successfully.');
 	}
-
+	public function searchDropdown(Request $request)
+	{
+		$query = $request->get('query', '');
+		if($query == '')
+		{
+			$data = tourOptionStaticData::orderBy('created_at', 'desc')->take(5)->get();
+			return response()->json($data);
+		}
+		$data = TourstatitourOptionStaticDatacdata::where('optionName', 'like', "%$query%")
+						 ->get(['tourOptionId', 'optionName']); // Adjust fields based on your requirements
+	
+		return response()->json($data);
+	}
+	public function prefill(Request $request)
+	{
+		$id = $request->get('id');
+		$tour = tourOptionStaticData::where('tourOptionId', $id)->first(['tourOptionId', 'optionName']); // Find the selected record by ID
+		return response()->json($tour);
+	}
 }

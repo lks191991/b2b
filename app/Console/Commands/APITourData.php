@@ -18,20 +18,28 @@ class APITourData extends Command
 
     public function handle()
     {
-        $url = env('TOUR_STATIC_DATA_URL');
-        $token = env('RAYNA_TOKEN');
+        
+        $url = "https://sandbox.raynatours.com/api/Tour/tourstaticdata";
+        $token = config('services.rayna.token');
         $postData = [
             "countryId" => 13063,
             "cityId" => 13668
         ];
+
+        
+       
+        
         
         try {
             $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $token,
-            ])->post($url, $postData);
-
-            
-
+            ])
+            ->withOptions([
+                'verify' => false, // Ensure SSL/TLS certificate verification
+            ])
+            ->post($url, $postData);
+          
             if ($response->successful()) {
                 $data = $response->json();
 

@@ -32,5 +32,8 @@ return [
 	 'flyremit' => [
         'api_key' => env('FLYREMIT_API_KEY'),
     ],
+    'rayna' => [
+       'token' => env('RAYNA_TOKEN'),
+   ],
 
 ];

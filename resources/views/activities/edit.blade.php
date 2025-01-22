@@ -155,7 +155,7 @@
 				</select>
               </div>
               <div class="form-group col-md-12">
-                <label for="searchInput">Search and Select:</label>
+                <label for="searchInput">Search or Select Tour:</label>
         <input type="text" id="searchInput" class="form-control" name="tourName" placeholder="Type to search..." autocomplete="off" value=""> <!-- Pre-fill name -->
         <input type="hidden" id="hiddenInput" name="tourId" value="{{ $record->tourstaticdata_id }}"> <!-- Pre-fill ID -->
         <ul id="dropdownList" class="list-group position-absolute w-100" style="display: none; max-height: 200px; overflow-y: auto; z-index: 1000;"></ul>

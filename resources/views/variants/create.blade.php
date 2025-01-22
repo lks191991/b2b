@@ -240,7 +240,12 @@
                  </select>
               </div>
 			  
-			   
+			    <div class="form-group col-md-12">
+                <label for="searchInput">Select Or Tour Option:</label>
+                <input type="text" id="searchInput" class="form-control" name="optionName" placeholder="Type to search..." autocomplete="off">
+                <input type="hidden" id="hiddenInput" name="tourOptionId"> <!-- Hidden input for ID -->
+                <ul id="dropdownList" class="list-group position-absolute w-100" style="display: none; max-height: 200px; overflow-y: auto; z-index: 1000;"></ul>
+          </div>
 			  
 			<div class="form-group col-md-6 zones_div" id="zones_div">
                 <label for="inputName"></label>
@@ -547,6 +552,78 @@ $("#myTable").on("click", ".delete-row", function() {
   });
 
        
+$(document).ready(function () {
+    let debounceTimer;
+    $('#searchInput').on('focus', function () {
+        $.ajax({
+            url: "{{ route('search.dropdown.tour.option') }}", // Laravel route for fetching top 5 records
+            method: 'GET',
+            success: function (data) {
+                let dropdownList = $('#dropdownList');
+                dropdownList.empty(); // Clear existing list
+
+                if (data.length > 0) {
+                    dropdownList.show(); // Show dropdown
+                    data.forEach(item => {
+                        dropdownList.append(
+                            `<li class="list-group-item dropdown-item" data-id="${item.tourOptionId}">${item.optionName}</li>`
+                        );
+                    });
+                } else {
+                    dropdownList.hide(); // Hide dropdown if no results
+                }
+            },
+            error: function () {
+                console.error('Error fetching data');
+            }
+        });
+    });
+    // Search input keyup event with debounce
+    $('#searchInput').on('keyup', function () {
+        let query = $(this).val();
+
+        clearTimeout(debounceTimer); 
+
+        debounceTimer = setTimeout(() => {
+            if (query.length > 0) { 
+                $.ajax({
+                    url: "{{ route('search.dropdown.tour.option') }}", 
+                    method: 'GET',
+                    data: { query: query },
+                    success: function (data) {
+                        let dropdownList = $('#dropdownList');
+                        dropdownList.empty(); 
+
+                        if (data.length > 0) {
+                            dropdownList.show(); 
+                            data.forEach(item => {
+                                dropdownList.append(
+                                    `<li class="list-group-item dropdown-item" data-id="${item.tourOptionId}">${item.optionName}</li>`
+                                );
+                            });
+                        } else {
+                            dropdownList.hide(); 
+                        }
+                    },
+                    error: function () {
+                        console.error('Error fetching data');
+                    }
+                });
+            } else {
+                $('#dropdownList').hide(); 
+            }
+        }, 300); 
+    });
+
+    $(document).on('click', '#dropdownList .list-group-item', function () {
+        let selectedText = $(this).text();
+        let selectedId = $(this).data('id'); 
+
+        $('#searchInput').val(selectedText); 
+        $('#hiddenInput').val(selectedId); 
+        $('#dropdownList').hide(); 
+    });
+});
 
    
   </script>   

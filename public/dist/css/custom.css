@@ -671,3 +671,16 @@ box-shadow: 1px 0px 22px -8px rgba(0,0,0,0.75);
 .cke_notifications_area {
     display: none!important;
 }
+
+ #dropdownList {
+      border: 1px solid #ddd;
+      background-color: #fff;
+  }
+
+  #dropdownList .list-group-item {
+      cursor: pointer;
+  }
+
+  #dropdownList .list-group-item:hover {
+      background-color: #f0f0f0;
+  }

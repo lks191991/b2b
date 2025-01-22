@@ -1,19 +1,6 @@
 @extends('layouts.app')
 @section('content')
-<style>
-  #dropdownList {
-      border: 1px solid #ddd;
-      background-color: #fff;
-  }
 
-  #dropdownList .list-group-item {
-      cursor: pointer;
-  }
-
-  #dropdownList .list-group-item:hover {
-      background-color: #f0f0f0;
-  }
-</style>
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -170,7 +157,7 @@
 				</select>
               </div>
               <div class="form-group col-md-12">
-                <label for="searchInput">Select Tour:</label>
+                <label for="searchInput">Search or Select Tour:</label>
                 <input type="text" id="searchInput" class="form-control" name="tourName" placeholder="Type to search..." autocomplete="off">
                 <input type="hidden" id="hiddenInput" name="tourId"> <!-- Hidden input for ID -->
                 <ul id="dropdownList" class="list-group position-absolute w-100" style="display: none; max-height: 200px; overflow-y: auto; z-index: 1000;"></ul>
