@@ -10,6 +10,8 @@ use App\Models\ActivityVariant;
 use DB;
 use App\Rules\DateRange;
 use Illuminate\Validation\Rule;
+use App\Exports\AllPriceReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class VariantPriceController extends Controller
 {
@@ -283,6 +285,45 @@ class VariantPriceController extends Controller
 		return redirect('activity-variant/prices/'.$record->activity_variant_id)->with('success', 'Prices Deleted Successfully.');
     }
 	
+	public function allpricesList(Request $request)
+    {
+        $data = $request->all();
+        $perPage = config("constants.ADMIN_PAGE_LIMIT");
+		$filter = 0;
+		$records = [];
+        $query = VariantPrice::with("createdBy","updatedBy","av","av.activity","av.variant");
+		if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
+		$filter = 1;
+			$startDate = date("Y-m-d", strtotime($data['from_date']));
+			$endDate = date("Y-m-d", strtotime($data['to_date']));
+			$query->whereDate('rate_valid_from', '>=', $startDate);
+			$query->whereDate('rate_valid_to', '<=', $endDate);
+		}
+		if ($filter == 1) {
+			$records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
+		} 
+		//dd($records);
+        return view('activity_variant_prices.allpriceList', compact('records','filter'));
+    }
+	
+	public function allpricesExport(Request $request)
+    {
+        $data = $request->all();
+        $perPage = config("constants.ADMIN_PAGE_LIMIT");
+		$filter = 0;
+		$records = [];
+        $query = VariantPrice::with("createdBy","updatedBy","av","av.activity","av.variant");
+		if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
+		$filter = 1;
+			$startDate = date("Y-m-d", strtotime($data['from_date']));
+			$endDate = date("Y-m-d", strtotime($data['to_date']));
+			$query->whereDate('rate_valid_from', '>=', $startDate);
+			$query->whereDate('rate_valid_to', '<=', $endDate);
+		}
+		$records = $query->orderBy('created_at', 'DESC')->get();
+		
+		return Excel::download(new AllPriceReportExport($records), 'price_report'.date('d-M-Y s').'.csv');
+    }
 	
 	
 }

@@ -517,7 +517,7 @@ $controller = preg_replace('/.*\\\/', '', $controller);
             </a>
           </li>
 		   @endpermission
-
+	
        @permission('list.voucher')
        @php
         $class=''; $active='';
@@ -535,6 +535,23 @@ $controller = preg_replace('/.*\\\/', '', $controller);
           </a>
         </li>
      @endpermission
+	  @role(1)
+	  @php
+          $class=''; $active='';
+          if($controller == 'VariantPriceController' and in_array($action,array('allpricesList'))){
+            $class = 'menu-open';
+            $active = 'active';
+          }
+          @endphp     
+			  <li class="nav-item ">
+                <a href="{{ route('activity.variant.allprices') }}" class="nav-link {{$active}}">
+               <i class="nav-icon fas fa-gift"></i>
+              <p>
+                Act-Vart All Prices
+              </p>
+            </a>
+          </li>
+		  @endrole
 		   @permission('list.invoiceEditList')
 		   @php
           $class=''; $active='';
