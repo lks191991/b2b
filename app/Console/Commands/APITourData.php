@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class APITourData extends Command
 {
+    
     protected $signature = 'tourstaticdata';
     protected $description = 'Fetch and update tour static data from the API';
 
