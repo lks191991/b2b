@@ -538,16 +538,16 @@ $controller = preg_replace('/.*\\\/', '', $controller);
 	  @role(1)
 	  @php
           $class=''; $active='';
-          if($controller == 'VariantPriceController' and in_array($action,array('allpricesList'))){
+          if($controller == 'ReporsController' and in_array($action,array('productMaster'))){
             $class = 'menu-open';
             $active = 'active';
           }
           @endphp     
 			  <li class="nav-item ">
-                <a href="{{ route('activity.variant.allprices') }}" class="nav-link {{$active}}">
+                <a href="{{ route('productMaster') }}" class="nav-link {{$active}}">
                <i class="nav-icon fas fa-gift"></i>
               <p>
-                Act-Vart All Prices
+                Product Master Report
               </p>
             </a>
           </li>

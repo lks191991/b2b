@@ -17,6 +17,7 @@ use App\Models\Ticket;
 use App\Models\Country;
 use App\Models\State;
 use App\Models\City;
+use App\Models\VariantPrice;
 use App\Models\ReportLog;
 use App\Models\VoucherHotel;
 use DB;
@@ -43,6 +44,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Exports\VoucherHotelReportExport;
 use App\Models\Zone;
+use App\Exports\AllPriceReportExport;
 
 class ReporsController extends Controller
 {
@@ -2100,4 +2102,59 @@ public function voucherHotelRefundedReport(Request $request)
 
 }
 
+public function productMaster(Request $request)
+    {
+        $data = $request->all();
+        $perPage = config("constants.ADMIN_PAGE_LIMIT");
+		$filter = 0;
+		$records = [];
+        $query = VariantPrice::with("createdBy","updatedBy","av","av.activity","av.variant");
+		if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
+		$filter = 1;
+			$startDate = date("Y-m-d", strtotime($data['from_date']));
+			$endDate = date("Y-m-d", strtotime($data['to_date']));
+			$query->whereDate('rate_valid_from', '>=', $startDate);
+			$query->whereDate('rate_valid_to', '<=', $endDate);
+		}
+		
+		
+		if(isset($data['vcode']) && !empty($data['vcode'])) {
+		$query->whereHas('av.variant', function($q)  use($data){
+			$q->where('code', 'like', '%' . $data['vcode'] . '%');
+		});
+		}
+		
+		if ($filter == 1) {
+			$records = $query->orderBy('rate_valid_to', 'ASC')->paginate($perPage);
+		} 
+		//dd($records);
+        return view('reports.product-master', compact('records','filter'));
+    }
+	
+	public function productMasterExport(Request $request)
+    {
+        $data = $request->all();
+        $perPage = config("constants.ADMIN_PAGE_LIMIT");
+		$filter = 0;
+		$records = [];
+        $query = VariantPrice::with("createdBy","updatedBy","av","av.activity","av.variant");
+		if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
+		$filter = 1;
+			$startDate = date("Y-m-d", strtotime($data['from_date']));
+			$endDate = date("Y-m-d", strtotime($data['to_date']));
+			$query->whereDate('rate_valid_from', '>=', $startDate);
+			$query->whereDate('rate_valid_to', '<=', $endDate);
+		}
+		
+		if(isset($data['vcode']) && !empty($data['vcode'])) {
+		$query->whereHas('av.variant', function($q)  use($data){
+			$q->where('code', 'like', '%' . $data['vcode'] . '%');
+		});
+		}
+		
+		$records = $query->orderBy('created_at', 'DESC')->get();
+		
+		return Excel::download(new AllPriceReportExport($records), 'price_report'.date('d-M-Y s').'.csv');
+    }
+	
 }

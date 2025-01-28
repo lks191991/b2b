@@ -6,12 +6,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Activity Variant Prices</h1>
+            <h1>Product Master Report</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-              <li class="breadcrumb-item active">Activity Variant Prices</li>
+              <li class="breadcrumb-item active">Product Master Report</li>
             </ol>
           </div>
         </div>
@@ -29,9 +29,9 @@
             <div class="card">
               <div class="card-header">
                 
-                <h3 class="card-title">Activity Variant Prices</h3>
+                <h3 class="card-title">Product Master Report</h3>
 				<div class="card-tools">
-				 <a href="{{ route('activity.variant.allpricesExport', request()->input()) }}" class="btn btn-info btn-sm mb-2 mr-4">Export to CSV</a>
+				
 				   </div>
               </div>
               <!-- /.card-header -->
@@ -39,42 +39,30 @@
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-					<th>Rate Valid From</th>
-					<th>Rate Valid To</th>
+					<th>Variant Code</th>
 					<th>Activity</th>
 					<th>Variant</th>
-                    <th>Adult R/Wo Vat</th>
-					<th>Adult R/W Vat</th>
-                    <th>Created</th>
-                    <th>Updated</th>
-					<th>Created By</th>
-                    <th>Updated By</th>
-                    <th width="10%"></th>
+					<th>Rate Valid From</th>
+					<th>Rate Valid To</th>
+                    <th>TKT Price Adult</th>
+					<th>TKT Price Child</th>
+					<th></th>
                   </tr>
 				 
                   </thead>
                   <tbody>
-				  <form id="filterForm" method="get" action="{{route('activity.variant.allprices')}}" >
+				  <form id="filterForm" method="get" action="{{route('productMaster')}}" >
 				   <tr>
            
-					<th><input type="text" name="from_date" value="{{ request('from_date') }}" autocomplete ="off" class="form-control datepicker"  placeholder="Rate Valid From" /></th>
+					<th><input type="text" name="vcode" value="{{ request('vcode') }}" autocomplete ="off" class="form-control "  placeholder="Variant Code" /></th>
+                    <th></th>
+                    <th></th>
+						<th><input type="text" name="from_date" value="{{ request('from_date') }}" autocomplete ="off" class="form-control datepicker"  placeholder="Rate Valid From" /></th>
           <th><input type="text" name="to_date" value="{{ request('to_date') }}" class="form-control datepicker" autocomplete ="off"  placeholder="Rate Valid To" /></th>
 		  <th width="12%"><button class="btn btn-info btn-sm" type="submit">Filter</button>
-                    <a class="btn btn-default btn-sm" href="{{route('activity.variant.allprices')}}">Clear</a></th>
-                    <th>
-					
-                    <th>
-                   
-
-                    </th>
-                    <th></th>
+                    <a class="btn btn-default btn-sm" href="{{route('productMaster')}}">Clear</a></th>
 					 <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-					<th></th>
-					
-                    
+                   <th></th>
 					 
                   </tr>
 				  </form>
@@ -86,25 +74,22 @@
                   @foreach ($records as $record)
 				  
                   <tr>
-					 <td>{{ $record->rate_valid_from ? date(config('app.date_format'),strtotime($record->rate_valid_from)) : null }}</td>
-                    <td>{{ $record->rate_valid_to ? date(config('app.date_format'),strtotime($record->rate_valid_to)) : null }}</td>
-					<td>{{ @$record->av->activity->title}}</td>
-					<td>{{ @$record->av->variant->title}}</td>
-                    <td>{{ $record->adult_rate_without_vat}}</td>
-					<td>{{ $record->adult_rate_with_vat}}</td>
+				  <td>{{ @$record->av->variant->code}}</td>
+				  <td>{{ @$record->av->activity->title}}</td>
+				  <td>{{ @$record->av->variant->title}}</td>
+			<td>{{ $record->rate_valid_from ? date(config('app.date_format'),strtotime($record->rate_valid_from)) : null }}</td>
+              <td>{{ $record->rate_valid_to ? date(config('app.date_format'),strtotime($record->rate_valid_to)) : null }}</td>
+                    <td>{{ $record->adult_B2C_with_vat}}</td>
+					<td>{{ $record->child_B2C_with_vat}}</td>
 					
-                    <td>{{ $record->created_at ? date(config('app.date_format'),strtotime($record->created_at)) : null }}</td>
-                    <td>{{ $record->updated_at ? date(config('app.date_format'),strtotime($record->updated_at)) : null }}</td>
-					<td>{{ @$record->createdBy->full_name }}</td>
-                    <td>{{ @$record->updatedBy->full_name }}</td>
                      <td>
 					
-					  <a class="btn btn-info btn-sm" href="{{route('activity.variant.price.view',$record->id)}}">
+					  <a class="btn btn-info btn-sm" target="_blank" href="{{route('activity.variant.price.view',$record->id)}}">
                               <i class="fas fa-eye">
                               </i>
                               
                           </a>
-					 <a class="btn btn-info btn-sm " href="{{route('activity.variant.price.edit',$record->id)}}">
+					 <a class="btn btn-info btn-sm " target="_blank" href="{{route('activity.variant.price.edit',$record->id)}}">
                               <i class="fas fa-pencil-alt">
                               </i>
                               
