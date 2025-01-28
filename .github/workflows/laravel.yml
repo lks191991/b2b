@@ -1,3 +1,5 @@
+name: Deploy Website on Push
+
 on:
   push:
     branches:
@@ -20,7 +22,5 @@ jobs:
           username: ${{ secrets.ftp_username }}
           password: ${{ secrets.ftp_password }}
           server-dir: /public_html/
-          exclude: .git*  # Exclude unnecessary files
+          exclude: ".git*"  # Exclude unnecessary files
           dangerous-clean-slate: true  # Remove obsolete files on server
-            name: Deploy Website on Push
-
