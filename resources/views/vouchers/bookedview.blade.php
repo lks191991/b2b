@@ -445,7 +445,7 @@
                   </div>
                   <div class="col-md-7 text-right">
 				  @php
-				  $totalDiscount = $ap->discount_tkt+ $ap->discount_sic_pvt_price;
+				  $totalDiscount = (float)$ap->discount_tkt+ (float)$ap->discount_sic_pvt_price;
 				  @endphp
                   AED {{$ap->totalprice - $totalDiscount}}
                   </div>

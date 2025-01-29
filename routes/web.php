@@ -151,6 +151,7 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
 		Route::post('activity-variants/update/{id}',[ActivityVariantController::class, 'update'])->name('activity.variants.update');
 		
 		 Route::delete('activity-variants-delete/{id}', [ActivityVariantController::class, 'destroy'])->name('activity.variants.destroy');
+		 
 		 Route::get('activity-variant/prices/{vid}', [VariantPriceController::class, 'index'])->name('activity.variant.prices');
 		Route::get('activity-variant/price/create/{vid}', [VariantPriceController::class, 'create'])->name('activity.variant.price.create');
 		Route::post('activity-variant/price/store', [VariantPriceController::class, 'store'])->name('activity.variant.price.store');
@@ -274,6 +275,9 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
 		Route::get('voucher-hotel-report-export', [ReporsController::class, 'voucherHotelReportExport'])->name('voucherHotelReportExport');
 		Route::get('voucher-hotel-report', [ReporsController::class, 'voucherHotelReport'])->name('voucherHotelReport'); 
 		
+		Route::get('product-master-report', [ReporsController::class, 'productMaster'])->name('productMaster');
+		Route::get('product-master-report-export', [ReporsController::class, 'productMasterExport'])->name('productMasterExport');
+		 
         Route::resource('users', UsersController::class);
 		Route::get('profile-edit/{id}', [UsersController::class, 'editProfileForm'])->name('profile-edit');
 		Route::post('profile-edit/{id}', [UsersController::class, 'updateProfile'])->name('profile-edit-post');

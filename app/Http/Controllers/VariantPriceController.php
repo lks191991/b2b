@@ -11,6 +11,7 @@ use DB;
 use App\Rules\DateRange;
 use Illuminate\Validation\Rule;
 
+
 class VariantPriceController extends Controller
 {
     /**
@@ -282,7 +283,5 @@ class VariantPriceController extends Controller
 			
 		return redirect('activity-variant/prices/'.$record->activity_variant_id)->with('success', 'Prices Deleted Successfully.');
     }
-	
-	
 	
 }
