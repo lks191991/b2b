@@ -8,19 +8,25 @@ on:
 jobs:
   web-deploy:
     name: Deploy
-    runs-on: ubuntu-22.04  # Explicitly specify Ubuntu version
+    runs-on: ubuntu-22.04
     steps:
       # Step 1: Checkout latest code
       - name: Get latest code
         uses: actions/checkout@v4
 
-      # Step 2: Deploy files via FTP
-      - name: Sync files
+      # Step 2: Deploy files via FTP with optimizations
+      - name: Sync files via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
           server: 159.65.148.197
           username: ${{ secrets.ftp_username }}
           password: ${{ secrets.ftp_password }}
           server-dir: /public_html/
-          exclude: ".git*"  # Exclude unnecessary files
-          dangerous-clean-slate: true  # Remove obsolete files on server
+          exclude: |
+            .git*
+            node_modules/*
+            vendor/*
+            storage/*
+            .env
+          dangerous-clean-slate: false  # Only update changed files
+          passive: false  # Disable passive mode for speed

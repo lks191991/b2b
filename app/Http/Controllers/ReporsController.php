@@ -44,7 +44,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Exports\VoucherHotelReportExport;
 use App\Models\Zone;
-use App\Exports\AllPriceReportExport;
+//use App\Exports\AllPriceReportExport;
 
 class ReporsController extends Controller
 {
@@ -2122,6 +2122,8 @@ public function productMaster(Request $request)
 		$query->whereHas('av.variant', function($q)  use($data){
 			$q->where('code', 'like', '%' . $data['vcode'] . '%');
 		});
+
+		$filter = 1;
 		}
 		
 		if ($filter == 1) {
@@ -2137,7 +2139,7 @@ public function productMaster(Request $request)
         $perPage = config("constants.ADMIN_PAGE_LIMIT");
 		$filter = 0;
 		$records = [];
-        $query = VariantPrice::with("createdBy","updatedBy","av","av.activity","av.variant");
+       /**  $query = VariantPrice::with("createdBy","updatedBy","av","av.activity","av.variant");
 		if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
 		$filter = 1;
 			$startDate = date("Y-m-d", strtotime($data['from_date']));
@@ -2155,6 +2157,7 @@ public function productMaster(Request $request)
 		$records = $query->orderBy('created_at', 'DESC')->get();
 		
 		return Excel::download(new AllPriceReportExport($records), 'price_report'.date('d-M-Y s').'.csv');
+		**/
     }
 	
 }
