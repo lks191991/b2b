@@ -38,6 +38,7 @@ use App\Http\Controllers\VariantPriceController;
 use App\Http\Controllers\ActivityVariantController;
 use App\Http\Controllers\VariantCanellationController;
 use App\Http\Controllers\APITourDataController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,10 @@ use App\Http\Controllers\APITourDataController;
 });
 */
 
+Route::get('/artisan', function () {
+    Artisan::call('optimize:clear');
+    return response()->json(['message' => 'Application cache cleared successfully']);
+});
 Route::get('/', [AgentVouchersController::class, 'index']);
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::get('/thank-you', [AuthController::class, 'thankyou'])->name('thankyou');
