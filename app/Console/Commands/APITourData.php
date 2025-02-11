@@ -33,7 +33,7 @@ class APITourData extends Command
                 'Authorization' => 'Bearer ' . $token,
             ])
             ->withOptions([
-                'verify' => false, // Ensure SSL/TLS certificate verification
+                'verify' => true, // Ensure SSL/TLS certificate verification
             ])
             ->post($url, $postData);
           
