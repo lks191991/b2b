@@ -58,6 +58,7 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::get('/artisan', function () {
     Artisan::call('optimize:clear');
+    Artisan::call('tourstaticdata');
     return response()->json(['message' => 'Application cache cleared successfully']);
 });
 Route::get('/', [AgentVouchersController::class, 'index']);
