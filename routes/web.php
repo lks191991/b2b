@@ -57,9 +57,17 @@ use Illuminate\Support\Facades\Artisan;
 */
 
 Route::get('/artisan', function () {
-    Artisan::call('optimize:clear');
-    Artisan::call('tourstaticdata');
-    return response()->json(['message' => 'Application cache cleared successfully']);
+    // Call the Artisan command
+    $exitCode = Artisan::call('tourstaticdata');
+    
+    // Get the output of the command
+    $output = Artisan::output();
+
+    return response()->json([
+        'exit_code' => $exitCode,
+        'output' => $output,
+        'message' => 'Application cache cleared successfully'
+    ]);
 });
 Route::get('/', [AgentVouchersController::class, 'index']);
 Route::get('/login', [AuthController::class, 'index'])->name('login');
