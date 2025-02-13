@@ -29,13 +29,11 @@ class APITourData extends Command
 
         try {
             $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token,
-            ])
-            ->withOptions([
-                'verify' => true, // Ensure SSL/TLS certificate verification
-            ])
-            ->post($url, $postData);
+        "Content-Type" => "application/json",
+        "Authorization" => "Bearer " . trim($token),
+        "Accept" => "application/json",
+        "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+		])->post($url, $data);
           
             if ($response->successful()) {
                 $data = $response->json();
