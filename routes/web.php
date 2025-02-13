@@ -70,6 +70,9 @@ Route::get('/artisan', function () {
         'message' => 'Application cache cleared successfully'
     ]);
 });
+
+Route::get('/tourdata', [AuthController::class, 'tourData']);
+
 Route::get('/', [AgentVouchersController::class, 'index']);
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::get('/thank-you', [AuthController::class, 'thankyou'])->name('thankyou');
