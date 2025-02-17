@@ -661,7 +661,7 @@ return view('auth.updatePage', compact('allrecords','notifications','announcment
     exit;
 }
 
-public function tourOptionData()
+public function tourOptionData($sourceData)
 {
     $url = "http://sandbox.raynatours.com/api/Tour/touroptionstaticdata";
    $token = config('services.rayna.token');
