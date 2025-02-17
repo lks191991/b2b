@@ -641,9 +641,51 @@ return view('auth.updatePage', compact('allrecords','notifications','announcment
         "Accept" => "application/json",
         "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     ])->post($url, $data);
+	if ($response->successful()) {
+                $data = $response->json();
 
+                if (isset($data['statuscode']) && $data['statuscode'] == 200) {
+                    foreach ($data['result'] as $tour) {
+						
+						$this->tourOptionData($tour);
+					}
+					
+				}
+	}
     $httpCode = $response->status();
     $responseArray = $response->json();
+
+    echo "HTTP Code:Laravel " . $httpCode . "\n";
+    echo "<pre>";
+    print_r($responseArray);
+    exit;
+}
+
+public function tourOptionData()
+{
+    $url = "http://sandbox.raynatours.com/api/Tour/touroptionstaticdata";
+   $token = config('services.rayna.token');
+    foreach ($sourceData as $data) {
+            $postData = [
+                'tourId' => $data['tourId'],
+                'contractId' => $data['contractId'],
+            ];
+
+
+            $response = Http::withHeaders([
+        "Content-Type" => "application/json",
+        "Authorization" => "Bearer " . trim($token),
+        "Accept" => "application/json",
+        "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+		])->post($url, $postData);
+		
+    $httpCode = $response->status();
+    $responseArray = $response->json();
+	  echo "<pre>";
+    print_r($responseArray);
+	 exit;
+	}
+	
 
     echo "HTTP Code:Laravel " . $httpCode . "\n";
     echo "<pre>";
