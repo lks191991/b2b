@@ -632,33 +632,39 @@ $data = [
     "countryId" => 13063,
     "cityId" => 13668
 ];
+ $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30); // Set timeout to avoid long waiting
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); // Connection timeout
+    curl_setopt($ch, CURLOPT_VERBOSE, true); // Debugging
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Content-Type: application/json",
+        "Authorization: Bearer " . trim($token),
+        "Accept: application/json",
+        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    ]);
 
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "Content-Type: application/json",
-    "Authorization: Bearer " . trim($token),
-    "Accept: application/json",
-	//"User-Agent: PostmanRuntime/7.29.2"
-    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-]);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
 
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
+    // Debugging Output
+    echo "HTTP Code: " . ($httpCode ? "CURL" . $httpCode : "CURL0") . "\n";
+    
+    if (!empty($curlError)) {
+        echo "cURL Error: " . $curlError . "\n";
+    }
 
-$responseArray = json_decode($response, true);
-echo "HTTP Code: CURL" . $httpCode . "\n";
-echo "<pre>";
-print_r($responseArray);
-
-        exit;
+    echo "<pre>";
+    print_r(json_decode($response, true));
+    exit;
     } 
 	
 	public function tourDataAAA()
