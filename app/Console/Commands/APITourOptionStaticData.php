@@ -13,7 +13,7 @@ class APITourOptionStaticData extends Command
      *
      * @var string
      */
-    protected $signature = 'touroptionstaticdata';
+    protected $signature = 'touroption';
 
     /**
      * The console command description.
@@ -30,12 +30,16 @@ class APITourOptionStaticData extends Command
     public function handle()
     {
         $sourceData = DB::table('tourstaticdata')->get();
-        $url = 'http://sandbox.raynatours.com/api/Tour/touroptionstaticdata';
+        $url = 'https://sandbox.raynatours.com/api/Tour/touroption';
         $token = config('services.rayna.token');
         foreach ($sourceData as $data) {
             $postData = [
                 'tourId' => $data->tourId,
                 'contractId' => $data->contractId,
+                'travelDate' => "2025-02-20",
+                'noOfAdult' => 1,
+                'noOfChild' => 0,
+                'noOfInfant' => 0,
             ];
 
 
