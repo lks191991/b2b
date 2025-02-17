@@ -627,7 +627,8 @@ return view('auth.updatePage', compact('allrecords','notifications','announcment
 	public function tourData()
 {
     $url = "https://sandbox.raynatours.com/api/Tour/tourstaticdata";
-    $token = config('services.rayna.token');
+    //$token = config('services.rayna.token');
+	$token = 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhNzAyOTAzZi1jYzA2LTQ5MjktOGNiNS0xN2E1NjJkY2JlNmIiLCJVc2VySWQiOiI1NDg5NiIsIlVzZXJUeXBlIjoiQWdlbnQiLCJQYXJlbnRJRCI6IjAiLCJFbWFpbElEIjoibmlraGlsQGFiYXRlcmFjb25zdWx0aW5nLmNvbSIsImlzcyI6Imh0dHA6Ly9kZXZyYXluYWFwaS5yYXluYXRvdXJzLmNvbS8iLCJhdWQiOiJodHRwOi8vZGV2cmF5bmFhcGkucmF5bmF0b3Vycy5jb20vIn0.4snkHjBlUrdGjQbnMdh3FIZQz8sIQ8Vl_ooSzB5BBKQ';
     $data = [
         "countryId" => 13063,
         "cityId" => 13668
@@ -664,7 +665,8 @@ return view('auth.updatePage', compact('allrecords','notifications','announcment
 public function tourOptionData($data)
 {
     $url = "http://sandbox.raynatours.com/api/Tour/touroptionstaticdata";
-   $token = config('services.rayna.token');
+  // $token = config('services.rayna.token');
+  $token = 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhNzAyOTAzZi1jYzA2LTQ5MjktOGNiNS0xN2E1NjJkY2JlNmIiLCJVc2VySWQiOiI1NDg5NiIsIlVzZXJUeXBlIjoiQWdlbnQiLCJQYXJlbnRJRCI6IjAiLCJFbWFpbElEIjoibmlraGlsQGFiYXRlcmFjb25zdWx0aW5nLmNvbSIsImlzcyI6Imh0dHA6Ly9kZXZyYXluYWFwaS5yYXluYXRvdXJzLmNvbS8iLCJhdWQiOiJodHRwOi8vZGV2cmF5bmFhcGkucmF5bmF0b3Vycy5jb20vIn0.4snkHjBlUrdGjQbnMdh3FIZQz8sIQ8Vl_ooSzB5BBKQ';
             $postData = [
                 'tourId' => $data['tourId'],
                 'contractId' => $data['contractId'],
