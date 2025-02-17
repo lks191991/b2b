@@ -646,7 +646,8 @@ return view('auth.updatePage', compact('allrecords','notifications','announcment
 
                 if (isset($data['statuscode']) && $data['statuscode'] == 200) {
                     foreach ($data['result'] as $tour) {
-						
+						print_r($tour);
+						exit;
 						$this->tourOptionData($tour);
 					}
 					
