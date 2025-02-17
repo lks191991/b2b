@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\Artisan;
 Route::get('/artisan', function () {
     // Call the Artisan command
 	Artisan::call('optimize:clear');
-    $exitCode = Artisan::call('tourstaticdata');
+    $exitCode = Artisan::call('touroptionstaticdata');
     
     // Get the output of the command
     $output = Artisan::output();
