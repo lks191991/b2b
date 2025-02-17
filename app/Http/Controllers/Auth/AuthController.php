@@ -645,7 +645,11 @@ return view('auth.updatePage', compact('allrecords','notifications','announcment
                 $data = $response->json();
 
                 if (isset($data['statuscode']) && $data['statuscode'] == 200) {
-						$this->tourOptionData($data['result']);
+                    foreach ($data['result'] as $tour) {
+						
+						$this->tourOptionData($tour);
+					}
+					
 				}
 	}
     $httpCode = $response->status();
@@ -657,11 +661,10 @@ return view('auth.updatePage', compact('allrecords','notifications','announcment
     exit;
 }
 
-public function tourOptionData($sourceData)
+public function tourOptionData($data)
 {
     $url = "http://sandbox.raynatours.com/api/Tour/touroptionstaticdata";
    $token = config('services.rayna.token');
-    foreach ($sourceData as $data) {
             $postData = [
                 'tourId' => $data['tourId'],
                 'contractId' => $data['contractId'],
@@ -680,7 +683,6 @@ public function tourOptionData($sourceData)
 	  echo "<pre>";
     print_r($responseArray);
 	 exit;
-	}
 	
 
     echo "HTTP Code:Laravel " . $httpCode . "\n";
