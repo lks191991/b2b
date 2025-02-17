@@ -116,9 +116,9 @@ class APITourOptionStaticData extends Command
                         }
 
                         // Update the tourOption flag only if there are options
-                        DB::table('tourstaticdata')->where('tourId', $data->tourId)->update([
-                            'tourOption' => 1
-                        ]);
+                       // DB::table('tourstaticdata')->where('tourId', $data->tourId)->update([
+                         //   'tourOption' => 1
+                       // ]);
                     }
 
                     $this->info('Tour options data updated or inserted successfully.');
