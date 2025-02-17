@@ -633,7 +633,9 @@ return view('auth.updatePage', compact('allrecords','notifications','announcment
         "cityId" => 13668
     ];
 
-    $response = Http::withHeaders([
+    $response = Http::withOptions([
+    'verify' => false
+])->withHeaders([
         "Content-Type" => "application/json",
         "Authorization" => "Bearer " . trim($token),
         "Accept" => "application/json",
