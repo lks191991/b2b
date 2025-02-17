@@ -657,7 +657,7 @@ $data = [
 
     // Debugging Output
     echo "HTTP Code: " . ($httpCode ? "CURL" . $httpCode : "CURL0") . "\n";
-    
+    echo env()
     if (!empty($curlError)) {
         echo "cURL Error: " . $curlError . "\n";
     }
@@ -669,6 +669,7 @@ $data = [
 	
 	public function tourDataAAA()
 {
+	echo env("DB_USERNAME")."ssds====".echo env("DB_PASSWORD")
     $url = "https://sandbox.raynatours.com/api/Tour/tourstaticdata";
     $token = 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhNzAyOTAzZi1jYzA2LTQ5MjktOGNiNS0xN2E1NjJkY2JlNmIiLCJVc2VySWQiOiI1NDg5NiIsIlVzZXJUeXBlIjoiQWdlbnQiLCJQYXJlbnRJRCI6IjAiLCJFbWFpbElEIjoibmlraGlsQGFiYXRlcmFjb25zdWx0aW5nLmNvbSIsImlzcyI6Imh0dHA6Ly9kZXZyYXluYWFwaS5yYXluYXRvdXJzLmNvbS8iLCJhdWQiOiJodHRwOi8vZGV2cmF5bmFhcGkucmF5bmF0b3Vycy5jb20vIn0.4snkHjBlUrdGjQbnMdh3FIZQz8sIQ8Vl_ooSzB5BBKQ';
     $data = [
