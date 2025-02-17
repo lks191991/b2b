@@ -119,27 +119,31 @@ class SlotsController extends Controller
 				"child" => 0,
 				"contractId" => 300
 			];
-			$data = RaynaHelper::getSlot($postData);
-		} else {
-			if(!empty($variantId)){
-				$query = Slot::where('variant_id', $variantId);
-				if($transferOption == 'Ticket Only'){
-					$query->where('ticket_only', 1);
+			$raynaSlot = RaynaHelper::getSlot($postData);
+			if(count($raynaSlot) > 0){
+				$data = $raynaSlot;
+			} else {
+				if(!empty($variantId)){
+					$query = Slot::where('variant_id', $variantId);
+					if($transferOption == 'Ticket Only'){
+						$query->where('ticket_only', 1);
+					}
+					if($transferOption == 'Shared Transfer'){
+						$query->where('sic', 1);
+					}
+					if($transferOption == 'Pvt Transfer'){
+						$query->where('pvt', 1);
+					}
+					$slots = $query->get();
+					
+					foreach($slots as $slot)
+					{
+						$data[$slot->slot_timing] = $slot->slot_timing;
+					}
+					
 				}
-				if($transferOption == 'Shared Transfer'){
-					$query->where('sic', 1);
-				}
-				if($transferOption == 'Pvt Transfer'){
-					$query->where('pvt', 1);
-				}
-				$slots = $query->get();
-				
-				foreach($slots as $slot)
-				{
-					$data[$slot->slot_timing] = $slot->slot_timing;
-				}
-				
 			}
+			
 		}
 		
 		
