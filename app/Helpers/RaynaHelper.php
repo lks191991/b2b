@@ -103,7 +103,7 @@ class RaynaHelper
             $data = $response->json();
             if (isset($data['statuscode']) && $data['statuscode'] == 200) {
                 foreach ($data['result'] as $slot) {
-                    $slots[$slot['tourOptionId']] = $slot['timeSlot'];
+                    $slots[$slot['timeSlot']] = $slot['timeSlot'];
                 }
             } 
         }

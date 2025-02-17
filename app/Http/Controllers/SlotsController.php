@@ -119,8 +119,7 @@ class SlotsController extends Controller
 				"child" => 0,
 				"contractId" => 300
 			];
-			$slots = RaynaHelper::getSlot($postData);
-			dd($slots);
+			$data = RaynaHelper::getSlot($postData);
 		} else {
 			if(!empty($variantId)){
 				$query = Slot::where('variant_id', $variantId);
