@@ -6,6 +6,7 @@ use App\Models\Slot;
 use App\Models\Variant;
 use Illuminate\Http\Request;
 use DB;
+use RaynaHelper;
 class SlotsController extends Controller
 {
     /**
@@ -108,26 +109,40 @@ class SlotsController extends Controller
 		$variant = Variant::find($variantId);
 		$data= [] ;
 		if($variant->slot_type < 3){
-		
-		if(!empty($variantId)){
-			$query = Slot::where('variant_id', $variantId);
-			if($transferOption == 'Ticket Only'){
-				$query->where('ticket_only', 1);
+		if($variant->is_slot == 1){
+			$postData = [
+				"travelDate" => "2025-07-25",
+				"tourId" => 65,
+				"tourOptionId" => 261,
+				"transferId" => 41865,
+				"adult" => 1,
+				"child" => 0,
+				"contractId" => 300
+			];
+			$slots = RaynaHelper::getSlot($postData);
+			dd($slots);
+		} else {
+			if(!empty($variantId)){
+				$query = Slot::where('variant_id', $variantId);
+				if($transferOption == 'Ticket Only'){
+					$query->where('ticket_only', 1);
+				}
+				if($transferOption == 'Shared Transfer'){
+					$query->where('sic', 1);
+				}
+				if($transferOption == 'Pvt Transfer'){
+					$query->where('pvt', 1);
+				}
+				$slots = $query->get();
+				
+				foreach($slots as $slot)
+				{
+					$data[$slot->slot_timing] = $slot->slot_timing;
+				}
+				
 			}
-			if($transferOption == 'Shared Transfer'){
-				$query->where('sic', 1);
-			}
-			if($transferOption == 'Pvt Transfer'){
-				$query->where('pvt', 1);
-			}
-			$slots = $query->get();
-			
-			foreach($slots as $slot)
-			{
-				$data[$slot->slot_timing] = $slot->slot_timing;
-			}
-			
 		}
+		
 		
 		$response = array("status"=>1,'slots'=>$data,"sstatus"=>$variant->is_slot,'variant'=>$variant);
 		} else {

@@ -84,4 +84,30 @@ class RaynaHelper
             ]);
         }
     }
+
+    public static  function getSlot($postData)
+    {
+        $slots = [];
+        $url = "https://sandbox.raynatours.com/api/Tour/timeslot";
+        $token = config('services.rayna.token');
+        $response = Http::withOptions(['verify' => false])
+			->withHeaders([
+				"Content-Type" => "application/json",
+				"Authorization" => "Bearer " . trim($token),
+				"Accept" => "application/json",
+				"User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+			])
+			->post($url, $postData);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data['statuscode']) && $data['statuscode'] == 200) {
+                foreach ($data['result'] as $slot) {
+                    $slots[$slot['tourOptionId']] = $slot['timeSlot'];
+                }
+            } 
+        }
+
+        return $slots;
+    }
 }
