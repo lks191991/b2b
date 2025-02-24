@@ -111,19 +111,22 @@ class SlotsController extends Controller
 		$isRayna = false;
 		if($variant->slot_type < 3){
 		if($variant->is_slot == 1){
-			$postData = [
-				"travelDate" => "2025-07-25",
-				"tourId" => 65,
-				"tourOptionId" => 261,
-				"transferId" => 41865,
-				"adult" => 1,
-				"child" => 0,
-				"contractId" => 300
-			];
-			$raynaSlot = RaynaHelper::getSlot($postData);
-			if(count($raynaSlot) > 0){
-				$data = $raynaSlot;
-				$isRayna = true;
+			$optionDetails = RaynaHelper::getTourOptionById($variant->touroption_id);
+			if(count($optionDetails) > 0){
+				$postData = [
+					"travelDate" => date('Y-m-d'),
+					"tourId" => $optionDetails['tourId'],
+					"tourOptionId" => $optionDetails['tourOptionId'],
+					"transferId" => 0,
+					"adult" => 1,
+					"child" => 0,
+					"contractId" => 300
+				];
+				$raynaSlot = RaynaHelper::getSlot($postData);
+				if(count($raynaSlot) > 0){
+					$data = $raynaSlot;
+					$isRayna = true;
+				} 
 			} else {
 				if(!empty($variantId)){
 					$query = Slot::where('variant_id', $variantId);

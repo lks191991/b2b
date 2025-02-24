@@ -56,7 +56,7 @@ class APITourOptionStaticData extends Command
                     if (!empty($tourOptions)) {
                         foreach ($tourOptions as $option) {
                             DB::table('tour_option_static_data')->updateOrInsert(
-                                ['tourOptionId' => $data->tourId],
+                                ['tourOptionId' => $option['tourOptionId']],
                                 [
                                     'tourId' => $data->tourId,
                                     'contractId' => $data->contractId,

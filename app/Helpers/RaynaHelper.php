@@ -15,15 +15,20 @@ class RaynaHelper
     protected static $token = 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkNWU4YWZhMC1mNGJhLTQ2NWUtYTAzOS1mZGJiYzMxZWZlZGUiLCJVc2VySWQiOiIzNzU0NSIsIlVzZXJUeXBlIjoiQWdlbnQiLCJQYXJlbnRJRCI6IjAiLCJFbWFpbElEIjoidHJhdmVsZ2F0ZXhAcmF5bmF0b3Vycy5jb20iLCJpc3MiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20iLCJhdWQiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20ifQ.i6GaRt-RVSlJXKPz7ZVx-axAPLW_hkl7usI_Dw8vP5w'; 
     public static  function getTourDetailsById($id)
     {
-        $tours = Tourstaticdata::where('tourId',  $id)->get(['tourId', 'tourName', 'contractId', 'isSlot']); 
-        return $tours;
+        if(!empty($id)){
+            return Tourstaticdata::where('tourId',  $id)->get(['tourId', 'tourName', 'contractId', 'isSlot']); 
+        }
+        return [];
     }
 
     public static  function getTourOptionById($id)
     {
-        $tours = $data = tourOptionStaticData::where('tourOptionId',  $id)
-        ->get(['tourOptionId', 'optionName', 'tourId', 'tourId']); 
-        return $tours;
+        if(!empty($id)){
+            return  tourOptionStaticData::where('tourOptionId',  $id)
+            ->get(['tourOptionId', 'optionName', 'contractId', 'tourId']); 
+        }
+       
+        return [];
     }
    
     public static  function getSlot($postData)
@@ -91,7 +96,7 @@ class RaynaHelper
         return false;
     }
 	
-	public static  function getTourAvailability($payload)
+	public static  function getTourBook($payload)
     {
 			$pData = [
 			"uniqueNo" => (int) ($payload['uniqueNo'] ?? 0),
