@@ -662,13 +662,21 @@ elementsTT.forEach((element) => {
 		 variant_id = $(this).data('variantid');
 		 inputnumber = $(this).data('inputnumber');
 		 const transferOptionName = $("body #transfer_option" + inputnumber).find(':selected').val();
+     const tour_date = $("body #tour_date" + inputnumber).val();
+     const adult = $("body #adult" + inputnumber).val();
+     const child = $("body #child" + inputnumber).val();
+     const infant = $("body #infant" + inputnumber).val();
 		 $.ajax({
 			  url: "{{ route('get.variant.slots') }}",
 			  type: 'POST',
 			  dataType: "json",
 			  data: {
 				  variant_id:variant_id,
-				  transferOptionName:transferOptionName
+				  transferOptionName:transferOptionName,
+          tour_date:tour_date,
+          adult:adult,
+          child:child,
+          infant:infant
 				  },
 			  success: function(data) {
 				  if(data.status == 1) {
