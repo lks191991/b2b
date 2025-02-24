@@ -595,7 +595,7 @@ class VariantsController extends Controller
 			$data = tourOptionStaticData::orderBy('created_at', 'desc')->take(5)->get();
 			return response()->json($data);
 		}
-		$data = TourstatitourOptionStaticDatacdata::where('optionName', 'like', "%$query%")
+		$data = tourOptionStaticData::where('optionName', 'like', "%$query%")
 						 ->get(['tourOptionId', 'optionName']); // Adjust fields based on your requirements
 	
 		return response()->json($data);
