@@ -41,6 +41,8 @@ use App\Mail\VoucheredBookingEmailMailable;
 use App\Mail\VoucheredCancelEmail;
 use App\Mail\InvoiceEditRequestEmail;
 use App\Models\ReportLog;
+use RaynaHelper;
+
 class VouchersController extends Controller
 {
 	public function __construct()

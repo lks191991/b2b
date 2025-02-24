@@ -108,6 +108,7 @@ class SlotsController extends Controller
 		$transferOption = $request->input('transferOptionName');
 		$variant = Variant::find($variantId);
 		$data= [] ;
+		$isRayna = false;
 		if($variant->slot_type < 3){
 		if($variant->is_slot == 1){
 			$postData = [
@@ -122,6 +123,7 @@ class SlotsController extends Controller
 			$raynaSlot = RaynaHelper::getSlot($postData);
 			if(count($raynaSlot) > 0){
 				$data = $raynaSlot;
+				$isRayna = true;
 			} else {
 				if(!empty($variantId)){
 					$query = Slot::where('variant_id', $variantId);
@@ -147,9 +149,9 @@ class SlotsController extends Controller
 		}
 		
 		
-		$response = array("status"=>1,'slots'=>$data,"sstatus"=>$variant->is_slot,'variant'=>$variant);
+		$response = array("status"=>1,'slots'=>$data,"sstatus"=>$variant->is_slot,'variant'=>$variant,"is_rayna"=>$isRayna);
 		} else {
-			$response = array("status"=>2,'slots'=>$data,"sstatus"=>$variant->is_slot,'variant'=>$variant);
+			$response = array("status"=>2,'slots'=>$data,"sstatus"=>$variant->is_slot,'variant'=>$variant,"is_rayna"=>$isRayna);
 		}
 		
         return response()->json($response);
