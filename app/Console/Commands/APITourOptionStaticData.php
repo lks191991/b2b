@@ -30,16 +30,12 @@ class APITourOptionStaticData extends Command
     public function handle()
     {
         $sourceData = DB::table('tourstaticdata')->get();
-        $url = 'https://sandbox.raynatours.com/api/Tour/touroption';
+        $url = 'https://sandbox.raynatours.com/api/Tour/touroptionstaticdata';
         $token = config('services.rayna.token');
         foreach ($sourceData as $data) {
             $postData = [
                 'tourId' => $data->tourId,
                 'contractId' => $data->contractId,
-                'travelDate' => "2025-02-20",
-                'noOfAdult' => 1,
-                'noOfChild' => 0,
-                'noOfInfant' => 0,
             ];
 
 
@@ -54,7 +50,7 @@ class APITourOptionStaticData extends Command
                 $apiData = $response->json();
 
                 if (isset($apiData['statuscode']) && $apiData['statuscode'] == 200) {
-                    $tourOptions = $apiData['result'] ?? [];
+                    $tourOptions = $apiData['result']['touroption'] ?? [];
 
                     // Only update the tourOption if there are valid tour options returned
                     if (!empty($tourOptions)) {
@@ -63,62 +59,34 @@ class APITourOptionStaticData extends Command
                                 ['tourOptionId' => $option['tourOptionId']],
                                 [
                                     'tourId' => $option['tourId'],
-                                    'transferId' => $option['transferId'],
-                                    'optionName' => $data->tourName.' - '.$option['transferName'],
-                                    'transferName' => $option['transferName'],
-                                    'adultPrice' => $option['adultPrice'],
-                                    'childPrice' => $option['childPrice'],
-                                    'infantPrice' => $option['infantPrice'],
-                                    'withoutDiscountAmount' => $option['withoutDiscountAmount'],
-                                    'finalAmount' => $option['finalAmount'],
-                                    'startTime' => $option['startTime'],
-                                    'departureTime' => $option['departureTime'],
-                                    'disableChild' => $option['disableChild'],
-                                    'disableInfant' => $option['disableInfant'],
-                                    'allowTodaysBooking' => $option['allowTodaysBooking'],
-                                    'cutOff' => $option['cutOff'],
-                                    'isSlot' => $option['isSlot'],
-                                    'isSeat' => $option['isSeat'],
-                                    'isDefaultTransfer' => $option['isDefaultTransfer'],
-                                    'rateKey' => $option['rateKey'],
-                                    'inventoryId' => $option['inventoryId'],
-                                    'adultBuyingPrice' => $option['adultBuyingPrice'],
-                                    'childBuyingPrice' => $option['childBuyingPrice'],
-                                    'infantBuyingPrice' => $option['infantBuyingPrice'],
-                                    'adultSellingPrice' => $option['adultSellingPrice'],
-                                    'childSellingPrice' => $option['childSellingPrice'],
-                                    'infantSellingPrice' => $option['infantSellingPrice'],
-                                    'companyBuyingPrice' => $option['companyBuyingPrice'],
-                                    'companySellingPrice' => $option['companySellingPrice'],
-                                    'agentBuyingPrice' => $option['agentBuyingPrice'],
-                                    'agentSellingPrice' => $option['agentSellingPrice'],
-                                    'subAgentBuyingPrice' => $option['subAgentBuyingPrice'],
-                                    'subAgentSellingPrice' => $option['subAgentSellingPrice'],
-                                    'finalSellingPrice' => $option['finalSellingPrice'],
-                                    'vatbuying' => $option['vatbuying'],
-                                    'vatselling' => $option['vatselling'],
-                                    'currencyFactor' => $option['currencyFactor'],
-                                    'agentPercentage' => $option['agentPercentage'],
-                                    'transferBuyingPrice' => $option['transferBuyingPrice'],
-                                    'transferSellingPrice' => $option['transferSellingPrice'],
-                                    'serviceBuyingPrice' => $option['serviceBuyingPrice'],
-                                    'serviceSellingPrice' => $option['serviceSellingPrice'],
-                                    'rewardPoints' => $option['rewardPoints'],
-                                    'tourChildAge' => $option['tourChildAge'],
-                                    'maxChildAge' => $option['maxChildAge'],
-                                    'maxInfantAge' => $option['maxInfantAge'],
-                                    'minimumPax' => $option['minimumPax'],
-                                    'pointRemark' => $option['pointRemark'],
-                                    'adultRetailPrice' => $option['adultRetailPrice'],
-                                    'childRetailPrice' => $option['childRetailPrice'],
+                                    'optionName' => $option['optionName'],
+                                    'childAge' => $option['childAge'],
+                                    'infantAge' => $option['infantAge'],
+                                    'optionDescription' => $option['optionDescription'],
+                                    'cancellationPolicy' => $option['cancellationPolicy'],
+                                    'cancellationPolicyDescription' => $option['cancellationPolicyDescription'],
+                                    'childPolicyDescription' => $option['childPolicyDescription'],
+                                    'xmlcode' => $option['xmlcode'],
+                                    'xmloptioncode' => $option['xmloptioncode'],
+                                    'countryId' => $option['countryId'],
+                                    'cityId' => $option['cityId'],
+                                    'minPax' => $option['minPax'],
+                                    'maxPax' => $option['maxPax'],
+                                    'duration' => $option['duration'],
+                                    'timeZone' => $option['timeZone'],
+                                    'isWithoutAdult' => $option['isWithoutAdult'],
+                                    'isTourGuide' => $option['isTourGuide'],
+                                    'compulsoryOptions' => $option['compulsoryOptions'],
+                                    'isHideRateBreakup' => $option['isHideRateBreakup'],
+                                    'isHourly' => $option['isHourly'],
                                 ]
                             );
                         }
 
                         // Update the tourOption flag only if there are options
-                       // DB::table('tourstaticdata')->where('tourId', $data->tourId)->update([
-                         //   'tourOption' => 1
-                       // ]);
+                        DB::table('tourstaticdata')->where('tourId', $data->tourId)->update([
+                            'tourOption' => 1
+                        ]);
                     }
 
                     $this->info('Tour options data updated or inserted successfully.');
