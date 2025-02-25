@@ -103,62 +103,99 @@ class SlotsController extends Controller
     }
 	
 	public function variantSlotGet(Request $request)
-    {
-		$variantId = $request->input('variant_id');
-		$transferOption = $request->input('transferOptionName');
-		$variant = Variant::find($variantId);
-		$data= [] ;
-		$isRayna = false;
-		if($variant->slot_type < 3){
-		if($variant->is_slot == 1){
-			$optionDetails = RaynaHelper::getTourOptionById($variant->touroption_id);
-			if(count($optionDetails) > 0){
-				$postData = [
-					"travelDate" => date('Y-m-d'),
-					"tourId" => $optionDetails['tourId'],
-					"tourOptionId" => $optionDetails['tourOptionId'],
-					"transferId" => 0,
-					"adult" => 1,
-					"child" => 0,
-					"contractId" => 300
-				];
-				$raynaSlot = RaynaHelper::getSlot($postData);
-				if(count($raynaSlot) > 0){
-					$data = $raynaSlot;
-					$isRayna = true;
-				} 
-			} else {
-				if(!empty($variantId)){
-					$query = Slot::where('variant_id', $variantId);
-					if($transferOption == 'Ticket Only'){
-						$query->where('ticket_only', 1);
-					}
-					if($transferOption == 'Shared Transfer'){
-						$query->where('sic', 1);
-					}
-					if($transferOption == 'Pvt Transfer'){
-						$query->where('pvt', 1);
-					}
-					$slots = $query->get();
-					
-					foreach($slots as $slot)
-					{
-						$data[$slot->slot_timing] = $slot->slot_timing;
-					}
-					
-				}
-			}
-			
-		}
-		
-		
-		$response = array("status"=>1,'slots'=>$data,"sstatus"=>$variant->is_slot,'variant'=>$variant,"is_rayna"=>$isRayna);
-		} else {
-			$response = array("status"=>2,'slots'=>$data,"sstatus"=>$variant->is_slot,'variant'=>$variant,"is_rayna"=>$isRayna);
-		}
-		
-        return response()->json($response);
+{
+    $variantId = $request->input('variant_id');
+    $transferOption = $request->input('transferOptionName');
+    $tourDate = $request->input('tour_date');
+    $adult = (int) ($request->input('adult') ?? 0);
+    $child = (int) ($request->input('child') ?? 0);
+    
+    $variant = Variant::find($variantId);
+    if (!$variant) {
+        return response()->json(["status" => 0, "message" => "Invalid variant."]);
     }
+
+    $data = [];
+    $isRayna = false;
+    
+    if (!empty($variant->touroption_id)) {
+        $optionDetails = RaynaHelper::getTourOptionById(2949);
+        
+        if (!empty($optionDetails['tourId'])) {
+            $tour = RaynaHelper::getTourDetailsById(5418);
+            $isRayna = true;//!empty($tour['isSlot']) ? true : false;
+        }
+
+
+        if ($isRayna) {
+            $postData = [
+                "travelDate" => "2025-10-30",//date('Y-m-d', strtotime($tourDate)),
+                "tourId" => $optionDetails['tourId'],
+                "tourOptionId" => $optionDetails['tourOptionId'],
+                "transferId" => 0,
+                "adult" => $adult,
+                "child" => $child,
+                "contractId" => $optionDetails['contractId'] ?? null
+            ];
+
+            $raynaSlot = RaynaHelper::getSlot($postData);
+            if (!is_array($raynaSlot) || empty($raynaSlot)) {
+                return response()->json(["status" => 4, "message" => "No slots available for the selected date or tour."]);
+            }
+			
+            $data = $raynaSlot;
+			return response()->json([
+			"status" => 1,
+			"slots" => $data,
+			"sstatus" => $variant->is_slot,
+			"variant" => $variant,
+			"is_rayna" => $isRayna
+			]);
+        }else{
+			 return response()->json(["status" => 4, "message" => "No slots available for the selected date or tour."]);
+		}
+        
+	} else 	if ($variant->slot_type < 3 && $variant->is_slot == 1) {
+        if (empty($data) && !empty($variantId)) {
+            $query = Slot::where('variant_id', $variantId);
+            $transferOptions = [
+                'Ticket Only' => 'ticket_only',
+                'Shared Transfer' => 'sic',
+                'Pvt Transfer' => 'pvt'
+            ];
+            
+            if (isset($transferOptions[$transferOption])) {
+                $query->where($transferOptions[$transferOption], 1);
+            }
+
+			$slots = $query->get();
+
+			foreach($slots as $slot)
+			{
+			$data[$slot->slot_timing] = $slot->slot_timing;
+			}
+        }
+		
+		return response()->json([
+			"status" => 1,
+			"slots" => $data,
+			"sstatus" => $variant->is_slot,
+			"variant" => $variant,
+			"is_rayna" => $isRayna
+		]);
+    }
+	
+	 return response()->json([
+        "status" => 2,
+        "slots" => $data,
+        "sstatus" => $variant->is_slot,
+        "variant" => $variant,
+        "is_rayna" => $isRayna
+    ]);
+    
+   
+}
+
 
 
 	

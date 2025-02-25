@@ -364,6 +364,23 @@ $delKey = $ap->id;
     </div>
 </div>
 
+<div class="modal fade" id="Noslot" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Slot Unavailable</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <span id="messageSlot" class="row p-2"></span>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
 
 @endsection
 
@@ -682,9 +699,13 @@ elementsTT.forEach((element) => {
 				  if(data.status == 1) {
 						
 						var timeslot = $('#timeslot').val();
+						$('#isRayna').val(data.is_rayna);
 						if(timeslot==''){
-							openTimeSlotModal(data.slots);
+							openTimeSlotModal(data.slots,data.is_rayna);
 						} 
+					} else if(data.status == 4) {
+						 $('#Noslot .modal-body #messageSlot').text(data.message).css("color", "red");
+						 $('#Noslot').modal('show');
 					} else if (data.status == 2) {
 						$("body #cartForm").submit();
 					}
@@ -826,7 +847,8 @@ function adultChildReq(a,c,inputnumber) {
   }
 }
 
-  function openTimeSlotModal(slots, selectedSlot) {
+  function openTimeSlotModal(slots, isRayna) {
+	  
     var isValid = $('body #cartForm').valid();
     if (isValid) {
 		$("body #cartForm").removeClass('error-rq');
@@ -850,6 +872,8 @@ function adultChildReq(a,c,inputnumber) {
             var selectedValue = $('input[name="timeSlotRadio"]:checked').val();
             if (selectedValue) {
                 $('#timeslot').val(selectedValue);
+				$('#isRayna').val(isRayna);
+				
                 $("body #cartForm").submit();
             } else {
                 $("body #cartForm").addClass('error-rq');

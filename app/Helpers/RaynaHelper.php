@@ -16,19 +16,19 @@ class RaynaHelper
     public static  function getTourDetailsById($id)
     {
         if(!empty($id)){
-            return Tourstaticdata::where('tourId',  $id)->get(['tourId', 'tourName', 'contractId', 'isSlot']); 
+            return Tourstaticdata::where('tourId',  $id)->select(['tourId', 'tourName', 'contractId', 'isSlot'])->first(); 
         }
-        return [];
+        return false;
     }
 
     public static  function getTourOptionById($id)
     {
         if(!empty($id)){
             return  tourOptionStaticData::where('tourOptionId',  $id)
-            ->get(['tourOptionId', 'optionName', 'contractId', 'tourId']); 
+            ->select(['tourOptionId', 'optionName', 'contractId', 'tourId'])->first(); 
         }
        
-        return [];
+        return false;
     }
    
     public static  function getSlot($postData)
