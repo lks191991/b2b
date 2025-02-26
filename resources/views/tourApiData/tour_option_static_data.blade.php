@@ -6,12 +6,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Tour Option Static Data</h1>
+                    <h1>Tour Option - {{ $tourName ?: 'All' }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Tour Option Static Data</li>
+                        <li class="breadcrumb-item active">Tour Option - {{ $tourName ?: 'All' }}</li>
                     </ol>
                 </div>
             </div>
@@ -27,7 +27,7 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Tour Option Static Data</h3>
+                            <h3 class="card-title">Tour Option - {{ $tourName ?: 'All' }}</h3>
                             <div class="card-tools">
                                 <!-- Add any additional buttons or filters here -->
                             </div>
@@ -46,11 +46,6 @@
                                         <th>Option Description</th>
                                         <th>Cancellation Policy</th>
                                         <th>Cancellation Policy Description</th>
-                                        <th>Child Policy Description</th>
-                                        <th>XML Code</th>
-                                        <th>XML Option Code</th>
-                                        <th>Country ID</th>
-                                        <th>City ID</th>
                                         <th>Min Pax</th>
                                         <th>Max Pax</th>
                                         <th>Duration</th>
@@ -74,11 +69,6 @@
                                             <td>{{ $record->optionDescription }}</td>
                                             <td>{{ $record->cancellationPolicy }}</td>
                                             <td>{!! $record->cancellationPolicyDescription !!}</td>
-                                            <td>{!! $record->childPolicyDescription !!}</td>
-                                            <td>{{ $record->xmlcode }}</td>
-                                            <td>{{ $record->xmloptioncode }}</td>
-                                            <td>{{ $record->countryId }}</td>
-                                            <td>{{ $record->cityId }}</td>
                                             <td>{{ $record->minPax }}</td>
                                             <td>{{ $record->maxPax }}</td>
                                             <td>{{ $record->duration }}</td>

@@ -85,7 +85,7 @@
                         $i++;
                       @endphp
                       <tr>
-                      <td><input type="number" id="tourDay_{{ $i }}" onBlur="funTourDate({{ $i }})" name="serial_no[]"  class="form-control" required></td>
+                      <td><input type="text" id="tourDay_{{ $i }}" onBlur="funTourDate({{ $i }})" name="serial_no[]"  class="form-control onlynumbrf" required></td>
                 <td><input type="text" id="tourDate_{{ $i }}" name="tourDate[]" value="{{$startDate}}" class="form-control" required>
                 <input type="hidden" id="tourDateOrg_{{ $i }}" name="tourDateOrg[]" value="{{$startDate}}" class="form-control" required>
             </td>
@@ -128,7 +128,7 @@
 
             @for($i = 1; $i <= 1; $i++)
             <tr>
-            <td><input type="number" id="tourDay_{{ $i }}" onBlur="funTourDate({{ $i }})" name="serial_no[]"  class="form-control" required></td>
+            <td><input type="text" id="tourDay_{{ $i }}" onBlur="funTourDate({{ $i }})" name="serial_no[]"   class="form-control onlynumbrf" required></td>
                 <td><input type="text" id="tourDate_{{ $i }}" name="tourDate[]" value="{{$startDate}}" class="form-control" required>
                 <input type="hidden" id="tourDateOrg_{{ $i }}" name="tourDateOrg[]" value="{{$startDate}}" class="form-control" required>
             </td>
@@ -233,7 +233,7 @@
 
     const newRow = document.createElement('tr');
             newRow.innerHTML = `
-             <td><input type="number" id="tourDay_{${rowCounter}" onBlur="funTourDate(${rowCounter})" name="serial_no[]"  class="form-control" required></td>
+             <td><input type="text" id="tourDay_{${rowCounter}" onBlur="funTourDate(${rowCounter})" name="serial_no[]"  class="form-control onlynumbrf" required></td>
                 <td><input type="text" id="tourDate_${rowCounter}" name="tourDate[]" value="${startDate}" class="form-control" required>
                                 <input type="hidden" id="tourDateOrg_${rowCounter}" name="tourDateOrg[]" value="${startDate}" class="form-control" required>
 
@@ -342,7 +342,7 @@
             rowCounter++;
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-             <td><input type="number" id="tourDay_${rowCounter}" onBlur="funTourDate(${rowCounter})" name="serial_no[]"  class="form-control" required></td>
+             <td><input type="text" id="tourDay_${rowCounter}" onBlur="funTourDate(${rowCounter})" name="serial_no[]"  class="form-control onlynumbrf" required></td>
                 <td><input type="text" id="tourDate_${rowCounter}" name="tourDate[]" value="${startDate}" class="form-control" required>
                 <input type="hidden" id="tourDateOrg_${rowCounter}" name="tourDateOrg[]" value="${startDate}" class="form-control" required>
                 </td>
@@ -487,6 +487,12 @@ for(var i=1;i<=1;i++)
     {
     initAutocomplete("#avid_name_"+i);
     }
-
+    $(document).on('keypress', '.onlynumbrf', function(evt) {
+   var charCode = (evt.which) ? evt.which : evt.keyCode
+   if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57))
+     return false;
+   return true;
+ 
+ });
 </script>
 @endsection

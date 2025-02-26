@@ -998,7 +998,7 @@ $controller = preg_replace('/.*\\\/', '', $controller);
             <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-ticket-alt"></i>
               <p>
-                API Tours
+                Rayna Tours
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -1017,7 +1017,7 @@ $controller = preg_replace('/.*\\\/', '', $controller);
      <li class="nav-item ">
               <a href="{{ route('tourStaticData') }}" class="nav-link {{$active}}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Tour Static Data</p>
+                  <p>Tour Data</p>
                 </a>
 				
               </li>
@@ -1033,7 +1033,7 @@ $controller = preg_replace('/.*\\\/', '', $controller);
 			  <li class="nav-item ">
               <a href="{{ route('tourOptionStaticData') }}" class="nav-link {{$active}}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Tour Option Static Data</p>
+                  <p>Tour Options Data</p>
                 </a>
 				
               </li>

@@ -63,6 +63,7 @@ class VouchersController extends Controller
 		 $perPage = config("constants.ADMIN_PAGE_LIMIT");
 		 $data = $request->all();
 		$query = Voucher::where('id','!=', null);
+		$query->where('is_quotation',"0");
 		if (isset($data['agent_id_select']) && !empty($data['agent_id_select'])) {
             $query->where('agent_id', $data['agent_id_select']);
         }
@@ -104,11 +105,11 @@ class VouchersController extends Controller
             if ($data['is_activity'] == 2)
                 $query->where('is_activity', 0);
         }
-		if(!empty(Auth::user()->zone)){
-			
-				$query->where('zone', '=', Auth::user()->zone);
-			
-}
+			if(!empty(Auth::user()->zone)){
+
+			$query->where('zone', '=', Auth::user()->zone);
+
+			}
         $records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
 		$agetid = '';
 		$agetName = '';
@@ -1058,6 +1059,7 @@ class VouchersController extends Controller
 		$child = $request->input('child');
 		$infant = $request->input('infant');
 		$discount = $request->input('discount');
+		$isRayna = $request->input('isRayna');
 		//dd($request->input('ucode'));
 		//dd($request->all());
 		$data = [];
@@ -1161,16 +1163,44 @@ class VouchersController extends Controller
 		
 		//dd($data);
 		
-		if(count($data) > 0)
-		{
-			VoucherActivity::insert($data);
-			$voucher = Voucher::find($voucher_id);
-			$voucher->total_activity_amount += $total_activity_amount;
-			$voucher->save();
-		}
+			if(count($data) > 0)
+			{
+				if ($isRayna) {
+					if (!empty($data) && isset($data[0])) {
+						$payload = $data[0];
+				
+						$pData = [
+							"travelDate" => $payload['tour_date'] ?? null,
+							"adult"      => $payload['adult'] ?? 0,
+							"child"      => $payload['child'] ?? 0,
+							"infant"     => $payload['infant'] ?? 0,
+						];
+				
+						$availability = RaynaHelper::getTourAvailability($variant->touroption_id, $pData);
+				
+						if (!empty($availability['status']) && $availability['status'] === true) {
+							VoucherActivity::insert($data);
+							$voucher = Voucher::find($voucher_id);
+							$voucher->total_activity_amount += $total_activity_amount;
+							$voucher->save();
+						} else {
+							$errorMessage = $availability['message'] ?? 'Unknown error occurred';
+							return redirect()->back()->with('error', $errorMessage);
+						}
+					} else {
+						return redirect()->back()->with('error', 'Invalid tour data.');
+					}
+				}
+				else{
+					VoucherActivity::insert($data);
+							$voucher = Voucher::find($voucher_id);
+							$voucher->total_activity_amount += $total_activity_amount;
+							$voucher->save();
+				}
+			}
 
 		} else {
-			return redirect()->back()->with('error', $variant->title.' Please Select Tour Option.');
+			return redirect()->back()->with('error',' Please Select Tour Option.');
 		}
 		
 		

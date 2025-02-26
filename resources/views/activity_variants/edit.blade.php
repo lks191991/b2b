@@ -41,7 +41,7 @@
                 @endif
               </div>
               <div class="form-group col-md-2">
-                <label for="inputName">Is Popular:</label>
+                <label for="inputName">Quick Add:</label>
                 <select name="is_popular" id="is_popular" class="form-control">
                     <option value="2" @if($activityVariant->is_popular ==2) {{'selected="selected"'}} @endif>Yes</option>
 					          <option value="1" @if($activityVariant->is_popular ==1) {{'selected="selected"'}} @endif >No</option>

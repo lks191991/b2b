@@ -119,10 +119,10 @@ class SlotsController extends Controller
     $isRayna = false;
     
     if (!empty($variant->touroption_id)) {
-        $optionDetails = RaynaHelper::getTourOptionById(2949);
+        $optionDetails = RaynaHelper::getTourOptionById($variant->touroption_id);
         
         if (!empty($optionDetails['tourId'])) {
-            $tour = RaynaHelper::getTourDetailsById(5418);
+            $tour = RaynaHelper::getTourDetailsById($optionDetails['tourId']);
             $isRayna = true;//!empty($tour['isSlot']) ? true : false;
         }
 
@@ -132,7 +132,7 @@ class SlotsController extends Controller
                 "travelDate" => "2025-10-30",//date('Y-m-d', strtotime($tourDate)),
                 "tourId" => $optionDetails['tourId'],
                 "tourOptionId" => $optionDetails['tourOptionId'],
-                "transferId" => 0,
+                "transferId" => 41865, // Without Transfer
                 "adult" => $adult,
                 "child" => $child,
                 "contractId" => $optionDetails['contractId'] ?? null

@@ -57,22 +57,22 @@ class RaynaHelper
         return $slots;
     }
 	
-	public static  function getTourAvailability($payload)
+	public static  function getTourAvailability($variantTouroptionId,$payload=[])
     {
+        $touroption = self::getTourOptionById($variantTouroptionId);
 		$pData = [   
-        "tourId"       => (int) ($payload['tourId'] ?? 0),
-        "tourOptionId" => (int) ($payload['tourOptionId'] ?? 0),
-        "transferId"   => (int) ($payload['transferId'] ?? 0),
+        "tourId"       => (int) ($touroption['tourId'] ?? 0),
+        "tourOptionId" => (int) ($touroption['tourOptionId'] ?? 0),
+        "transferId"   => 41865,
+        "contractId"   => (int) ($touroption['contractId'] ?? 0),
         "travelDate"   => $payload['travelDate'] ?? '',
         "adult"        => (int) ($payload['adult'] ?? 1),
         "child"        => (int) ($payload['child'] ?? 0),
-        "infant"       => (int) ($payload['infant'] ?? 0),
-        "contractId"   => (int) ($payload['contractId'] ?? 0),
+        "infant"       => (int) ($payload['infant'] ?? 0)
+        
 		];
 
-		$postData =  json_encode($pData);
-		
-        $slots = [];
+        $data = [];
         $url = "https://sandbox.raynatours.com/api/Tour/availability";
         $token = config('services.rayna.token');
         $response = Http::withOptions(['verify' => false])
@@ -82,23 +82,38 @@ class RaynaHelper
 				"Accept" => "application/json",
 				"User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 			])
-			->post($url, $postData);
+			->post($url, $pData);
 
-        if ($response->successful()) {
+       if ($response->successful()) {
             $data = $response->json();
-            if (isset($data['statuscode']) && $data['statuscode'] == 200) {
-                if ($data['count'] > 0) {
-                    return true;
+            
+            if (($data['statuscode'] ?? null) === 200) {
+                if (!empty($data['result']) && ($data['result']['status'] ?? 0) > 0) {
+                    return [
+                        'status' => true,
+                        'message' => '',
+                    ];
                 }
-            } 
+                return [
+                    'status' => false,
+                    'message' => $data['result']['message'] ?? 'No message available',
+                ];
+            }
+            
+            return [
+                'status' => false,
+                'message' => $data['error_description'] ?? 'Unknown error occurred',
+            ];
+            
         }
+
 
         return false;
     }
 	
 	public static  function getTourBook($payload)
     {
-			$pData = [
+			$postData = [
 			"uniqueNo" => (int) ($payload['uniqueNo'] ?? 0),
 			"TourDetails" => [
 				[
@@ -135,12 +150,6 @@ class RaynaHelper
 			]
 		];
 
-
-
-
-		$postData =  json_encode($pData, JSON_PRETTY_PRINT);
-		
-        $slots = [];
         $url = "https://sandbox.raynatours.com/api/Booking/bookings";
         $token = config('services.rayna.token');
         $response = Http::withOptions(['verify' => false])

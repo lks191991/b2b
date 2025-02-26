@@ -13,25 +13,54 @@ class APITourDataController extends Controller
    
    protected $token = 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkNWU4YWZhMC1mNGJhLTQ2NWUtYTAzOS1mZGJiYzMxZWZlZGUiLCJVc2VySWQiOiIzNzU0NSIsIlVzZXJUeXBlIjoiQWdlbnQiLCJQYXJlbnRJRCI6IjAiLCJFbWFpbElEIjoidHJhdmVsZ2F0ZXhAcmF5bmF0b3Vycy5jb20iLCJpc3MiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20iLCJhdWQiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20ifQ.i6GaRt-RVSlJXKPz7ZVx-axAPLW_hkl7usI_Dw8vP5w';  
    
-	public function tourStaticData()
+	public function tourStaticData(Request $request)
 	{
-		    $records = DB::table('tourstaticdata')->paginate(10);
+		$data = $request->all();
+		$query = DB::table('tourstaticdata')->where('id', '!=' , '0');
+		if (isset($data['name']) && !empty($data['name'])) {
+            $query->where('tourName', 'like', '%' . $data['name'] . '%');
+        }
+       
+	   if (isset($data['tourId']) && !empty($data['tourId'])) {
+            $query->where('tourId',  $data['tourId']);
+        }
+		
+		if (!empty($data['tourOption'])) {
+			if ($data['tourOption'] == 1) {
+				$query->where('tourOption', 1);
+			} elseif ($data['tourOption'] == 2) {
+				$query->where('tourOption', 0);
+			}
+		}
+		
+		
+		
+        if (isset($data['isSlot']) && !empty($data['isSlot'])) {
+            if($data['isSlot'] == 1)
+                $query->where('isSlot', 1);
+            if($data['isSlot'] == 2)
+                $query->where('isSlot', 0);
+        }
+		    $records = $query->orderBy('tourId', 'desc')->paginate(10);
 
 			return view('tourApiData.tourstaticdata', compact('records'));
 	}
 
-    public function tourOptionStaticData($id = 0)
+    public function tourOptionStaticData(int $id = 0)
 	{
-		$query = DB::table('tour_option_static_data');
+		$query = DB::table('tour_option_static_data'); // No need to use select('*')
+
+		$tourName = null;
 		if ($id > 0) {
 			$query->where('tourId', $id);
+			$tourName = DB::table('tourstaticdata')->where('tourId', $id)->value('tourName'); 
 		}
 
 		$records = $query->paginate(10);
-		return view('tourApiData.tour_option_static_data', compact('records'));
+
+		return view('tourApiData.tour_option_static_data', compact('records', 'tourName'));
 	}
-	
-	
+
 	public function tourStaticDataFromAPI($countryId='13063',$cityId='13668')
 	{
 		$url = 'http://sandbox.raynatours.com/api/Tour/tourstaticdata';
