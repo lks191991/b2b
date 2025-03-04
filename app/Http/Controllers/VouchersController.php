@@ -599,7 +599,7 @@ class VouchersController extends Controller
 			
 			$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
 			
-			Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
+			//Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
 			
 			
 			
@@ -630,6 +630,7 @@ class VouchersController extends Controller
 			$record->save();
 		}
 		
+		$bk = [];
 		foreach($voucherActivityRecord as $vac){
 			if($record->status_main == 5){
 				$voucherActivityU = VoucherActivity::with("variant")->find($vac->id);
@@ -639,11 +640,17 @@ class VouchersController extends Controller
 				
 				$voucherActivityU->status = 3;
 				$voucherActivityU->save();
-				RaynaHelper::tourBooking($record,$voucherActivityU);
+				
 			}
 			SiteHelpers::voucherActivityLog($record->id,$vac->id,$vac->discountPrice,$vac->totalprice,$record->status_main);
 			
 		}
+		
+		if($record->status_main==5){
+		$bk = RaynaHelper::tourBooking($record);
+		}
+		
+		
 		
 		if($record->status_main > 3){
 			return redirect()->route('voucherView',$record->id)->with('success', 'Voucher Created Successfully.');
@@ -1069,6 +1076,7 @@ class VouchersController extends Controller
 		$total_activity_amount = 0;
 		$k  = $request->input('ucode');
 		$timeslot  = $request->input('timeslot');
+		$timeSlotId  = $request->input('timeSlotId');
 		//$activitySelectNew[$k] = $k;
 		
 		$acodes = explode(",",$activity_variant_code[$k]);
@@ -1154,7 +1162,9 @@ class VouchersController extends Controller
 				'vat_percentage' => $priceCal['vat_per'],
 				'discountPrice' => "0",
 				'discountPrice' => "0",
-				'isRayna' => $isRayna,
+				'time_slot' => $timeslot,
+				'timeSlotId' => ($isRayna)?$timeSlotId:0,
+				'isRayna' => ($isRayna)?1:0,
 				'cancellation_chart' => json_encode($cancellation),
 				'totalprice' => number_format($priceCal['totalprice'], 2, '.', ''),
 				'created_by' => Auth::user()->id,

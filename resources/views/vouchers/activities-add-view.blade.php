@@ -13,6 +13,7 @@
 				 <input type="hidden" id="activity_type" name="activity_type" value="{{ $activity->product_type }}"  />
 				 <input type="hidden" id="ucode" name="ucode" value="{{$variantData['activityVariants']['0']['ucode']}}"  />
 				 <input type="hidden" id="timeslot" name="timeslot" value=""  />
+				 <input type="hidden" id="timeSlotId" name="timeSlotId" value="0"  />
 				<input type="hidden" id="isRayna" name="isRayna" value="false"  />
 				
 				 <table class="table rounded-corners" style="border-radius: 10px !important;font-size:10pt;">

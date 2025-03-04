@@ -847,7 +847,7 @@ function adultChildReq(a,c,inputnumber) {
   }
 }
 
-  function openTimeSlotModal(slots, isRayna) {
+  function openTimeSlotModal(slots, isRayna,timeSlotId) {
 	  
     var isValid = $('body #cartForm').valid();
     if (isValid) {
@@ -863,17 +863,19 @@ function adultChildReq(a,c,inputnumber) {
             //     .prop('checked', slot === selectedSlot);
             // var label = $('<label>').text(slot).prepend(radio);
             // radioGroup.append(label);
-            var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
+            var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
             radioGroup.append(radio);
             tk++;
         });
 
         $('#selectTimeSlotBtn').on('click', function() {
-            var selectedValue = $('input[name="timeSlotRadio"]:checked').val();
+            var selectedRadio = $('input[name="timeSlotRadio"]:checked');
+			var selectedValue = selectedRadio.val();
+			var timeSlotId = selectedRadio.data('id');
             if (selectedValue) {
                 $('#timeslot').val(selectedValue);
 				$('#isRayna').val(isRayna);
-				
+				$('#timeSlotId').val(timeSlotId);
                 $("body #cartForm").submit();
             } else {
                 $("body #cartForm").addClass('error-rq');

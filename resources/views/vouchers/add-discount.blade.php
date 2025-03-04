@@ -590,7 +590,7 @@ $aid = 0;
       @else 
 			<a href="{{ route('vouchers.show',$voucher->id) }}" id="checkout-btn" class="btn btn-lg btn-primary pull-right" style="width:100%">
 			<i class="fas fa-shopping-cart"></i>
-			Checkout {{$submtBtnTNA }}
+			Checkout
 			</a>
       @endif
 			@endif

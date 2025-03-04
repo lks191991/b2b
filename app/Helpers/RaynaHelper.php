@@ -50,7 +50,7 @@ class RaynaHelper
             $data = $response->json();
             if (isset($data['statuscode']) && $data['statuscode'] == 200) {
                 foreach ($data['result'] as $slot) {
-                    $slots[$slot['timeSlot']] = $slot['timeSlot'];
+                    $slots[$slot['timeSlotId']] = $slot['timeSlot'];
                 }
             } 
         }
@@ -112,49 +112,19 @@ class RaynaHelper
         return false;
     }
 	
-	public static function tourBooking($voucher, $va)
+	public static function tourBooking($voucher)
 	{
-		$variant = $va->variant;
-		$touroption = self::getTourOptionById($variant->touroption_id);
-		$fullName = $voucher->guest_name ?? "";
-		$nameParts = explode(" ", trim($fullName), 2);
-
+		
+		$tourData = self::makeTourServicePayload($voucher);
+		
+		
 		$postData = [
 			"uniqueNo" => (int) ($voucher->id ?? 0),
-			"TourDetails" => [
-				[
-					"serviceUniqueId" => (int) ($voucher->id ?? 0),
-					"tourId" => (int) ($touroption['tourId'] ?? 0),
-					"optionId" => (int) ($touroption['optionId'] ?? 0),
-					"adult" => (int) ($va->adult ?? 1),
-					"child" => (int) ($va->child ?? 0),
-					"infant" => (int) ($va->infant ?? 0),
-					"tourDate" => !empty($va->tour_date) ? date("Y-m-d", strtotime($va->tour_date)) : "2025-02-25",
-					"timeSlotId" => 0,
-					"startTime" => !empty($va->time_slot) ? date("h:i A", strtotime($va->time_slot)) : "10:00 AM",
-					"transferId" => 41865,
-					"pickup" => $va->pickup_location ?? "Hotel XYZ",
-					"adultRate" => (float) ($va->adultPrice ?? 100.50),
-					"childRate" => (float) ($va->childPrice ?? 50.25),
-					"serviceTotal" => (float) (($va->adultPrice ?? 100.50) + ($va->childPrice ?? 50.25)),
-				]
-			],
-			"passengers" => [
-				[
-					"serviceType" => "Tour",
-					"prefix" => "Mr",
-					"firstName" => $nameParts[0] ?? "",
-					"lastName" => $nameParts[1] ?? "", 
-					"email" => $voucher->guest_email ?? "",
-					"mobile" => $voucher->guest_phone ?? "",
-					"nationality" => "UAE",
-					"message" => $voucher->remark ?? "Looking forward to the tour",
-					"leadPassenger" => true,
-					"paxType" => "Adult",
-					"clientReferenceNo" => $voucher->agent_ref_no ?? "",
-				]
-			]
+			"TourDetails" => $tourData['tour'],
+			"passengers" => $tourData['passengers']
 		];
+		echo(json_encode($postData));
+exit;
 
 		$url = "https://sandbox.raynatours.com/api/Booking/bookings";
 		$token = config('services.rayna.token');
@@ -167,7 +137,8 @@ class RaynaHelper
 				"User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 			])
 			->post($url, $postData);
-
+echo(json_encode($postData));
+exit;
     if ($response->successful()) {
         $data = $response->json();
 
@@ -185,13 +156,66 @@ class RaynaHelper
                         ]);
                     }
                 }
-            }
+				
+				 return true;
+            } else {
+				return false;
+			}
 			
-			 return true;
+			
         }
     }
 
     return false;
+	}
+	
+	public static function makeTourServicePayload($voucher)
+	{
+		$voucherActivity = VoucherActivity::with("variant")->where('voucher_id', $voucher->id)->where('isRayna', true)->get();
+		$fullName = $voucher->guest_name ?? "";
+		$nameParts = explode(" ", trim($fullName), 2);
+		$data = [];
+		$tour = [];
+		$passengers = [];
+		foreach($voucherActivity as $vac){
+		$variant = $vac->variant;
+		$touroption = self::getTourOptionById($variant->touroption_id);
+		$tour[] = [
+					"serviceUniqueId" => mt_rand(100000, 999999),
+					"tourId" => (int) ($touroption['tourId'] ?? 0),
+					"optionId" => (int) ($touroption['tourOptionId'] ?? 0),
+					"adult" => (int) ($vac->adult ?? 1),
+					"child" => (int) ($vac->child ?? 0),
+					"infant" => (int) ($vac->infant ?? 0),
+					"tourDate" => !empty($vac->tour_date) ? (string) date("Y-m-d", strtotime($vac->tour_date)) : "2025-02-25",
+					"timeSlotId" =>(int) $vac->timeSlotId,
+					"startTime" => !empty($vac->time_slot) ? (string) date("h:i A", strtotime($vac->time_slot)) : "10:00 AM",
+					"transferId" => 41865,
+					"pickup" => (string) $vac->pickup_location ?? "Hotel XYZ",
+					"adultRate" => ($vac->adult > 0 && isset($vac->adultPrice)) ? (float) ($vac->adultPrice * $vac->adult) : 0.00,
+					"childRate" => ($vac->child > 0 && isset($vac->childPrice)) ? (float) ($vac->childPrice * $vac->child) : 0.00,
+					"serviceTotal" => (string) ($vac->totalprice ?? 0.00),
+		];
+		
+		$passengers[] = [
+					"serviceType" => "Tour",
+					"prefix" => $voucher->guest_salutation ?? "Mr",
+					"firstName" => $nameParts[0] ?? "",
+					"lastName" => $nameParts[1] ?? "", 
+					"email" => $voucher->guest_email ?? "",
+					"mobile" => $voucher->guest_phone ?? "",
+					"nationality" => "UAE",
+					"message" => $voucher->remark ?? "Looking forward to the tour",
+					"leadPassenger" => 1,
+					"paxType" => "Adult",
+					"clientReferenceNo" => $voucher->agent_ref_no ?? "",
+				];
+		}
+		
+		$data['tour'] = $tour;
+		$data['passengers'] = $passengers;
+		
+		return $data;
 	}
 
 }
