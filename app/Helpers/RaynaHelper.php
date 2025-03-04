@@ -117,7 +117,6 @@ class RaynaHelper
 		
 		$tourData = self::makeTourServicePayload($voucher);
 		
-		
 		$postData = [
 			"uniqueNo" => (int) ($voucher->id ?? 0),
 			"TourDetails" => $tourData['tour'],

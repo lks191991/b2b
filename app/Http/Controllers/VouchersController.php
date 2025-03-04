@@ -548,59 +548,68 @@ class VouchersController extends Controller
 			$grandTotal = $grandTotalAfD + $hotelPriceTotal;
 			if($agentAmountBalance >= $grandTotal)
 			{
+			DB::beginTransaction();
+
+			try {
 				
-			if($record->vat_invoice == 1)
-			{
-				$voucherCount = Voucher::where('invoice_number','!=', NULL)->where('vat_invoice',1)->count();
-				$voucherCountNumber = $voucherCount +1;
-				$code = 'VIN-2100001'.$voucherCountNumber;
-			}
-			else
-			{
-				$voucherCount = Voucher::where('invoice_number','!=', NULL)->where('vat_invoice',0)->count();
-				$voucherCountNumber = $voucherCount +1;
-				$code = 'WVIN-2100001'.$voucherCountNumber;
-			}
-			
-			$record->booking_date = date("Y-m-d H:i:s");
-			$record->vouchered_by = Auth::user()->id;
-			$record->updated_by = Auth::user()->id;
-			$record->invoice_number = $code;
-			$record->status_main = 5;
-			$record->zone = $agent->zone;
-			$record->save();
-			$agent->agent_amount_balance -= $grandTotal;
-			$agent->save();
-			
-			$agentAmount = new AgentAmount();
-			$agentAmount->agent_id = $record->agent_id;
-			$agentAmount->amount = $grandTotal;
-			$agentAmount->date_of_receipt = date("Y-m-d");
-			$agentAmount->transaction_type = "Payment";
-			$agentAmount->transaction_from = 2;
-			$agentAmount->status = 2;
-			$agentAmount->role_user = 3;
-			$agentAmount->created_by = Auth::user()->id;
-			$agentAmount->updated_by = Auth::user()->id;
-			$agentAmount->save();
-			
-			$recordUser = AgentAmount::find($agentAmount->id);
-			$recordUser->receipt_no = $code;
-			$recordUser->is_vat_invoice = $record->vat_invoice;
-			$recordUser->save(); 
-			
-			VoucherActivity::where('voucher_id', $record->id)->update(['booking_date' => Carbon::now(),'status' => '3']);
-			
-			$emailData = [
-			'voucher'=>$record,
-			'voucherActivity'=>$voucherActivityRecord,
-			'voucherHotel'=>$voucherHotel,
-			];
-			
-			$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
-			
-			//Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
-			
+					if($record->vat_invoice == 1)
+					{
+						$voucherCount = Voucher::where('invoice_number','!=', NULL)->where('vat_invoice',1)->count();
+						$voucherCountNumber = $voucherCount +1;
+						$code = 'VIN-2100001'.$voucherCountNumber;
+					}
+					else
+					{
+						$voucherCount = Voucher::where('invoice_number','!=', NULL)->where('vat_invoice',0)->count();
+						$voucherCountNumber = $voucherCount +1;
+						$code = 'WVIN-2100001'.$voucherCountNumber;
+					}
+					
+					$record->booking_date = date("Y-m-d H:i:s");
+					$record->vouchered_by = Auth::user()->id;
+					$record->updated_by = Auth::user()->id;
+					$record->invoice_number = $code;
+					$record->status_main = 5;
+					$record->zone = $agent->zone;
+					$record->save();
+					$agent->agent_amount_balance -= $grandTotal;
+					$agent->save();
+					
+					$agentAmount = new AgentAmount();
+					$agentAmount->agent_id = $record->agent_id;
+					$agentAmount->amount = $grandTotal;
+					$agentAmount->date_of_receipt = date("Y-m-d");
+					$agentAmount->transaction_type = "Payment";
+					$agentAmount->transaction_from = 2;
+					$agentAmount->status = 2;
+					$agentAmount->role_user = 3;
+					$agentAmount->created_by = Auth::user()->id;
+					$agentAmount->updated_by = Auth::user()->id;
+					$agentAmount->save();
+					
+					$recordUser = AgentAmount::find($agentAmount->id);
+					$recordUser->receipt_no = $code;
+					$recordUser->is_vat_invoice = $record->vat_invoice;
+					$recordUser->save(); 
+					
+					VoucherActivity::where('voucher_id', $record->id)->update(['booking_date' => Carbon::now(),'status' => '3']);
+					
+					$emailData = [
+					'voucher'=>$record,
+					'voucherActivity'=>$voucherActivityRecord,
+					'voucherHotel'=>$voucherHotel,
+					];
+					
+					$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
+					$bk = RaynaHelper::tourBooking($record);
+					if (!$bk) {
+						return redirect()->back()->with('error', 'Rayna tourBooking failed.');
+					}
+					//Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
+					} catch (\Exception $e) {
+					DB::rollback(); 
+					return redirect()->back()->with('error', 'Something went wrong.');
+					}
 			
 			
 			}
@@ -630,7 +639,6 @@ class VouchersController extends Controller
 			$record->save();
 		}
 		
-		$bk = [];
 		foreach($voucherActivityRecord as $vac){
 			if($record->status_main == 5){
 				$voucherActivityU = VoucherActivity::with("variant")->find($vac->id);
@@ -646,9 +654,7 @@ class VouchersController extends Controller
 			
 		}
 		
-		if($record->status_main==5){
-		$bk = RaynaHelper::tourBooking($record);
-		}
+		
 		
 		
 		
