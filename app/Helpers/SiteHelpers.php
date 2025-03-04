@@ -327,7 +327,7 @@ class SiteHelpers
 
 		return $dates;
     }
-	public static function getDateList($tour_dt,$blackoutDates='',$soldoutDates='',$operDays='')
+	public static function getDateList01032025($tour_dt,$blackoutDates='',$soldoutDates='',$operDays='')
     {
 			$blackDate = [];
 			$soldDate = [];
@@ -373,6 +373,45 @@ class SiteHelpers
 
 		return $dates;
     }
+
+public static function getDateList($tour_dt, $blackoutDates = '', $soldoutDates = '', $operDays = '')
+{
+$blackDate = [];
+$soldDate = [];
+$operationDays = [];
+$check_days = true; // Default check operational days
+
+if (empty($operDays) || strtolower($operDays) == 'all') {
+	$check_days = false; // All days are operational
+} else {
+	$operationDays = explode(",", $operDays); // Convert comma-separated days into an array
+}
+
+if (!empty($blackoutDates)) {
+	$blackDate = explode(",", $blackoutDates);
+}
+
+if (!empty($soldoutDates)) {
+	$soldDate = explode(",", $soldoutDates);
+}
+
+$dates = [];
+
+if (strtotime($tour_dt) >= strtotime(date('Y-m-d'))) {
+	if (!in_array($tour_dt, $blackDate) && !in_array($tour_dt, $soldDate)) {
+		if ($check_days) {
+			$day = date('l', strtotime($tour_dt)); // Get day of the week
+			if (in_array($day, $operationDays)) {
+				$dates[] = $tour_dt;
+			}
+		} else {
+			$dates[] = $tour_dt;
+		}
+	}
+}
+
+return $dates;
+}
 	public static function getDateListOld($startDate,$endDate,$blackoutDates='',$soldoutDates='')
     {
 			$blackDate = [];

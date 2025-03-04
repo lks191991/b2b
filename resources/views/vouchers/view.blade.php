@@ -127,12 +127,20 @@
             <!-- /.card -->
 			@php
 					$ii = 0;
+          $submtBtnTNA = 0;
 					@endphp
 			@if(!empty($voucherActivity) && $voucher->is_activity == 1)
 				@foreach($voucherActivity as $ap)
 				  @if(($ap->transfer_option == 'Shared Transfer') || ($ap->transfer_option == 'Pvt Transfer') || ($ap->transfer_option == 'Ticket Only'))
 				  @php
 					$ii = 1;
+         
+          $variant = $ap->variant;
+          $getAvailableDateList = SiteHelpers::getDateList($ap->tour_date,$variant->black_out,$variant->sold_out,$variant->availability);
+			    if (!in_array($ap->tour_date, $getAvailableDateList))
+          {
+            $submtBtnTNA=1;
+          }
 					@endphp
 				@endif
 					@endforeach
@@ -435,16 +443,16 @@
         </div>
         <div class="col-12 text-right">
           @if($voucher->status_main < 2)
-            <button type="submit" name="btn_quotation" class="btn btn-primary">Pending for Invoice</button>
+            <button type="submit" name="btn_quotation" class="btn btn-primary" {{ $submtBtnTNA == 1 ? 'disabled' : '' }}>Pending for Invoice</button>
             @endif
             @if($voucher->status_main < 3)
-            <button type="submit" name="btn_process" class="btn btn-info">In Process</button>
+            <button type="submit" name="btn_process" class="btn btn-info" {{ $submtBtnTNA == 1 ? 'disabled' : '' }}>In Process</button>
             @endif
             @if($voucher->status_main < 4)
-            <button type="submit" name="btn_hold" class="btn btn-primary">Hold</button>
+            <button type="submit" name="btn_hold" class="btn btn-primary" {{ $submtBtnTNA == 1 ? 'disabled' : '' }}>Hold</button>
             @endif
             @if($voucher->status_main < 5 )
-            <button type="submit" name="btn_paynow" class="btn btn-success">Pay Now</button>
+            <button type="submit" name="btn_paynow" class="btn btn-success" {{ $submtBtnTNA == 1 ? 'disabled' : '' }}>Pay Now</button>
             @endif
         </div>
       </div>
@@ -461,14 +469,16 @@
           <!--/.col (left) -->
           <!-- right column -->
           <div class="col-md-4" >
-		 
+          
             <!-- Form Element sizes -->
 			@php
 				$totalGrand =0; 
 				$totalGrandDiscount =0; 
         $caid = 0;
-$ty=0;
-$aid = 0;
+        $ty=0;
+        $aid = 0;
+        $tourNotAvailable = 0;
+        
 			  @endphp
 			  @if(!empty($voucherActivity) && $voucher->is_activity == 1)
 					@if(!empty($voucherActivity))
@@ -476,6 +486,12 @@ $aid = 0;
             @php
             $delKey = $ap->id;
             $totalDiscount = 0;
+            $variant = $ap->variant;
+          $getAvailableDateList = SiteHelpers::getDateList($ap->tour_date,$variant->black_out,$variant->sold_out,$variant->availability);
+			    if(!in_array($ap->tour_date,$getAvailableDateList))
+          {
+            $tourNotAvailable = 1;
+          }
 					@endphp
           @if(($ap->activity_product_type == 'Bundle_Same') || ($ap->activity_product_type == 'Bundle_Diff'))
           @php
@@ -504,8 +520,8 @@ $aid = 0;
           
           @if( $dis == 1)
 				  
-            <div class="card card-default">
-			
+            <div class="card card-default rowtourcsk">
+              
               <div class="card-header">
                 <div class="row">
 				<div class="col-md-8 text-left">
@@ -564,9 +580,14 @@ $aid = 0;
                   </div>
 				   </div>
               </div>
+             
               <div class="card-body">
-			  
-			  <div class="">
+                @if($tourNotAvailable == 1)
+                <div class="overlay">
+                  <p>Tour is not available for Selected Date.</p>
+              </div>
+              @endif
+			    <div class="">
                 <div class="row" style="margin-bottom: 5px;">
                     <div class="col-md-5 text-left">
                       <strong>Tour Option</strong>

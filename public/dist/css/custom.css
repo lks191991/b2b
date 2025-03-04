@@ -684,3 +684,29 @@ box-shadow: 1px 0px 22px -8px rgba(0,0,0,0.75);
   #dropdownList .list-group-item:hover {
       background-color: #f0f0f0;
   }
+  
+  .rowtourcsk .card-body {
+    position: relative; 
+    padding: 20px;
+}
+.rowtourcsk .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #e62020 !important;
+    font-weight: bold;
+    font-size: 15px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); /* Black shadow for better visibility */
+}
+
+
+
+.rowtourcsk .overlay p {
+    color: #e62020 !important;
+    font-weight: bold;
+}

@@ -2201,7 +2201,7 @@ class VouchersController extends Controller
 			return response()->json([]);
 		}
 
-		$activityVariants = ActivityVariant::where('ActivityVariantName', 'LIKE', '%' . $search . '%')->where('type', 'LIKE', 'single')
+		$activityVariants = ActivityVariant::with('activity','variant')->where('ActivityVariantName', 'LIKE', '%' . $search . '%')->where('type', 'LIKE', 'single')
 						->paginate(20);
 
 		$response = [];
@@ -2209,6 +2209,9 @@ class VouchersController extends Controller
 			$response[] = [
 				"value" => $variant->id,
 				"label" => $variant->ActivityVariantName,
+				"tkonly" => (($variant->activity->entry_type=='Limo') || ($variant->activity->entry_type=='Yacht') || ($variant->activity->entry_type=='Ticket Only'))?1:0,
+				"sic" => ($variant->variant->sic_TFRS==1)?1:0,
+				"pvt" => ($variant->variant->pvt_TFRS==1)?1:0,
 			];
 		}
 

@@ -451,35 +451,52 @@ if (isNaN(orgDay) || isNaN(mkupDt)) {
     }
 
     function initAutocomplete(selector) {
-        let path = "{{ route('auto.activityvariantname') }}";
+    let path = "{{ route('auto.activityvariantname') }}";
 
-        $(selector).autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: path,
-                    type: 'GET',
-                    dataType: "json",
-                    data: {
-                        search: request.term
-                    },
-                    success: function (data) {
-                        response(data);
-                    }
-                });
-            },
-            select: function (event, ui) {
-                $(selector).val(ui.item.label);
-                $(selector).closest('tr').find('input[type=hidden]').val(ui.item.value);
-                return false;
-            },
-            change: function (event, ui) {
-                if (ui.item == null) {
-                    $(selector).val('');
-                    $(selector).closest('tr').find('input[type=hidden]').val('');
+    $(selector).autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: path,
+                type: 'GET',
+                dataType: "json",
+                data: {
+                    search: request.term
+                },
+                success: function (data) {
+                    response(data);
                 }
+            });
+        },
+        select: function (event, ui) {
+            $(selector).val(ui.item.label);
+            $(selector).closest('tr').find('input[type=hidden]').val(ui.item.value);
+
+            let transferDropdown = $(selector).closest('tr').find("select[name='transferOption[]']");
+
+            transferDropdown.find("option").prop("disabled", false);
+
+            if (ui.item.tkonly == 0) {
+                transferDropdown.find("option[value='Ticket Only']").prop("disabled", true);
             }
-        });
-    }
+            if (ui.item.sic == 0) {
+                transferDropdown.find("option[value='Shared Transfer']").prop("disabled", true);
+            }
+            if (ui.item.pvt == 0) {
+                transferDropdown.find("option[value='Pvt Transfer']").prop("disabled", true);
+            }
+
+            transferDropdown.val(transferDropdown.find("option:not(:disabled)").first().val());
+
+            return false;
+        },
+        change: function (event, ui) {
+            if (ui.item == null) {
+                $(selector).val('');
+                $(selector).closest('tr').find('input[type=hidden]').val('');
+            }
+        }
+    });
+}
 
     // Initialize autocomplete for the first row
 //    initAutocomplete("#avid_name_1");

@@ -75,6 +75,7 @@
 					 @foreach($voucherActivity as $ap)
 					 @php
 					$c++;
+          
 					@endphp
 				  
           
@@ -159,12 +160,22 @@ $aid = 0;
              <!-- /.card-body -->
            </div>
            <!-- /.card -->
-          
+          @php
+          $submtBtnTNA=0;
+          $tourNotAvailable=0;
+          @endphp
 			
 					  @foreach($voucherActivity as $ap)
             @php
             $delKey = $ap->id;
             $totalDiscount = 0;
+            $variant = $ap->variant;
+          $getAvailableDateList = SiteHelpers::getDateList($ap->tour_date,$variant->black_out,$variant->sold_out,$variant->availability);
+			    if (!in_array($ap->tour_date, $getAvailableDateList))
+          {
+            $submtBtnTNA = 1;
+            $tourNotAvailable = 1;
+          }
 					@endphp
           @if(($ap->activity_product_type == 'Bundle_Same') || ($ap->activity_product_type == 'Bundle_Diff'))
           @php
@@ -172,8 +183,8 @@ $aid = 0;
           $delKey = $ap->voucher_id;
           $total_sp  = 0;
           
-		  $total_sp = PriceHelper::getTotalActivitySP($ap->voucher_id,$ap->activity_id);
-
+		     $total_sp = PriceHelper::getTotalActivitySP($ap->voucher_id,$ap->activity_id);
+        
 					@endphp
           @endif
           @if(($ap->activity_product_type == 'Bundle_Same') && ($caid != $ap->activity_id))
@@ -192,7 +203,7 @@ $aid = 0;
           
           @if( $dis == 1)
            
-            <div class="card card-default">
+            <div class="card card-default rowtourcsk">
 			
               <div class="card-header">
                 <div class="row">
@@ -223,7 +234,11 @@ $aid = 0;
 				   </div>
               </div>
               <div class="card-body">
-			  
+                @if($tourNotAvailable == 1)
+                <div class="overlay">
+                  <p>Tour is not available for Selected Date.</p>
+              </div>
+              @endif
 			  <div class="">
         @if(($ap->activity_product_type != 'Bundle_Same'))
                 <div class="row" style="margin-bottom: 5px;">
@@ -569,12 +584,15 @@ $aid = 0;
         
         <div class="col-12 text-right">
 			@if(!empty($voucherActivity))
-
-     
+      @if($submtBtnTNA == 1 )
+      <button type="button" class="btn btn-primary" disabled="disabled">	<i class="fas fa-shopping-cart"></i>
+        Checkout</button>
+      @else 
 			<a href="{{ route('vouchers.show',$voucher->id) }}" id="checkout-btn" class="btn btn-lg btn-primary pull-right" style="width:100%">
 			<i class="fas fa-shopping-cart"></i>
-			Checkout
+			Checkout {{$submtBtnTNA }}
 			</a>
+      @endif
 			@endif
         </div>
       </div>
