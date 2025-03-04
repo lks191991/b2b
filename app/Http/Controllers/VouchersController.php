@@ -601,6 +601,8 @@ class VouchersController extends Controller
 			
 			Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
 			
+			
+			
 			}
 			else
 			{
@@ -630,13 +632,14 @@ class VouchersController extends Controller
 		
 		foreach($voucherActivityRecord as $vac){
 			if($record->status_main == 5){
-				$voucherActivityU = VoucherActivity::find($vac->id);
+				$voucherActivityU = VoucherActivity::with("variant")->find($vac->id);
 				$cancellation = VariantCanellation::where('varidCode', $voucherActivityU->variant_code)->get();
 				$voucherActivityU->cancellation_chart = json_encode($cancellation);
 
 				
 				$voucherActivityU->status = 3;
 				$voucherActivityU->save();
+				RaynaHelper::tourBooking($record,$voucherActivityU);
 			}
 			SiteHelpers::voucherActivityLog($record->id,$vac->id,$vac->discountPrice,$vac->totalprice,$record->status_main);
 			
@@ -1150,7 +1153,8 @@ class VouchersController extends Controller
 				'original_trans_rate' => $priceCal['transferPrice'],
 				'vat_percentage' => $priceCal['vat_per'],
 				'discountPrice' => "0",
-				'time_slot' => $timeslot,
+				'discountPrice' => "0",
+				'isRayna' => $isRayna,
 				'cancellation_chart' => json_encode($cancellation),
 				'totalprice' => number_format($priceCal['totalprice'], 2, '.', ''),
 				'created_by' => Auth::user()->id,

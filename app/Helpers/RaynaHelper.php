@@ -9,6 +9,7 @@ use Auth;
 use Illuminate\Support\Facades\Http;
 use App\Models\tourOptionStaticData;
 use App\Models\Tourstaticdata;
+use App\Models\VoucherActivity;
 
 class RaynaHelper
 {
@@ -111,48 +112,54 @@ class RaynaHelper
         return false;
     }
 	
-	public static  function getTourBook($payload)
-    {
-			$postData = [
-			"uniqueNo" => (int) ($payload['uniqueNo'] ?? 0),
+	public static function tourBooking($voucher, $va)
+	{
+		$variant = $va->variant;
+		$touroption = self::getTourOptionById($variant->touroption_id);
+		$fullName = $voucher->guest_name ?? "";
+		$nameParts = explode(" ", trim($fullName), 2);
+
+		$postData = [
+			"uniqueNo" => (int) ($voucher->id ?? 0),
 			"TourDetails" => [
 				[
-					"serviceUniqueId" => (int) ($payload['serviceUniqueId'] ?? 0), 
-					"tourId" => (int) ($payload['tourId'] ?? 0), 
-					"optionId" => (int) ($payload['optionId'] ?? 0), 
-					"adult" => (int) ($payload['adult'] ?? 1),
-					"child" => (int) ($payload['child'] ?? 0), 
-					"infant" => (int) ($payload['infant'] ?? 0),
-					"tourDate" => $payload['tourDate'] ?? "2025-02-25",
-					"timeSlotId" => (int) ($payload['timeSlotId'] ?? 5),
-					"startTime" => $payload['startTime'] ?? "10:00 AM",
-					"transferId" => (int) ($payload['transferId'] ?? 303),
-					"pickup" => $payload['pickup'] ?? "Hotel XYZ",
-					"adultRate" => (float) ($payload['adultRate'] ?? 100.50),
-					"childRate" => (float) ($payload['childRate'] ?? 50.25),
-					"serviceTotal" => (float) (($payload['adultRate'] ?? 100.50) + ($payload['childRate'] ?? 50.25)),
+					"serviceUniqueId" => (int) ($voucher->id ?? 0),
+					"tourId" => (int) ($touroption['tourId'] ?? 0),
+					"optionId" => (int) ($touroption['optionId'] ?? 0),
+					"adult" => (int) ($va->adult ?? 1),
+					"child" => (int) ($va->child ?? 0),
+					"infant" => (int) ($va->infant ?? 0),
+					"tourDate" => !empty($va->tour_date) ? date("Y-m-d", strtotime($va->tour_date)) : "2025-02-25",
+					"timeSlotId" => 0,
+					"startTime" => !empty($va->time_slot) ? date("h:i A", strtotime($va->time_slot)) : "10:00 AM",
+					"transferId" => 41865,
+					"pickup" => $va->pickup_location ?? "Hotel XYZ",
+					"adultRate" => (float) ($va->adultPrice ?? 100.50),
+					"childRate" => (float) ($va->childPrice ?? 50.25),
+					"serviceTotal" => (float) (($va->adultPrice ?? 100.50) + ($va->childPrice ?? 50.25)),
 				]
 			],
 			"passengers" => [
 				[
 					"serviceType" => "Tour",
-					"prefix" => $payload['prefix'] ?? "Mr",
-					"firstName" => $payload['firstName'] ?? "",
-					"lastName" => $payload['lastName'] ?? "",
-					"email" => $payload['email'] ?? "",
-					"mobile" => $payload['mobile'] ?? "",
-					"nationality" => $payload['nationality'] ?? "",
-					"message" => $payload['message'] ?? "Looking forward to the tour",
-					"leadPassenger" => (bool) ($payload['leadPassenger'] ?? true),
-					"paxType" => $payload['paxType'] ?? "Adult",
-					"clientReferenceNo" => $payload['clientReferenceNo'] ?? "",
+					"prefix" => "Mr",
+					"firstName" => $nameParts[0] ?? "",
+					"lastName" => $nameParts[1] ?? "", 
+					"email" => $voucher->guest_email ?? "",
+					"mobile" => $voucher->guest_phone ?? "",
+					"nationality" => "UAE",
+					"message" => $voucher->remark ?? "Looking forward to the tour",
+					"leadPassenger" => true,
+					"paxType" => "Adult",
+					"clientReferenceNo" => $voucher->agent_ref_no ?? "",
 				]
 			]
 		];
 
-        $url = "https://sandbox.raynatours.com/api/Booking/bookings";
-        $token = config('services.rayna.token');
-        $response = Http::withOptions(['verify' => false])
+		$url = "https://sandbox.raynatours.com/api/Booking/bookings";
+		$token = config('services.rayna.token');
+		
+		$response = Http::withOptions(['verify' => false])
 			->withHeaders([
 				"Content-Type" => "application/json",
 				"Authorization" => "Bearer " . trim($token),
@@ -161,15 +168,30 @@ class RaynaHelper
 			])
 			->post($url, $postData);
 
-        if ($response->successful()) {
-            $data = $response->json();
-            if (isset($data['statuscode']) && $data['statuscode'] == 200) {
-                if ($data['count'] > 0) {
-                    return $data['result'];
-                }
-            } 
-        }
+    if ($response->successful()) {
+        $data = $response->json();
 
-        return false;
+        if (isset($data['statuscode']) && $data['statuscode'] == 200) {
+            $bookings = $data['result'];
+
+            if (!empty($bookings)) { 
+                foreach ($bookings as $booking) {
+                    $voucherActivity = VoucherActivity::where('id', $va->id)->first();
+
+                    if ($voucherActivity) {
+                        $voucherActivity->update([
+                            'rayna_bookingId' => $booking['bookingId'] ?? null,
+                            'rayna_booking_details' => json_encode($booking)
+                        ]);
+                    }
+                }
+            }
+			
+			 return true;
+        }
     }
+
+    return false;
+	}
+
 }
