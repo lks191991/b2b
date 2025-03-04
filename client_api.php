@@ -474,6 +474,5 @@ if((isset($user_action)))
 echo json_encode($jsondata);
 exit;
 
-"ALTER TABLE `voucher_activity` ADD `isRayna` BOOLEAN NOT NULL DEFAULT FALSE AFTER `org_refund_trans_amt`, ADD `rayna_bookingId` INT NOT NULL DEFAULT '0' AFTER `isRayna`, ADD `rayna_booking_details` JSON NOT NULL AFTER `rayna_bookingId`;";
 
 ?>
