@@ -452,7 +452,7 @@
             <button type="submit" name="btn_hold" class="btn btn-primary" {{ $submtBtnTNA == 1 ? 'disabled' : '' }}>Hold</button>
             @endif
             @if($voucher->status_main < 5 )
-            <button type="submit" name="btn_paynow" class="btn btn-success" {{ $submtBtnTNA == 1 ? 'disabled' : '' }}>Pay Now</button>
+            <button type="submit" name="btn_paynow" id="btn_paynow" class="btn btn-success" {{ $submtBtnTNA == 1 ? 'disabled' : '' }}>Pay Now</button>
             @endif
         </div>
       </div>
@@ -1124,36 +1124,18 @@ $('#cusDetails').validate({});
             }
           });
 	 });
-	 
-	/*  $(document).on('change', '.inputsaveDis', function(evt) {
-		$("#loader-overlay").show();
-		var id = $(this).data('id');
-		var inputname = $(this).data('name');
-		//alert(id);
-		$.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-			
-		$.ajax({
-            url: "{{route('voucherReportSave')}}",
-            type: 'POST',
-            dataType: "json",
-            data: {
-               id: id,
-			   inputname: inputname,
-			   val: $(this).val(),
-            },
-            success: function( data ) {
-			   if(inputname == 'supplier_ticket'){
-          
-				   $("#actual_total_cost"+id).val(data[0].cost);
-			   }
-			  $("#loader-overlay").hide();
-            }
-          });
-	 }); */
+   $('#btn_paynow').on('click', function(event) {
+  event.preventDefault();
+
+  const loaderOverlay = $("body #loader-overlay");
+  loaderOverlay.show(); 
+
+  setTimeout(function() {
+    $('#cusDetails').submit(); 
+  }, 500); 
+});
+
+
 	 
 	
 

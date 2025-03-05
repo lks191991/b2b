@@ -602,13 +602,16 @@ class VouchersController extends Controller
 					
 					$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
 					$bk = RaynaHelper::tourBooking($record);
+					
 					if (!$bk) {
+						DB::rollback(); 
 						return redirect()->back()->with('error', 'Rayna tourBooking failed.');
 					}
+					DB::commit();
 					//Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
 					} catch (\Exception $e) {
 					DB::rollback(); 
-					return redirect()->back()->with('error', 'Something went wrong.');
+					return redirect()->back()->with('error', $e->getMessage() ?? 'Something went wrong.');
 					}
 			
 			
@@ -1199,6 +1202,17 @@ class VouchersController extends Controller
 						$availability = RaynaHelper::getTourAvailability($variant->touroption_id, $pData);
 				
 						if (!empty($availability['status']) && $availability['status'] === true) {
+							$tourOptionDetails = RaynaHelper::getTourOptionByTourId($variant->touroption_id, $pData);
+							if (!empty($tourOptionDetails) && $tourOptionDetails['status'] === true) {
+								$data[0]['rayna_adultPrice']  = $tourOptionDetails['rayna_adultPrice'] * $payload['adult'];
+								$data[0]['rayna_childPrice']  = $tourOptionDetails['rayna_childPrice'] * $payload['child'];
+								$data[0]['rayna_infantPrice'] = $tourOptionDetails['rayna_infantPrice'] * $payload['infant'];
+							} else {
+								$errorMessage = $tourOptionDetails['message'] ?? 'Unknown error occurred';
+								return redirect()->back()->with('error', $errorMessage);
+							}
+
+
 							VoucherActivity::insert($data);
 							$voucher = Voucher::find($voucher_id);
 							$voucher->total_activity_amount += $total_activity_amount;

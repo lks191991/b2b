@@ -470,6 +470,7 @@ $('.actcsk:first').prop('checked', true).trigger("change");
  
 <script type="text/javascript">
   $(document).ready(function() {
+    const loaderOverlay = $("body #loader-overlay");
 	  $('body #cartForm').validate({});
    adultChildReq(0,0,0);
 
@@ -675,6 +676,7 @@ elementsTT.forEach((element) => {
 
   $(document).on('click', '.addToCart', function(evt) {
 	  evt.preventDefault();
+    loaderOverlay.show();
 	 if($('body #cartForm').validate({})){
 		 variant_id = $(this).data('variantid');
 		 inputnumber = $(this).data('inputnumber');
@@ -702,6 +704,7 @@ elementsTT.forEach((element) => {
 						$('#isRayna').val(data.is_rayna);
 						if(timeslot==''){
 							openTimeSlotModal(data.slots,data.is_rayna);
+              loaderOverlay.hide();
 						} 
 					} else if(data.status == 4) {
 						 $('#Noslot .modal-body #messageSlot').text(data.message).css("color", "red");
@@ -709,6 +712,8 @@ elementsTT.forEach((element) => {
 					} else if (data.status == 2) {
 						$("body #cartForm").submit();
 					}
+
+          loaderOverlay.hide();
 				//console.log(data);
 			  },
 			  error: function(error) {
@@ -880,6 +885,7 @@ function adultChildReq(a,c,inputnumber) {
             } else {
                 $("body #cartForm").addClass('error-rq');
             }
+
         });
 
         $('#timeSlotModal .close').on('click', function() {
