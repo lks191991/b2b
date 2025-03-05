@@ -112,57 +112,73 @@ class RaynaHelper
         return false;
     }
 	
-public static function tourBooking($voucher)
-{
-    $tourData = self::makeTourServicePayload($voucher);
-
-    $postData = [
-        "uniqueNo" => mt_rand(100000, 999999),
-        "TourDetails" => $tourData['tour'],   
-        "passengers" => $tourData['passengers']
-    ];
-
-    $url = "https://sandbox.raynatours.com/api/Booking/bookings";
-    $token = config('services.rayna.token'); // Fetch the token from config
-
-    $response = Http::withOptions(['verify' => false]) // Disabling SSL verification
-        ->withHeaders([
-            "Content-Type" => "application/json",
-            "Authorization" => "Bearer " . trim($token), // Adding the Bearer token for authorization
-            "Accept" => "application/json",
-            "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        ])
-        ->post($url, $postData);
-
-    if ($response->successful()) {
-        $data = $response->json(); 
-
-        if (isset($data['statuscode']) && $data['statuscode'] == 200) {
-            $bookings = $data['result'] ?? null;
-
-            if (!empty($bookings)) {
-                $bookingDetails = $bookings['details'] ?? [];
-
-                if (!empty($bookingDetails)) {
-                    $voucherActivities = VoucherActivity::where('voucher_id', $voucher->id)
-                        ->where('isRayna', true)
-                        ->get();
-
-                    foreach ($voucherActivities as $voucherActivity) {
-                        $voucherActivity->referenceNo = $bookings['referenceNo'];
-                        $voucherActivity->rayna_booking_details = json_encode($bookingDetails);
-                        $voucherActivity->save();
+    public static function tourBooking($voucher)
+    {
+        $tourData = self::makeTourServicePayload($voucher);
+    
+        $postData = [
+            "uniqueNo" => mt_rand(100000, 999999),
+            "TourDetails" => $tourData['tour'],   
+            "passengers" => $tourData['passengers']
+        ];
+    
+        $url = "https://sandbox.raynatours.com/api/Booking/bookings";
+        $token = config('services.rayna.token');
+    
+        $response = Http::withOptions(['verify' => false]) 
+            ->withHeaders([
+                "Content-Type" => "application/json",
+                "Authorization" => "Bearer " . trim($token), 
+                "Accept" => "application/json",
+                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            ])
+            ->post($url, $postData);
+    
+        if ($response->successful()) {
+            $data = $response->json(); 
+    
+            if (isset($data['statuscode']) && $data['statuscode'] == 200) {
+                $bookings = $data['result'] ?? null;
+    
+                if (!empty($bookings)) {
+                    $bookingDetails = $bookings['details'] ?? [];
+    
+                    if (!empty($bookingDetails)) {
+                        $voucherActivities = VoucherActivity::where('voucher_id', $voucher->id)
+                            ->where('isRayna', true)
+                            ->get();
+    
+                        foreach ($voucherActivities as $voucherActivity) {
+                            $voucherActivity->referenceNo = $bookings['referenceNo'];
+                            $voucherActivity->rayna_booking_details = json_encode($bookingDetails);
+                            $voucherActivity->save();
+                        }
+                        return ['status' => true];
+                    } else {
+                        $error = $data['error'] ?? [];
+                        $errorDescription = $error['description'] ?? 'No description available.';
+                        return ['status' => false,'error' => $errorDescription];
                     }
-                    return true; 
+                } else {
+                    $error = $data['error'] ?? [];
+                    $errorDescription = $error['description'] ?? 'No description available.';
+                    return ['status' => false,'error' => $errorDescription];
                 }
+            } else {
+                
+                return ['status' => false,'error' => 'No description available.'];
             }
-        } else{
-            return false;
+        } else {
+    
+            return [
+                'error' => 'Request failed with status code: ' . $response->status()
+            ];
         }
+    
+        return false;
     }
-
-    return false;
-}
+    
+    
 
 	public static function makeTourServicePayload($voucher)
 	{

@@ -1124,16 +1124,8 @@ $('#cusDetails').validate({});
             }
           });
 	 });
-   $('#btn_paynow').on('click', function(event) {
-  event.preventDefault();
+  
 
-  const loaderOverlay = $("body #loader-overlay");
-  loaderOverlay.show(); 
-
-  setTimeout(function() {
-    $('#cusDetails').submit(); 
-  }, 500); 
-});
 
 
 	 

@@ -485,6 +485,7 @@ class VouchersController extends Controller
 	
 	public function statusChangeVoucher(Request $request,$id)
     {
+		
 		$this->checkPermissionMethod('list.voucher');
 		$data = $request->all();
 		$hotelPriceTotal = 0;
@@ -548,7 +549,7 @@ class VouchersController extends Controller
 			$grandTotal = $grandTotalAfD + $hotelPriceTotal;
 			if($agentAmountBalance >= $grandTotal)
 			{
-			DB::beginTransaction();
+			//DB::beginTransaction();
 
 			try {
 				
@@ -602,15 +603,22 @@ class VouchersController extends Controller
 					
 					$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
 					$bk = RaynaHelper::tourBooking($record);
-					
-					if (!$bk) {
-						DB::rollback(); 
-						return redirect()->back()->with('error', 'Rayna tourBooking failed.');
+					//dd($bk);
+					if (isset($bk['status']) && $bk['status'] == false) {
+						
+						$errorDescription = $bk['error']; 
+						$record->status_main = 4;
+						$saveResult = $record->save();
+						
+						return redirect()->route('vouchers.show',$record->id) ->with('error', $errorDescription);;
+							dd("aaaaaaaaaaa");			
 					}
-					DB::commit();
+
+					
+					
 					//Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
 					} catch (\Exception $e) {
-					DB::rollback(); 
+					//DB::rollback(); 
 					return redirect()->back()->with('error', $e->getMessage() ?? 'Something went wrong.');
 					}
 			
@@ -659,7 +667,7 @@ class VouchersController extends Controller
 		
 		
 		
-		
+		//DB::commit();
 		
 		if($record->status_main > 3){
 			return redirect()->route('voucherView',$record->id)->with('success', 'Voucher Created Successfully.');
