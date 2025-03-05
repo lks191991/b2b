@@ -1124,7 +1124,35 @@ $('#cusDetails').validate({});
             }
           });
 	 });
-  
+   $('#btn_paynow, #btn_submit, #btn_other').on('click', function(event) {
+  event.preventDefault();
+
+  const loaderOverlay = $("body #loader-overlay");
+
+  var buttonName = $(this).attr('name');
+  var buttonValue = $(this).val();
+
+  $('#cusDetails').append(`<input type="hidden" name="${buttonName}" value="${buttonValue}" />`);
+
+  if ($('#cusDetails').valid()) {
+    loaderOverlay.show();
+
+    setTimeout(function() {
+      $('#cusDetails').submit(); 
+    }, 500);
+  } else {
+    var name = '';
+    $('#cusDetails').find(':input').each(function() {
+      if (!$(this).valid()) {
+        name = $(this).attr('placeholder'); 
+        return false; 
+      }
+    });
+
+    alert("Please fill " + name); 
+  }
+});
+
 
 
 
