@@ -609,6 +609,8 @@ class VouchersController extends Controller
 						$errorDescription = $bk['error']; 
 						$record->status_main = 4;
 						$saveResult = $record->save();
+						$agent->agent_amount_balance += $grandTotal;
+						$agent->save();
 						
 						return redirect()->route('vouchers.show',$record->id) ->with('error', $errorDescription);;
 							dd("aaaaaaaaaaa");			

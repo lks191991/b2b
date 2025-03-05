@@ -121,7 +121,8 @@ class RaynaHelper
             "TourDetails" => $tourData['tour'],   
             "passengers" => $tourData['passengers']
         ];
-    
+        
+        if(count($tourData['tour']) > 0){
         $url = "https://sandbox.raynatours.com/api/Booking/bookings";
         $token = config('services.rayna.token');
     
@@ -174,8 +175,9 @@ class RaynaHelper
                 'error' => 'Request failed with status code: ' . $response->status()
             ];
         }
-    
-        return false;
+        }
+        return ['status' => true,'error' => 'No Rayna data'];
+       
     }
     
     
@@ -183,11 +185,14 @@ class RaynaHelper
 	public static function makeTourServicePayload($voucher)
 	{
 		$voucherActivity = VoucherActivity::with("variant")->where('voucher_id', $voucher->id)->where('isRayna', true)->get();
+        
 		$fullName = $voucher->guest_name ?? "";
 		$nameParts = explode(" ", trim($fullName), 2);
 		$data = [];
 		$tour = [];
 		$passengers = [];
+        if($voucherActivity->count()){
+
 		foreach($voucherActivity as $vac){
 		$variant = $vac->variant;
 		$touroption = self::getTourOptionById($variant->touroption_id);
@@ -222,6 +227,7 @@ class RaynaHelper
 					"clientReferenceNo" => $voucher->agent_ref_no ?? "",
 				];
 		}
+    }
 		
 		$data['tour'] = $tour;
 		$data['passengers'] = $passengers;
