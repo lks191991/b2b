@@ -194,10 +194,11 @@ class RaynaHelper
         if($voucherActivity->count()){
 
 		foreach($voucherActivity as $vac){
+		$serviceUniqueId = mt_rand(100000, 999999);
 		$variant = $vac->variant;
 		$touroption = self::getTourOptionById($variant->touroption_id);
 		$tour[] = [
-					"serviceUniqueId" => mt_rand(100000, 999999),
+					"serviceUniqueId" => $serviceUniqueId,
 					"tourId" => (int) ($touroption['tourId'] ?? 0),
 					"optionId" => (int) ($touroption['tourOptionId'] ?? 0),
 					"adult" => 1,
@@ -212,6 +213,9 @@ class RaynaHelper
 					"childRate" => ($vac->child > 0 && isset($vac->rayna_childPrice)) ? (float) ($vac->rayna_childPrice) : 0.00,
 					"serviceTotal" => (string) ($vac->rayna_adultPrice+$vac->rayna_childPrice ?? 0.00),
 		];
+		
+		//$vac->serviceUniqueId = $serviceUniqueId;
+		//$vac->save();
 		
 		$passengers[] = [
 					"serviceType" => "Tour",
@@ -292,5 +296,101 @@ class RaynaHelper
     ];
 }
 
+public static function cancelBooking($referenceNo,$bookingId)
+    {
+        
+        $postData = [
+            "bookingId" => (string) $referenceNo,
+            "referenceNo" =>  (int) $bookingId,   
+            "cancellationReason" => (string) "cancel booking other"
+        ];
+        
+       
+        $url = "https://sandbox.raynatours.com/api/Booking/cancelbooking";
+        $token = config('services.rayna.token');
+    
+        $response = Http::withOptions(['verify' => false]) 
+            ->withHeaders([
+                "Content-Type" => "application/json",
+                "Authorization" => "Bearer " . trim($token), 
+                "Accept" => "application/json",
+                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            ])
+            ->post($url, $postData);
+    
+        if ($response->successful()) {
+            $data = $response->json(); 
+    
+            if (isset($data['statuscode']) && $data['statuscode'] == 200) {
+                $bookings = $data['result'] ?? null;
+    
+                if (!empty($bookings)) {
+                        return ['status' => true];
+                } else {
+						$error = $data['error'] ?? '';
+                        $errorDescription = $error ?? 'Booking canceled.';
+                        return ['status' => false,'error' => $errorDescription];                   
+                }
+            } else {
+                
+                return ['status' => false,'error' => 'Booking canceled.'];
+            }
+        } else {
+    
+            return [
+                'error' => 'Request failed with status code: ' . $response->status()
+            ];
+        }
+        
+    }
+    
+	public static function getBookedTicket($referenceNo,$bookingId)
+    {
+        
+        $postData = [
+            "uniqNO" => ( mt_rand(100000, 999999),
+            "referenceNo" =>  (int) $referenceNo,   
+            "bookedOption" => [
+					"serviceUniqueId" => string) mt_rand(100000, 999999),
+					"bookingId" =>  (int) $bookingId, 
+			]
+        ];
+        
+       
+        $url = "https://sandbox.raynatours.com/api/Booking/GetBookedTickets";
+        $token = config('services.rayna.token');
+    
+        $response = Http::withOptions(['verify' => false]) 
+            ->withHeaders([
+                "Content-Type" => "application/json",
+                "Authorization" => "Bearer " . trim($token), 
+                "Accept" => "application/json",
+                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            ])
+            ->post($url, $postData);
+    
+        if ($response->successful()) {
+            $data = $response->json(); 
+    
+            if (isset($data['statuscode']) && $data['statuscode'] == 200) {
+                $bookings = $data['result'] ?? null;
+    
+                if (!empty($bookings)) {
+                        return ['status' => true];
+                } else {
+						$error = $data['error'] ?? '';
+                        $errorDescription = $error ?? 'Booking canceled.';
+                        return ['status' => false,'error' => $errorDescription];                   
+                }
+            } else {
+                return ['status' => false,'error' => 'Booking canceled.'];
+            }
+        } else {
 
+            return [
+                'error' => 'Request failed with status code: ' . $response->status()
+            ];
+        }
+        
+    }
 }
