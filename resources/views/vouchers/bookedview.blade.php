@@ -976,9 +976,11 @@ Do you want proceed with the Download ?             </div>
     }, 2000); // Reload after 2 seconds
 });
  $(document).ready(function() {
+  const loaderOverlay = $("body #loader-overlay");
  $(document).on('click', '.cancelAct', function(evt) {
 	 variantcode = $(this).data('variantcode');
 	 formid = $(this).data('apid');
+   
 	  evt.preventDefault();
 	
 		 $.ajax({
@@ -1133,9 +1135,11 @@ $(document).on('change', '.inputsave', function(evt) {
 	 
  });
 function openModal(cancel,formid) {
+  const loaderOverlay = $("body #loader-overlay");
         $('#cancelModal').modal('show');
         $('#selectCancelBtn').on('click', function() {
 			console.log($("body #cancel_remark").val());
+      loaderOverlay.show();
 			$("body #cancel_remark_data-"+formid).val($("body #cancel_remark").val());
 			$("body #cancel-form-"+formid).submit();
         });

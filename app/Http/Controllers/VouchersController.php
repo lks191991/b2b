@@ -602,20 +602,29 @@ class VouchersController extends Controller
 					];
 					
 					$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
-					$bk = RaynaHelper::tourBooking($record);
-					//dd($bk);
-					if (isset($bk['status']) && $bk['status'] == false) {
-						
-						$errorDescription = $bk['error']; 
+					
+
+					try {
+						$bk = RaynaHelper::tourBooking($record);
+						if (isset($bk['status']) && $bk['status'] == false) {
+							$errorDescription = $bk['error']; 
+							$record->status_main = 4;
+							$saveResult = $record->save();
+							$agent->agent_amount_balance += $grandTotal;
+							$agent->save();
+					
+							return redirect()->route('vouchers.show', $record->id)->with('error', $errorDescription);
+						}
+					} catch (\Exception $e) {
 						$record->status_main = 4;
 						$saveResult = $record->save();
+						
 						$agent->agent_amount_balance += $grandTotal;
 						$agent->save();
-						
-						return redirect()->route('vouchers.show',$record->id) ->with('error', $errorDescription);;
-							dd("aaaaaaaaaaa");			
+					
+						return redirect()->route('vouchers.show', $record->id)->with('error', $e->getMessage());
 					}
-
+					
 					
 					
 					//Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
@@ -1692,6 +1701,8 @@ class VouchersController extends Controller
 		$recordV = Voucher::find($record->voucher_id);
 		$remarkNew = $record->internal_remark.'<br>'.$remark." -- By ".Auth::user()->name." on ".date('M, d: H:s');
 		$voucherActivity[0] = $record;
+		
+		
 		$agent = User::find($recordV->agent_id);
 		$refundAmt = PriceHelper::checkCancellation($id);
 		$cancellation = VariantCanellation::where('varidCode', $record->variant_code)->get();
@@ -1703,6 +1714,17 @@ class VouchersController extends Controller
 		$record->org_refund_trans_amt = $refundAmt['refundamt']['trf'];
 		if(!empty($remark)){
 			$record->internal_remark = $remarkNew;
+		}
+		if($record->isRayna == '1'){
+			if ($record && !empty($record->rayna_booking_details)) {
+			$bookingDetails = json_decode($record->rayna_booking_details, true);
+			$referenceNo = $record->referenceNo;
+			$bookingId = $bookingDetails[0]['bookingId'];
+			$cancel = RaynaHelper::cancelBooking($referenceNo,$bookingId);
+				if ($cancel['status']) {
+					$record->isRaynaCancel = '1';
+				}
+			}
 		}
 		//$record->cancellation_time_data = json_encode($cancellation);
 		$record->save();
@@ -1720,6 +1742,7 @@ class VouchersController extends Controller
 			}
 		}
 		
+		
 		$recordCount = VoucherActivity::where("voucher_id",$record->voucher_id)->whereIn("status",['0','3','4'])->count();
 		if($recordCount == '0'){
 			$voucher = Voucher::find($record->voucher_id);
@@ -1728,7 +1751,7 @@ class VouchersController extends Controller
 		}
 		
 		$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
-		Mail::to($agent->email,'Booking Cancellation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredCancelEmail($voucherActivity)); 
+		//Mail::to($agent->email,'Booking Cancellation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredCancelEmail($voucherActivity)); 
 		
 		return redirect()->back()->with('success', 'Activity Canceled Successfully.');
 		//}
