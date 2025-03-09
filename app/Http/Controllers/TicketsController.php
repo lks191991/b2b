@@ -22,6 +22,7 @@ use SPDF;
 use Illuminate\Support\Facades\Auth;
 use App\Models\AgentAmount;
 use Validator;
+use RaynaHelper;
 
 class TicketsController extends Controller
 {
@@ -151,6 +152,16 @@ class TicketsController extends Controller
     {
 		$totalprice = 0;
 		$voucherActivity = VoucherActivity::find($id);
+		if ($voucherActivity->isRayna == '1') {
+			$ticket = RaynaHelper::getBookedTicket($voucherActivity->id);
+		
+			if (!$ticket['status']) {
+				return back()->with('error', $ticket['error']);
+			}
+		
+			return redirect()->route('ticket.dwnload', $voucherActivity->id);
+		}
+		
 		if(!empty($voucherActivity->ticket_pdf)){
 			return redirect($voucherActivity->ticket_pdf);
 		} else {
@@ -280,10 +291,7 @@ class TicketsController extends Controller
 		$voucher = Voucher::where('id',$voucherActivity->voucher_id)->first();;
 
 		$parent_code = $voucherActivity->parent_code;
-		if($voucherActivity->isRayna == '1'){
-		{
-			$ticket = RaynaHelper::getBookedTicket($voucherActivity->id);
-		}
+		
 		
 		if($parent_code == '0')
 		{
