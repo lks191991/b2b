@@ -280,6 +280,11 @@ class TicketsController extends Controller
 		$voucher = Voucher::where('id',$voucherActivity->voucher_id)->first();;
 
 		$parent_code = $voucherActivity->parent_code;
+		if($voucherActivity->isRayna == '1'){
+		{
+			$ticket = RaynaHelper::getBookedTicket($voucherActivity->id);
+		}
+		
 		if($parent_code == '0')
 		{
 			$tickets = Ticket::where('activity_variant',$voucherActivity->variant_code)->where('voucher_activity_id',$voucherActivity->id)->where('ticket_generated','1')->get();

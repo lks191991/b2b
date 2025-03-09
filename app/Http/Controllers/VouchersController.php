@@ -57,7 +57,6 @@ class VouchersController extends Controller
      */
     public function index(Request $request)
     {
-		
 		$this->checkPermissionMethod('list.voucher');
 		
 		 $perPage = config("constants.ADMIN_PAGE_LIMIT");

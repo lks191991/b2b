@@ -371,57 +371,97 @@ public static function cancelBooking($referenceNo, $bookingId)
         : ['status' => false, 'error' => $booking['message'] ?? $errorMessage];
 }
     
-	public static function getBookedTicket($referenceNo,$bookingId,$serviceUniqueId)
-    {
-        
-        $postData = [
-            "uniqNO" => mt_rand(100000, 999999), 
-            "referenceNo" => (int) $referenceNo,   
-            "bookedOption" => [
-                "serviceUniqueId" => (string) $serviceUniqueId, 
-                "bookingId" => (int) $bookingId
-            ]
-        ];
-        
-        
-       
-        $url = "https://sandbox.raynatours.com/api/Booking/GetBookedTickets";
-        $token = config('services.rayna.token');
-    
-        $response = Http::withOptions(['verify' => false]) 
-            ->withHeaders([
-                "Content-Type" => "application/json",
-                "Authorization" => "Bearer " . trim($token), 
-                "Accept" => "application/json",
-                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-            ])
-            ->post($url, $postData);
-    
-        if ($response->successful()) {
-            $data = $response->json(); 
-    
-            if (isset($data['statuscode']) && $data['statuscode'] == 200) {
-                $bookings = $data['result'] ?? null;
-    
-                if (!empty($bookings)) {
-                        return ['status' => true];
-                } else {
-						$error = $data['error'] ?? '';
-                        $errorDescription = $error ?? 'Booking canceled.';
-                        return ['status' => false,'error' => $errorDescription];                   
-                }
-            } else {
-                return ['status' => false,'error' => 'Booking canceled.'];
-            }
-        } else {
+public static function getBookedTicket($acvt)
+{
+    $voucherActivity = VoucherActivity::with("variant:id,ucode")
+        ->where('id', $acvt)
+        ->first();
 
-            return [
-                'error' => 'Request failed with status code: ' . $response->status()
-            ];
-        }
-        
+    if (!$voucherActivity || empty($voucherActivity->rayna_booking_details)) {
+        return ['status' => false, 'error' => 'Voucher activity not found or booking details missing.'];
     }
 
+    $bookingDetails = json_decode($voucherActivity->rayna_booking_details, true);
+    if (empty($bookingDetails[0]['bookingId']) || empty($bookingDetails[0]['serviceUniqueId'])) {
+        return ['status' => false, 'error' => 'Invalid booking details.'];
+    }
+
+    $postData = [
+        "uniqNO" => (int) $voucherActivity->RaynaBooking_uniqNO,
+        "referenceNo" => (string) $voucherActivity->referenceNo,
+        "bookedOption" => [
+            [
+            "serviceUniqueId" => (string) $bookingDetails[0]['serviceUniqueId'],
+            "bookingId" => (int) $bookingDetails[0]['bookingId'],
+        ]
+            ],
+    ];
+
+    $url = "https://sandbox.raynatours.com/api/Booking/GetBookedTickets";
+    $token = trim(config('services.rayna.token'));
+
+    $response = Http::withOptions(['verify' => false])
+        ->withHeaders([
+            "Content-Type" => "application/json",
+            "Authorization" => "Bearer $token",
+            "Accept" => "application/json",
+            "User-Agent" => "Mozilla/5.0"
+        ])
+        ->post($url, $postData);
+        
+    if (!$response->successful()) {
+        return ['status' => false, 'error' => 'Request failed with status code: ' . $response->status()];
+    }
+
+    $data = $response->json();
+    if (($data['statuscode'] ?? null) !== 200 || empty($data['result'])) {
+        return ['status' => false, 'error' => $data['error'] ?? 'Ticket not found.'];
+    }
+
+    $ticket = self::ticketSaveInDB($data['result'], $voucherActivity);
+    return ['status' => true, 'ticket' => $ticket];
+}
+
+public static function ticketSaveInDB($raynaData, $voucherActivity)
+{
+   
+    $validityDate = self::extractDate($raynaData['validity']);
+   
+    $ticketData = [
+        'ticket_for' => isset($raynaData['ticketDetails'][0]['type']) ? ucfirst($raynaData['ticketDetails'][0]['type']) : '',
+        'type_of_ticket' => ($raynaData['printType'] ?? '') === 'QR Code' ? 'QR-Code' : 'Media-Code',
+        'activity_id' => 0,
+        'activity_variant' => $voucherActivity->variant->ucode ?? '',
+        'ticket_no' => $raynaData['ticketDetails'][0]['barCode'] ?? '',
+        'serial_number' => $raynaData['pnrNumber'] ?? '',
+        'valid_from' => $validityDate ?? null,
+        'valid_till' => $validityDate ?? null,
+        'created_at' => now(),
+        'updated_at' => now(),
+        'voucher_id' => $voucherActivity->voucher_id ?? 0,
+        'voucher_activity_id' => $voucherActivity->id ?? 0,
+        'ticket_generated' => 1,
+        'ticket_downloaded' => 1,
+        'supplier_ticket' => '947d43d9-c999-446c-a841-a1aee22c7257',
+        'ticket_downloaded_by' => Auth::user()->id,
+        'generated_time' => now(),
+        'downloaded_time' => now(),
+        'rayna_ticket_details' => json_encode($raynaData['ticketDetails'][0] ?? []),
+        'rayna_ticketURL' => $raynaData['ticketURL'] ?? '',
+        'isRayna' => 1,
+    ];
+   
+    return Ticket::create($ticketData);
+}
+
+private static function extractDate($dateStr)
+{
+    if (preg_match('/\d{2}-\d{2}-\d{4}/', $dateStr, $matches)) {
+        return Carbon::createFromFormat('d-m-Y', $matches[0])->format('Y-m-d');
+    }
+    return null;
+}
+    
     public static function generateUniqueNo() {
         $year = date('y');  
         $second = date('s'); 
@@ -442,39 +482,6 @@ public static function cancelBooking($referenceNo, $bookingId)
     
         return (int) $uniqueNo;
     }
-
-  /*   public static function ticketSaveInDB($raynaData,$vaId){
-        $voucherActivity = VoucherActivity::with("variant:id,ucode")->where('voucher_id', $vaId)->get();
-        
-        $dateStr = $raynaData['validity']; 
-        preg_match('/\d{2}-\d{2}-\d{4}/', $dateStr, $matches);
-        $date = null;
-        if (!empty($matches)) {
-            $date = Carbon::createFromFormat('d-m-Y', $matches[0])->format('Y-m-d');
-        }
-
-        $ticket = new Ticket;
-        $ticket->ticket_for = ucfirst($raynaData['ticketDetails']['type']);
-        $ticket->type_of_ticket = ($raynaData['printType']=='QR Code')?"QR-Code":"Media-Code";
-        $ticket->activity_id = 0;
-        $ticket->activity_variant = $voucherActivity->variant->ucode;
-        $ticket->ticket_no = $raynaData['ticketDetails']['barCode'];
-        $ticket->serial_number = $raynaData['pnrNumber'];
-        $ticket->valid_from = $date;
-        $ticket->valid_till = $date;
-        $ticket->created_at = Carbon::now();
-        $ticket->updated_at = Carbon::now();
-        $ticket->voucher_id = $voucherActivity->voucher_id;
-        $ticket->voucher_activity_id = $voucherActivity->id;
-        $ticket->ticket_generated = 1;
-        $ticket->ticket_downloaded = 1;
-        $ticket->generated_time = Carbon::now();
-        $ticket->downloaded_time = Carbon::now();
-        $ticket->isRayna = 1;
-        $ticket->save();
-    } */
-    
-    
 
     
 }
