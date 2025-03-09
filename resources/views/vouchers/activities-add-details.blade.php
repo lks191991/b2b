@@ -170,13 +170,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="timeSlotDropdown">Choose a time slot:</label>
-                    <select class="form-control" required id="timeSlotDropdown">
-                        <!-- Time slots will be dynamically added here -->
-                    </select>
-                </div>
-            </div>
+              <div class="form-group" id="radioSlotGroup">
+                  <!-- Radio buttons will be dynamically added here -->
+              </div>
+          </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-primary-flip btn-sm" id="selectTimeSlotBtn"><i class="fa fa-cart-plus"></i></button>
                 <!-- You can add a button here for further actions if needed -->
@@ -389,26 +386,37 @@
  });
 
   $(document).on('click', '.addToCart', function(evt) {
+    const loaderOverlay = $("body #loader-overlay");
 	  evt.preventDefault();
+    loaderOverlay.show();
 	 if($('body #cartForm').validate({})){
 		 variant_id = $(this).data('variantid');
 		 inputnumber = $(this).data('inputnumber');
 		 const transferOptionName = $("body #transfer_option" + inputnumber).find(':selected').val();
+     const tour_date = $("body #tour_date" + inputnumber).val();
+     const adult = $("body #adult" + inputnumber).val();
+     const child = $("body #child" + inputnumber).val();
+     const infant = $("body #infant" + inputnumber).val();
 		 $.ajax({
 			  url: "{{ route('get.variant.slots') }}",
 			  type: 'POST',
 			  dataType: "json",
 			  data: {
 				  variant_id:variant_id,
-				  transferOptionName:transferOptionName
+				  transferOptionName:transferOptionName,
+          tour_date:tour_date,
+          adult:adult,
+          child:child,
+          infant:infant
 				  },
-			  success: function(data) {
+          success: function(data) {
 				  if(data.status == 1) {
 						
 						var timeslot = $('#timeslot').val();
 						$('#isRayna').val(data.is_rayna);
 						if(timeslot==''){
-							openTimeSlotModal(data.slots);
+							openTimeSlotModal(data.slots,data.is_rayna);
+              loaderOverlay.hide();
 						} 
 					} else if(data.status == 4) {
 						 $('#Noslot .modal-body #messageSlot').text(data.message).css("color", "red");
@@ -416,6 +424,8 @@
 					} else if (data.status == 2) {
 						$("body #cartForm").submit();
 					}
+
+          loaderOverlay.hide();
 				//console.log(data);
 			  },
 			  error: function(error) {
@@ -532,40 +542,37 @@ function adultChildReq(a,c,inputnumber) {
     if (isValid) {
         $('#timeSlotModal').modal('show');
 
-        var dropdown = $('#timeSlotDropdown');
-        dropdown.empty();
+        var radioGroup = $('#radioSlotGroup');
+        radioGroup.empty();
+        var tk = 0;
 
         $.each(slots, function(index, slot) {
-            var option = $('<option></option>').attr('value', slot).text(slot);
-            if (slot === selectedSlot) {
-                option.attr('selected', 'selected');
-            }
-            dropdown.append(option);
-        });
-
-        dropdown.on('change', function() {
-            var selectedValue = dropdown.val();
-			$('body #timeslot').val('');
-            if (selectedValue !== 'select') {
-                $('#timeslot').val(selectedValue);
-				$("body #timeSlotDropdown").removeClass('error-rq');
-            }
+            // var radio = $('<input type="radio" name="timeSlotRadio">')
+            //     .attr('value', slot)
+            //     .prop('checked', slot === selectedSlot);
+            // var label = $('<label>').text(slot).prepend(radio);
+            // radioGroup.append(label);
+            var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
+            radioGroup.append(radio);
+            tk++;
         });
 
         $('#selectTimeSlotBtn').on('click', function() {
-				var timeslot = $('body #timeslot').val();
-				$("body #timeSlotDropdown").removeClass('error-rq');
-				//if(timeslot==''){
-				//$("body #timeSlotDropdown").addClass('error-rq');
-				//} else { 
-					$("body #cartForm").submit();
-				//}
-						
-            
+            var selectedRadio = $('input[name="timeSlotRadio"]:checked');
+			var selectedValue = selectedRadio.val();
+			var timeSlotId = selectedRadio.data('id');
+            if (selectedValue) {
+                $('#timeslot').val(selectedValue);
+				$('#isRayna').val(isRayna);
+				$('#timeSlotId').val(timeSlotId);
+                $("body #cartForm").submit();
+            } else {
+                $("body #cartForm").addClass('error-rq');
+            }
+
         });
 
         $('#timeSlotModal .close').on('click', function() {
-            $('body #timeslot').val('');
             $('#timeSlotModal').modal('hide');
         });
     }
