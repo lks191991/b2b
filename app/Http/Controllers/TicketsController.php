@@ -153,7 +153,7 @@ class TicketsController extends Controller
 		$totalprice = 0;
 		$voucherActivity = VoucherActivity::find($id);
 		
-		if ($voucherActivity->isRayna == '1') {
+		if ($voucherActivity->isRayna == '1' && $voucherActivity->ticket_generated == '0') {
     
 			if (empty($voucherActivity->referenceNo)) {
 				return back()->with('error', 'Reference number is missing, cannot generate ticket.');
@@ -164,7 +164,9 @@ class TicketsController extends Controller
 			if (!$ticket['status']) {
 				return back()->with('error', $ticket['error']);
 			}
-		
+			
+			$voucherActivity->ticket_generated = 1;
+			$voucherActivity->save();
 			return redirect()->route('ticket.dwnload', $voucherActivity->id);
 		}
 		

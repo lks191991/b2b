@@ -458,8 +458,8 @@ public static function ticketSaveInDB($raynaData, $voucherActivity)
         'rayna_ticketURL' => $raynaData['ticketURL'] ?? '',
         'isRayna' => 1,
     ];
-   
-    return Ticket::create($ticketData);
+    
+    $ticket = Ticket::create($ticketData);
 }
 
 private static function extractDate($dateStr)
