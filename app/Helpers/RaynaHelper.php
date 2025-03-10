@@ -426,7 +426,15 @@ public static function ticketSaveInDB($raynaData, $voucherActivity)
 {
    
     $validityDate = self::extractDate($raynaData['validity']);
-   
+    $ticketNo = $raynaData['ticketDetails'][0]['barCode'] ?? '';
+    if (!empty($ticketNo)) {
+        $existingTicket = Ticket::where('ticket_no', $ticketNo)->first();
+        
+        if ($existingTicket && !empty($existingTicket->id)) {
+            return $existingTicket; 
+        }
+    }
+
     $ticketData = [
         'ticket_for' => isset($raynaData['ticketDetails'][0]['type']) ? ucfirst($raynaData['ticketDetails'][0]['type']) : '',
         'type_of_ticket' => ($raynaData['printType'] ?? '') === 'QR Code' ? 'QR-Code' : 'Media-Code',

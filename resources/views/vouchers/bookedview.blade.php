@@ -330,7 +330,20 @@
 							
 							@elseif(($ap->ticket_generated == '1') and ($ap->status == '4'))
 							<a class="btn btn-success float-right  btn-sm  d-pdf" href="#" onclick='window.open("{{route('ticket.dwnload',$ap->id)}}");return false;'  ><i class="fas fa-download"></i> Ticket</a>
-							@endif
+              @elseif(!empty($voucherActivity->referenceNo) && ($ap->isRayna == '1') and ($ap->status == '4'))
+							<a class="btn btn-success float-right  btn-sm  d-pdf" href="#" onclick='window.open("{{route('ticket.dwnload',$ap->id)}}");return false;'  ><i class="fas fa-download"></i> Ticket</a>
+              @endif
+              @if(!empty($ap->referenceNo) && ($ap->isRayna == '1'))
+							<form id="tickets-generate-form-{{$ap->id}}" method="post" action="{{route('tickets.generate',$ap->id)}}" style="display:none;">
+                {{csrf_field()}}
+<input type="hidden" id="statusv" value="2" name="statusv"  /> 
+<input type="hidden" id="payment_date" name="payment_date"  /> 
+            </form>
+
+<a class="btn btn-success float-right mr-3 btn-sm" href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')"><i class="fas fa-download"></i> Ticket</a>
+
+              @endif
+
 							@if($ap->status == 1)
 							<span style="color:red"  >{{ config('constants.voucherActivityStatus')[$ap->status] }}</span>
 							@endif

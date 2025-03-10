@@ -152,15 +152,23 @@ class TicketsController extends Controller
     {
 		$totalprice = 0;
 		$voucherActivity = VoucherActivity::find($id);
-		if ($voucherActivity->isRayna == '1') {
-			$ticket = RaynaHelper::getBookedTicket($voucherActivity->id);
 		
+		if ($voucherActivity->isRayna == '1') {
+    
+			if (empty($voucherActivity->referenceNo)) {
+				return back()->with('error', 'Reference number is missing, cannot generate ticket.');
+			}
+		
+			$ticket = RaynaHelper::getBookedTicket($voucherActivity->id);
+			
 			if (!$ticket['status']) {
 				return back()->with('error', $ticket['error']);
 			}
 		
 			return redirect()->route('ticket.dwnload', $voucherActivity->id);
 		}
+		
+		
 		
 		if(!empty($voucherActivity->ticket_pdf)){
 			return redirect($voucherActivity->ticket_pdf);
