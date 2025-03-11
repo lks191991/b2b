@@ -319,7 +319,7 @@
 							<a class="btn btn-primary  float-right cancelAct btn-sm ml-2" data-variantcode="{{$ap->variant_code}}" href="javascript:void(0)" data-apid="{{$ap->id}}" ><i class="fas fa-times"></i> Cancel </a>
 						@endif
           	@endif
-            @if(!empty($ap->referenceNo) && ($ap->isRayna == '1') && ($ap->ticket_generated == '0') && ($voucher->status_main == 5))
+            @if(!empty($ap->referenceNo) && ($ap->isRayna == '1') && ($ap->ticket_generated == '0') && ($voucher->status_main == 5) && ($voucher->status == 3))
 							<form id="tickets-generate-form-{{$ap->id}}" method="post" action="{{route('tickets.generate',$ap->id)}}" style="display:none;">
                 {{csrf_field()}}
 <input type="hidden" id="statusv" value="2" name="statusv"  /> 
