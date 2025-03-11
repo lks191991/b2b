@@ -319,7 +319,15 @@
 							<a class="btn btn-primary  float-right cancelAct btn-sm ml-2" data-variantcode="{{$ap->variant_code}}" href="javascript:void(0)" data-apid="{{$ap->id}}" ><i class="fas fa-times"></i> Cancel </a>
 						@endif
           	@endif
-                    @if(($voucher->status_main == 5) and ($ap->ticket_generated == '0') and ($ticketCount > '0') and ($ap->status == '3'))
+            @if(!empty($ap->referenceNo) && ($ap->isRayna == '1') && ($ap->ticket_generated == '0') && ($voucher->status_main == 5))
+							<form id="tickets-generate-form-{{$ap->id}}" method="post" action="{{route('tickets.generate',$ap->id)}}" style="display:none;">
+                {{csrf_field()}}
+<input type="hidden" id="statusv" value="2" name="statusv"  /> 
+<input type="hidden" id="payment_date" name="payment_date"  /> 
+            </form>
+
+<a class="btn btn-success float-right mr-3 btn-sm" href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')"><i class="fas fa-download"></i> Ticket</a>
+                    @elseif(($voucher->status_main == 5) and ($ap->ticket_generated == '0') and ($ticketCount > '0') and ($ap->status == '3'))
 						<form id="tickets-generate-form-{{$ap->id}}" method="post" action="{{route('tickets.generate',$ap->id)}}" style="display:none;">
                                 {{csrf_field()}}
 								<input type="hidden" id="statusv" value="2" name="statusv"  /> 
@@ -330,18 +338,7 @@
 							
 							@elseif(($ap->ticket_generated == '1') and ($ap->status == '4'))
 							<a class="btn btn-success float-right  btn-sm  d-pdf" href="#" onclick='window.open("{{route('ticket.dwnload',$ap->id)}}");return false;'  ><i class="fas fa-download"></i> Ticket</a>
-            
-              @endif
-              @if(!empty($ap->referenceNo) && ($ap->isRayna == '1') && ($ap->ticket_generated == '0'))
-							<form id="tickets-generate-form-{{$ap->id}}" method="post" action="{{route('tickets.generate',$ap->id)}}" style="display:none;">
-                {{csrf_field()}}
-<input type="hidden" id="statusv" value="2" name="statusv"  /> 
-<input type="hidden" id="payment_date" name="payment_date"  /> 
-            </form>
-
-<a class="btn btn-success float-right mr-3 btn-sm" href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')"><i class="fas fa-download"></i> Ticket</a>
-            @elseif(!empty($ap->referenceNo) && ($ap->isRayna == '1') && ($ap->ticket_generated == '1'))
-            <a class="btn btn-success float-right  btn-sm  d-pdf" href="#" onclick='window.open("{{route('ticket.dwnload',$ap->id)}}");return false;'  ><i class="fas fa-download"></i> Ticket</a> 
+             
             @endif
 
 							@if($ap->status == 1)
