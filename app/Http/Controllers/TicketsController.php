@@ -166,6 +166,7 @@ class TicketsController extends Controller
 			}
 			
 			$voucherActivity->ticket_generated = 1;
+			$voucherActivity->status = 4;
 			$voucherActivity->save();
 			return redirect()->route('ticket.dwnload', $voucherActivity->id);
 		}
