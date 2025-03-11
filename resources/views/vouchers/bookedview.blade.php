@@ -335,7 +335,11 @@
                             </form>
 						
 							<a class="btn btn-success float-right mr-3 btn-sm" href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')"><i class="fas fa-download"></i> Ticket</a>
-							
+							@elseif($ap->ticket_generated == '1' && $ap->isRayna == '1' && $ap->status > 3 && $ap->status < 6)
+
+							<a class="btn btn-success float-right  btn-sm  d-pdf" href="#" onclick='window.open("{{route('ticket.dwnload',$ap->id)}}");return false;'  ><i class="fas fa-download"></i> Ticket</a>
+             
+            
 							@elseif(($ap->ticket_generated == '1') and ($ap->status == '4'))
 							<a class="btn btn-success float-right  btn-sm  d-pdf" href="#" onclick='window.open("{{route('ticket.dwnload',$ap->id)}}");return false;'  ><i class="fas fa-download"></i> Ticket</a>
              
