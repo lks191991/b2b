@@ -14,6 +14,8 @@ use App\Models\Ticket;
 use App\Models\AgentAmount;
 use Validator;
 use App\Models\User;
+use App\Models\RaynaBookingLog;
+
 class RaynaHelper
 {
     protected static $token = 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkNWU4YWZhMC1mNGJhLTQ2NWUtYTAzOS1mZGJiYzMxZWZlZGUiLCJVc2VySWQiOiIzNzU0NSIsIlVzZXJUeXBlIjoiQWdlbnQiLCJQYXJlbnRJRCI6IjAiLCJFbWFpbElEIjoidHJhdmVsZ2F0ZXhAcmF5bmF0b3Vycy5jb20iLCJpc3MiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20iLCJhdWQiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20ifQ.i6GaRt-RVSlJXKPz7ZVx-axAPLW_hkl7usI_Dw8vP5w'; 
@@ -49,8 +51,14 @@ class RaynaHelper
 			])
 			->post($url, $postData);
 
+		RaynaBookingLog::logBooking($postData, $response->json(),'Tour/timeslot');
         if ($response->successful()) {
             $data = $response->json();
+            
+			
+            
+			
+			
             if (isset($data['statuscode']) && $data['statuscode'] == 200) {
                 foreach ($data['result'] as $slot) {
                     $slots[$slot['timeSlotId']] = $slot['timeSlot'];
@@ -87,7 +95,8 @@ class RaynaHelper
 				"User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 			])
 			->post($url, $pData);
-
+		
+		RaynaBookingLog::logBooking($pData, $response->json(),'Tour/availability');
        if ($response->successful()) {
             $data = $response->json();
             
@@ -149,7 +158,7 @@ class RaynaHelper
                     "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
                 ])
                 ->post($url, $postData);
-
+			RaynaBookingLog::logBooking($postData, $response->json(),'Booking/bookings');
             // Handling API response
             if ($response->successful()) {
                 $data = $response->json(); 
@@ -306,7 +315,7 @@ class RaynaHelper
         ])
         ->post($url, $pData);
        
-
+	RaynaBookingLog::logBooking($pData, $response->json(),'Tour/touroption');
     if ($response->successful()) {
         $data = $response->json();
 
@@ -357,7 +366,7 @@ public static function cancelBooking($referenceNo, $bookingId)
             "User-Agent" => "Mozilla/5.0"
         ])
         ->post($url, $postData);
-
+	RaynaBookingLog::logBooking($postData, $response->json(),'Booking/cancelbooking');
     if (!$response->successful()) {
         return ['status' => false, 'error' => 'Request failed with status code: ' . $response->status()];
     }
@@ -408,7 +417,9 @@ public static function getBookedTicket($acvt)
             "User-Agent" => "Mozilla/5.0"
         ])
         ->post($url, $postData);
-        
+		
+    RaynaBookingLog::logBooking($postData, $response->json(),'Booking/GetBookedTickets');
+		
     if (!$response->successful()) {
         return ['status' => false, 'error' => 'Request failed with status code: ' . $response->status()];
     }
