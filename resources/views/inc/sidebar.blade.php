@@ -1040,7 +1040,37 @@ $controller = preg_replace('/.*\\\/', '', $controller);
 			  
             </ul>
           </li>
-		  
+          <li class="nav-item has-treeview ">
+            <a href="#" class="nav-link ">
+              <i class="nav-icon fas fa-ticket-alt"></i>
+              <p>
+                Logs
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+            
+			  @php
+        $class=''; $active='';
+        if($controller == 'LogsController' and in_array($action,array('raynaBookingLogs'))){
+          $class = 'menu-open';
+          $active = 'active';
+        }
+   
+    
+        @endphp 
+		
+     <li class="nav-item ">
+              <a href="{{ route('logs.rayna.booking') }}" class="nav-link {{$active}}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Rayna Logs</p>
+                </a>
+				
+              </li>
+			 
+			  
+            </ul>
+          </li>
 		  @endrole 
 		  @endif
 		   <li class="nav-item">

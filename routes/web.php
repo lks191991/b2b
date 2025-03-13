@@ -39,6 +39,7 @@ use App\Http\Controllers\ActivityVariantController;
 use App\Http\Controllers\VariantCanellationController;
 use App\Http\Controllers\APITourDataController;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\LogsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -333,6 +334,7 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
 		
 		 Route::get('/search-dropdown-tour-option', [VariantsController::class, 'searchDropdown'])->name('search.dropdown.tour.option');
         Route::get('/search/prefill-tour-option', [VariantsController::class, 'prefill'])->name('search.prefill.tour.option');
+        Route::get('/rayna-logs', [LogsController::class, 'raynaBookingLogs'])->name('logs.rayna.booking');
 
     });
 });
