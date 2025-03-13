@@ -123,13 +123,13 @@ class SlotsController extends Controller
         
         if (!empty($optionDetails['tourId'])) {
             $tour = RaynaHelper::getTourDetailsById($optionDetails['tourId']);
-            $isRayna = true;//!empty($tour['isSlot']) ? true : false;
+            $isRayna = !empty($tour['isSlot']) ? true : false;
         }
 
 
         if ($isRayna) {
             $postData = [
-                "travelDate" => "2025-10-30",//date('Y-m-d', strtotime($tourDate)),
+                "travelDate" => date('Y-m-d', strtotime($tourDate)),
                 "tourId" => $optionDetails['tourId'],
                 "tourOptionId" => $optionDetails['tourOptionId'],
                 "transferId" => 41865, // Without Transfer
