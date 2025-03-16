@@ -216,6 +216,7 @@ class VariantsController extends Controller
 		$record->pick_up_required = $request->input('pick_up_required');
 		$record->transfer_plan = ($request->input('pvt_TFRS')==1)?$request->input('transfer_plan'):0;
 		$record->slot_type = $request->input('slot_type');
+		$record->is_slot = in_array($request->slot_type, [1, 2]) ? 1 : 0;
 		$record->available_slots = ($request->slot_type == 3)?'':$request->input('available_slots');
 		$record->slot_duration = ($request->slot_type == 3)?'':$request->input('slot_duration');
 		$record->activity_duration = $request->input('activity_duration');
@@ -512,6 +513,7 @@ class VariantsController extends Controller
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
 		$record->touroption_id = $request->input('tourOptionId');
+		$record->is_slot = in_array($request->slot_type, [1, 2]) ? 1 : 0;
         $record->save();
 		
 		//Upload Additional images
