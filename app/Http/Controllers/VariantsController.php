@@ -363,34 +363,34 @@ class VariantsController extends Controller
     {
 		
 		$options['allow_img_size'] = 10;
-        //  $request->validate([
-        //     'title' => 'required|max:255|sanitizeScripts',
-		// 	'description' => 'required',
-		// 	'code' => 'required',
-		// 	'slot_type' => 'required',
-		// 	'start_time' => 'required|date_format:H:i',
-		// 	'sell_price' => 'required',
-		// 	'list_price' => 'required',
-		// 	'end_time' => 'required|date_format:H:i',
-		// 	'available_slots' => ($request->slot_type == 1) ? 'required' : '',
-        //     'slot_duration' => ($request->slot_type == 2) ? 'required|integer' : '',
-		// 	'ticket_banner_image' => 'nullable|image|max:' . ($options['allow_img_size'] * 1024),
-		// 	'ticket_footer_image' => 'nullable|image|max:' . ($options['allow_img_size'] * 1024),
-		// 	'brand_logo' => 'nullable|image|max:' . ($options['allow_img_size'] * 1024),
+         $request->validate([
+            'title' => 'required|max:255|sanitizeScripts',
+			'description' => 'required',
+			'code' => 'required',
+			'slot_type' => 'required',
+			'start_time' => 'required|date_format:H:i',
+			'sell_price' => 'required',
+			'list_price' => 'required',
+			'end_time' => 'required|date_format:H:i',
+			'available_slots' => ($request->slot_type == 1) ? 'required' : '',
+            'slot_duration' => ($request->slot_type == 2) ? 'required|integer' : '',
+			'ticket_banner_image' => 'nullable|image|max:' . ($options['allow_img_size'] * 1024),
+			'ticket_footer_image' => 'nullable|image|max:' . ($options['allow_img_size'] * 1024),
+			'brand_logo' => 'nullable|image|max:' . ($options['allow_img_size'] * 1024),
 			
-        // ], [
-		// 	'available_slots.required' => 'Available slots is required when Slot Type is Custom.',
-		// 	'sell_price.required' => 'Min Selling field is required.',
-		// 	'list_price.required' => 'Min Price field is required.',
-        //     'slot_duration.required' => 'Sot Duration is required when Slot Type is Auto.',
-        //     'title.sanitize_scripts' => 'Invalid value entered for title field.',
-		// 	'ticket_banner_image.max' => 'The featured ticket banner image must not be greater than '.$options['allow_img_size'].' MB.',
-		// 	'ticket_footer_image.max' => 'The featured ticket footer image must not be greater than '.$options['allow_img_size'].' MB.',
-		// 	'brand_logo.max' => 'The brand logo must not be greater than '.$options['allow_img_size'].' MB.',
-		// 	'start_time.date_format' => 'Date format in 24 hours like 11:00,23:00.',
-        //     'end_time.date_format' => 'Date format in 24 hours like 11:00,23:00.',
-		// 	'image.*.image' => 'The image must be an image.',
-        // ]);
+        ], [
+			'available_slots.required' => 'Available slots is required when Slot Type is Custom.',
+			'sell_price.required' => 'Min Selling field is required.',
+			'list_price.required' => 'Min Price field is required.',
+            'slot_duration.required' => 'Sot Duration is required when Slot Type is Auto.',
+            'title.sanitize_scripts' => 'Invalid value entered for title field.',
+			'ticket_banner_image.max' => 'The featured ticket banner image must not be greater than '.$options['allow_img_size'].' MB.',
+			'ticket_footer_image.max' => 'The featured ticket footer image must not be greater than '.$options['allow_img_size'].' MB.',
+			'brand_logo.max' => 'The brand logo must not be greater than '.$options['allow_img_size'].' MB.',
+			'start_time.date_format' => 'Date format in 24 hours like 11:00,23:00.',
+            'end_time.date_format' => 'Date format in 24 hours like 11:00,23:00.',
+			'image.*.image' => 'The image must be an image.',
+        ]);
 
         $record = Variant::find($id);
 		
