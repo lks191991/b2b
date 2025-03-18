@@ -43,8 +43,8 @@
                   <tr>
                     <th>Title</th>
 					<th>Code</th>
-					<th>Min Starting Price</th>
-					<th>Min Selling Price</th>
+					{{-- <th>Min Starting Price</th>
+					<th>Min Selling Price</th> --}}
                     <th>Status</th>
 					<th>Is Slot</th>
 					<th>Is Canellation</th>
@@ -58,8 +58,8 @@
                     <form id="filterForm" method="get" action="{{route('variants.index')}}" >
                     <th><input type="text" name="name" value="{{request('name')}}" class="form-control"  placeholder="Title" /></th>
                  <th></th>
-				 	<th><input type="text" name="list_price" value="{{request('list_price')}}" class="form-control"  placeholder="Min Starting Price" /></th>
-					<th><input type="text" name="sell_price" value="{{request('sell_price')}}" class="form-control"  placeholder="Min Selling Price" /></th>
+				 	{{-- <th><input type="text" name="list_price" value="{{request('list_price')}}" class="form-control"  placeholder="Min Starting Price" /></th>
+					<th><input type="text" name="sell_price" value="{{request('sell_price')}}" class="form-control"  placeholder="Min Selling Price" /></th>--}}
 					 <th><select name="status" id="status" class="form-control">
                     <option value="" @if(request('status') =='') {{'selected="selected"'}} @endif>Select</option>
                     <option value="1" @if(request('status') ==1) {{'selected="selected"'}} @endif>Active</option>
@@ -97,8 +97,8 @@
 					
                     <td>{{ $record->title}}</td>
 					<td>{{ $record->code}}</td>
-					<td>{{ $record->list_price}}</td>
-					<td>{{ $record->sell_price}}</td>
+					{{--<td>{{ $record->list_price}}</td>
+					<td>{{ $record->sell_price}}</td>--}}
                     <td>{!! SiteHelpers::statusColor($record->status) !!}</td>
 					<td>{!! SiteHelpers::statusColorYesNo($record->is_slot) !!}</td>
 					<td>{!! SiteHelpers::statusColorYesNo($record->is_canellation) !!}</td>

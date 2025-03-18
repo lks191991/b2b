@@ -106,8 +106,8 @@ class VariantsController extends Controller
 			'description' => 'required',
 			'code' => 'required',
 			'slot_type' => 'required',
-			'list_price' => 'required',
-			'sell_price' => 'required',
+			//'list_price' => 'required',
+			//'sell_price' => 'required',
 			'start_time' => 'required|date_format:H:i',
 			'end_time' => 'required|date_format:H:i',
 			'available_slots' => ($request->slot_type == 1) ? 'required' : '',
@@ -232,9 +232,9 @@ class VariantsController extends Controller
 		$record->for_backend_only = $request->input('for_backend_only');
         $record->status = $request->input('status');
 		$record->created_by = Auth::user()->id;
-		$record->list_price = $request->input('list_price');
+		//$record->list_price = $request->input('list_price');
 		$record->parent_code = $request->input('parent_code');
-		$record->sell_price = $request->input('sell_price');
+		//$record->sell_price = $request->input('sell_price');
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
 		$record->save();
@@ -363,14 +363,15 @@ class VariantsController extends Controller
     {
 		
 		$options['allow_img_size'] = 10;
+		
          $request->validate([
             'title' => 'required|max:255|sanitizeScripts',
 			'description' => 'required',
 			'code' => 'required',
 			'slot_type' => 'required',
 			'start_time' => 'required|date_format:H:i',
-			'sell_price' => 'required',
-			'list_price' => 'required',
+			//'sell_price' => 'required',
+			//'list_price' => 'required',
 			'end_time' => 'required|date_format:H:i',
 			'available_slots' => ($request->slot_type == 1) ? 'required' : '',
             'slot_duration' => ($request->slot_type == 2) ? 'required|integer' : '',
@@ -508,8 +509,8 @@ class VariantsController extends Controller
         $record->status = $request->input('status');
 		$record->updated_by = Auth::user()->id;
 		$record->parent_code = $request->input('parent_code');
-		$record->list_price = $request->input('list_price');
-		$record->sell_price = $request->input('sell_price');
+		//$record->list_price = $request->input('list_price');
+		//$record->sell_price = $request->input('sell_price');
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
 		$record->touroption_id = $request->input('tourOptionId');
