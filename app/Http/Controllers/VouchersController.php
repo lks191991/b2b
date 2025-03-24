@@ -1719,7 +1719,7 @@ class VouchersController extends Controller
 			$bookingDetails = json_decode($record->rayna_booking_details, true);
 			$referenceNo = $record->referenceNo;
 			$bookingId = $bookingDetails[0]['bookingId'];
-			$cancel = RaynaHelper::cancelBooking($referenceNo,$bookingId);
+			$cancel = RaynaHelper::cancelBooking($referenceNo,$bookingId,$record->voucher_id,$record->id);
 				if ($cancel['status']) {
 					$record->isRaynaCancel = '1';
 				}

@@ -158,7 +158,7 @@ class RaynaHelper
                     "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
                 ])
                 ->post($url, $postData);
-			RaynaBookingLog::logBooking($postData, $response->json(),'Booking/bookings');
+			$log = RaynaBookingLog::logBooking($postData, $response->json(),'Booking/bookings',$voucher->id,$actId);
             // Handling API response
             if ($response->successful()) {
                 $data = $response->json(); 
@@ -180,6 +180,7 @@ class RaynaHelper
                                 $voucherActivity->rayna_booking_details = json_encode($bookingDetails);
                                 $voucherActivity->save();
                                 $returnData[$actId] = ['status' => true, 'error' => ''];
+								$log->update(['status' => 1]);
                             } else {
                                 $returnData[$actId] = ['status' => false, 'error' => 'Voucher activity not found.'];
                             }
@@ -347,7 +348,7 @@ class RaynaHelper
     ];
 }
 
-public static function cancelBooking($referenceNo, $bookingId)
+public static function cancelBooking($referenceNo, $bookingId,$vid=0,$vaid=0,)
 {
     $postData = [
         "bookingId" => (int) $bookingId,
@@ -366,7 +367,7 @@ public static function cancelBooking($referenceNo, $bookingId)
             "User-Agent" => "Mozilla/5.0"
         ])
         ->post($url, $postData);
-	RaynaBookingLog::logBooking($postData, $response->json(),'Booking/cancelbooking');
+	$log = RaynaBookingLog::logBooking($postData, $response->json(),'Booking/cancelbooking',$vid,$vaid);
     if (!$response->successful()) {
         return ['status' => false, 'error' => 'Request failed with status code: ' . $response->status()];
     }
@@ -374,10 +375,13 @@ public static function cancelBooking($referenceNo, $bookingId)
     $data = $response->json();
     $booking = $data['result'] ?? null;
     $errorMessage = $data['error'] ?? 'Booking canceled.';
-
-    return isset($data['statuscode']) && $data['statuscode'] == 200 && !empty($booking) && ($booking['status'] ?? 0) == 1
-        ? ['status' => true]
-        : ['status' => false, 'error' => $booking['message'] ?? $errorMessage];
+	if(isset($data['statuscode']) && $data['statuscode'] == 200 && !empty($booking) && ($booking['status'] ?? 0) == 1)
+	{
+		$log->update(['status' => 1]);
+		return ['status' => true];
+	}
+	
+    return  ['status' => false, 'error' => $booking['message'] ?? $errorMessage];
 }
     
 public static function getBookedTicket($acvt)
@@ -418,7 +422,7 @@ public static function getBookedTicket($acvt)
         ])
         ->post($url, $postData);
 		
-    RaynaBookingLog::logBooking($postData, $response->json(),'Booking/GetBookedTickets');
+    $log = RaynaBookingLog::logBooking($postData, $response->json(),'Booking/GetBookedTickets',$voucherActivity->voucher_id,$voucherActivity->id);
 		
     if (!$response->successful()) {
         return ['status' => false, 'error' => 'Request failed with status code: ' . $response->status()];
@@ -430,6 +434,7 @@ public static function getBookedTicket($acvt)
     }
 
     $ticket = self::ticketSaveInDB($data['result'], $voucherActivity);
+	$log->update(['status' => 1]);
     return ['status' => true, 'ticket' => $ticket];
 }
 
