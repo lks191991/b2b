@@ -29,7 +29,7 @@ class APITourOptionStaticData extends Command
 
     public function handle()
     {
-        $sourceData = DB::table('tourstaticdata')->where('isSlot','1')->get();
+        $sourceData = DB::table('tourstaticdata')->get();
         $url = 'https://sandbox.raynatours.com/api/Tour/touroptionstaticdata';
         $token = config('services.rayna.token');
         foreach ($sourceData as $data) {
@@ -39,12 +39,14 @@ class APITourOptionStaticData extends Command
             ];
 
 
-            $response = Http::withHeaders([
-        "Content-Type" => "application/json",
-        "Authorization" => "Bearer " . trim($token),
-        "Accept" => "application/json",
-        "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-		])->post($url, $postData);
+            $response = Http::withOptions(['verify' => false])
+			->withHeaders([
+				"Content-Type" => "application/json",
+				"Authorization" => "Bearer " . trim($token),
+				"Accept" => "application/json",
+				"User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+			])
+			->post($url, $postData);
 
             if ($response->successful()) {
                 $apiData = $response->json();

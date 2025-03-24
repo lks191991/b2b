@@ -11,7 +11,7 @@ class RaynaBookingLog extends Model
 	
 	use HasFactory;
 
-    protected $fillable = ['payload', 'response','endpoint','voucher_id','voucher_act_id'];
+    protected $fillable = ['payload', 'response','endpoint','voucher_id','voucher_act_id','status'];
 
     protected $casts = [
         'payload' => 'array',
