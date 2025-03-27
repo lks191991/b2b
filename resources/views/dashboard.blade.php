@@ -211,59 +211,163 @@
             <!-- /.info-box -->
           </div>
 		  @endif
-		<div class="col-lg-12 col-6">
+		<div class="col-lg-12">
 		<div class="card">
 		<div class="card-body">
-		<table id="example1" class="table table-bordered">
-                  <thead>
-                  <tr>
-					<th>Code</th>
+    <div class="row" style="display:none">
+        <h2 class="text-center mb-3">Sell Report</h2>
+      <style>
+    table, th, td {
+        border: 1px solid #dee2e6 !important;
+        border-collapse: collapse;
+        text-align: center;
+    }
+    th, td {
+        padding: 8px;
+    }
+</style>
+
+<table class="table text-center mb-4" >
+    <thead class="table-light">
+        <tr>
+            <th rowspan="2">Service</th>
+            <th colspan="3">Total Sales</th>
+            <th colspan="3">Total Cost</th>
+            <th colspan="3">Profit Cost</th>
+            <th colspan="3">Unaccounted</th>
+        </tr>
+        <tr>
+            <th>Current Date</th>
+            <th>MTD</th>
+            <th>YTD</th>
+            <th>Current Date</th>
+            <th>MTD</th>
+            <th>YTD</th>
+            <th>Current Date</th>
+            <th>MTD</th>
+            <th>YTD</th>
+            <th>Unaccounted Service</th>
+            <th>Value</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Ticket</td>
+            <td>Ticket Current Date</td>
+            <td>Ticket MTD</td>
+            <td>Ticket YTD</td>
+            <td>Ticket Cost Current Date</td>
+            <td>Ticket Cost MTD</td>
+            <td>Ticket Cost YTD</td>
+            <td>Ticket Profit Current Date</td>
+            <td>Ticket Profit MTD</td>
+            <td>Ticket Profit YTD</td>
+            <td>Ticket</td>
+            <td>Ticket Value</td>
+            <td>Ticket Count</td>
+        </tr>
+        <tr>
+            <td>Transfers</td>
+            <td>Transfers Current Date</td>
+            <td>Transfers MTD</td>
+            <td>Transfers YTD</td>
+            <td>Transfers Cost Current Date</td>
+            <td>Transfers Cost MTD</td>
+            <td>Transfers Cost YTD</td>
+            <td>Transfers Profit Current Date</td>
+            <td>Transfers Profit MTD</td>
+            <td>Transfers Profit YTD</td>
+            <td>Transfers</td>
+            <td>Transfers Value</td>
+            <td>Transfers Count</td>
+        </tr>
+        <tr>
+            <td>Hotel</td>
+            <td>Hotel Current Date</td>
+            <td>Hotel MTD</td>
+            <td>Hotel YTD</td>
+            <td>Hotel Cost Current Date</td>
+            <td>Hotel Cost MTD</td>
+            <td>Hotel Cost YTD</td>
+            <td>Hotel Profit Current Date</td>
+            <td>Hotel Profit MTD</td>
+            <td>Hotel Profit YTD</td>
+            <td>Total</td>
+            <td>Hotel Value</td>
+            <td>Hotel Count</td>
+        </tr>
+        <tr>
+            <td>Total Sales</td>
+            <td>Total Sales Current Date</td>
+            <td>Total Sales MTD</td>
+            <td>Total Sales YTD</td>
+            <td>Total Cost Current Date</td>
+            <td>Total Cost MTD</td>
+            <td>Total Cost YTD</td>
+            <td>Total Profit Current Date</td>
+            <td>Total Profit MTD</td>
+            <td>Total Profit YTD</td>
+            <td>Total Sales</td>
+            <td>Total Sales Value</td>
+            <td>Total Sales Count</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+    </div>
+
+    <div class="row">
+	<h2 class="text-center mb-3">Current Bookings</h2>
+        <table id="example1" class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Code</th>
                     <th>Agency</th>
-					<th>Zone</th>
+                    <th>Zone</th>
                     <th>Status</th>
                     <th>Travel Date</th>
-					<th>Booking Date</th>
+                    <th>Booking Date</th>
                     <th>Created On</th>
-					<th>Created By</th>
-                    <th width="4%"></th>
-                  </tr>
-				  
-                  </thead>
-                  <tbody>
-				 
-                  @foreach ($vouchers as $record)
-				  
-                  <tr>
-				  <td>{{ ($record->code)}}</td>
-                    <td>{{ ($record->agent)?$record->agent->company_name:''}}</td>
-					<td>{{ ($record->zone)}}</td>
-                     <td>{!! SiteHelpers::voucherStatus($record->status_main) !!}</td>
-					   <td>{{ $record->travel_from_date ? date("M d Y, H:i:s",strtotime($record->travel_from_date)) : null }} <b>To</b> {{ $record->travel_to_date ? date(config('app.date_format'),strtotime($record->travel_to_date)) : null }}</td>
-					   <td>{{ $record->booking_date ? date("M d Y",strtotime($record->booking_date)) : null }} </td>
-                    <td>{{ $record->created_at ? date("M d Y, H:i:s",strtotime($record->created_at)) : null }}</td>
-					<td>{{ ($record->createdBy)?$record->createdBy->name:''}}</td>
-                  
-					
-						 
-                     <td>
-					 
-					 <a class="btn btn-info btn-sm" href="{{route('voucherView',$record->id)}}">
-                              <i class="fas fa-eye">
-                              </i>
-                              
-                          </a>
-					
-                            
-                         </td>
-                  </tr>
-				 
-                  @endforeach
-                  </tbody>
-                 
-                </table>
-				
-				<div class="pagination pull-right mt-3"> {!! $vouchers->links() !!} </div> 
-		</div> </div></div>
+                    <th>Created By</th>
+                    <th width="4%">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($vouchers as $record)
+                <tr>
+                    <td>{{ $record->code }}</td>
+                    <td>{{ $record->agent ? $record->agent->company_name : '' }}</td>
+                    <td>{{ $record->zone }}</td>
+                    <td>{!! SiteHelpers::voucherStatus($record->status_main) !!}</td>
+                    <td>
+                        {{ $record->travel_from_date ? date("M d Y, H:i:s", strtotime($record->travel_from_date)) : null }} 
+                        <b>To</b> 
+                        {{ $record->travel_to_date ? date(config('app.date_format'), strtotime($record->travel_to_date)) : null }}
+                    </td>
+                    <td>{{ $record->booking_date ? date("M d Y", strtotime($record->booking_date)) : null }}</td>
+                    <td>{{ $record->created_at ? date("M d Y, H:i:s", strtotime($record->created_at)) : null }}</td>
+                    <td>{{ $record->createdBy ? $record->createdBy->name : '' }}</td>
+                    <td>
+                        <a class="btn btn-info btn-sm" href="{{ route('voucherView', $record->id) }}">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination float-end mt-3"> {!! $vouchers->links() !!} </div>
+    </div>
+</div>
+
+
+		</div>
+		</div>
       
     </div>
     <!-- /.row --> 
