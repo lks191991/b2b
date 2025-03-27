@@ -214,106 +214,130 @@
 		<div class="col-lg-12">
 		<div class="card">
 		<div class="card-body">
-    <div class="row" style="display:none">
+      <div class="row">
         <h2 class="text-center mb-3">Sell Report</h2>
-      <style>
-    table, th, td {
-        border: 1px solid #dee2e6 !important;
-        border-collapse: collapse;
-        text-align: center;
-    }
-    th, td {
-        padding: 8px;
-    }
-</style>
-
-<table class="table text-center mb-4" >
-    <thead class="table-light">
-        <tr>
-            <th rowspan="2">Service</th>
-            <th colspan="3">Total Sales</th>
-            <th colspan="3">Total Cost</th>
-            <th colspan="3">Profit Cost</th>
-            <th colspan="3">Unaccounted</th>
-        </tr>
-        <tr>
-            <th>Current Date</th>
-            <th>MTD</th>
-            <th>YTD</th>
-            <th>Current Date</th>
-            <th>MTD</th>
-            <th>YTD</th>
-            <th>Current Date</th>
-            <th>MTD</th>
-            <th>YTD</th>
-            <th>Unaccounted Service</th>
-            <th>Value</th>
-            <th>Count</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Ticket</td>
-            <td>Ticket Current Date</td>
-            <td>Ticket MTD</td>
-            <td>Ticket YTD</td>
-            <td>Ticket Cost Current Date</td>
-            <td>Ticket Cost MTD</td>
-            <td>Ticket Cost YTD</td>
-            <td>Ticket Profit Current Date</td>
-            <td>Ticket Profit MTD</td>
-            <td>Ticket Profit YTD</td>
-            <td>Ticket</td>
-            <td>Ticket Value</td>
-            <td>Ticket Count</td>
-        </tr>
-        <tr>
-            <td>Transfers</td>
-            <td>Transfers Current Date</td>
-            <td>Transfers MTD</td>
-            <td>Transfers YTD</td>
-            <td>Transfers Cost Current Date</td>
-            <td>Transfers Cost MTD</td>
-            <td>Transfers Cost YTD</td>
-            <td>Transfers Profit Current Date</td>
-            <td>Transfers Profit MTD</td>
-            <td>Transfers Profit YTD</td>
-            <td>Transfers</td>
-            <td>Transfers Value</td>
-            <td>Transfers Count</td>
-        </tr>
-        <tr>
-            <td>Hotel</td>
-            <td>Hotel Current Date</td>
-            <td>Hotel MTD</td>
-            <td>Hotel YTD</td>
-            <td>Hotel Cost Current Date</td>
-            <td>Hotel Cost MTD</td>
-            <td>Hotel Cost YTD</td>
-            <td>Hotel Profit Current Date</td>
-            <td>Hotel Profit MTD</td>
-            <td>Hotel Profit YTD</td>
-            <td>Total</td>
-            <td>Hotel Value</td>
-            <td>Hotel Count</td>
-        </tr>
-        <tr>
-            <td>Total Sales</td>
-            <td>Total Sales Current Date</td>
-            <td>Total Sales MTD</td>
-            <td>Total Sales YTD</td>
-            <td>Total Cost Current Date</td>
-            <td>Total Cost MTD</td>
-            <td>Total Cost YTD</td>
-            <td>Total Profit Current Date</td>
-            <td>Total Profit MTD</td>
-            <td>Total Profit YTD</td>
-            <td>Total Sales</td>
-            <td>Total Sales Value</td>
-            <td>Total Sales Count</td>
-        </tr>
-    </tbody>
+    
+        <style>
+            table, th, td {
+                border: 1px solid #dee2e6 !important;
+                border-collapse: collapse;
+                text-align: center;
+            }
+            th, td {
+                padding: 8px;
+            }
+           
+        </style>
+    
+        @php
+            use Carbon\Carbon;
+    
+            $todayDate = date("d-m-Y");
+            $currentDate = Carbon::now();
+            $currentYear = $currentDate->year;
+            $currentMonthStartDate = $currentDate->startOfMonth()->format('d-m-Y');
+            $startDateOfYear = Carbon::createFromDate($currentYear, 1, 1)->format('d-m-Y');
+            $endDateOfYear = Carbon::createFromDate($currentYear, 12, 31)->format('d-m-Y');
+        @endphp
+    
+        
+    
+<table class="table text-center mb-4">
+  
+  <thead class="table-light">
+    <tr>
+      <th colspan="4"><strong>Current Date</strong> : <span>({{ $todayDate }})</span></th>
+      <th colspan="5"><strong>MTD</strong> : ({{ $currentMonthStartDate }} - {{ $todayDate }})</span></th>
+      <th colspan="4"><strong>YTD</strong><span> : ({{ $startDateOfYear }} - {{ $endDateOfYear }})</span></th>
+      
+  </tr>
+      <tr>
+          <th rowspan="2">Service</th>
+          <th colspan="3">Total Sales</th>
+          <th colspan="3">Total Cost</th>
+          <th colspan="3">Profit Cost</th>
+          <th colspan="3">Unaccounted</th>
+      </tr>
+      <tr>
+          <th>Current Date</th>
+          <th>MTD</th>
+          <th>YTD</th>
+          <th>Current Date</th>
+          <th>MTD</th>
+          <th>YTD</th>
+          <th>Current Date</th>
+          <th>MTD</th>
+          <th>YTD</th>
+          <th>Unaccounted Service</th>
+          <th>Value</th>
+          <th>Count</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Ticket</td>
+          <td>{{ number_format((float)$cDReport['totalSells'], 2) }}</td>
+          <td>{{ number_format((float)$cMReport['totalSells'], 2) }}</td>
+          <td>{{ number_format((float)$cYReport['totalSells'], 2) }}</td>
+          <td>{{ number_format((float)$cDReport['totalCost'], 2) }}</td>
+          <td>{{ number_format((float)$cMReport['totalCost'], 2) }}</td>
+          <td>{{ number_format((float)$cYReport['totalCost'], 2) }}</td>
+          <td>{{ number_format((float)$cDReport['totalAccountedProfit'], 2) }}</td>
+          <td>{{ number_format((float)$cMReport['totalAccountedProfit'], 2) }}</td>
+          <td>{{ number_format((float)$cYReport['totalAccountedProfit'], 2) }}</td>
+          <td>Ticket</td>
+          <td>{{ number_format((float)$cYReport['totalUnAccountedSell'], 2) }}</td>
+          <td>Ticket Count</td>
+      </tr>
+      <tr>
+          <td>Transfers</td>
+          <td>{{ number_format((float)$cDReport['totalTransSells'], 2) }}</td>
+          <td>{{ number_format((float)$cMReport['totalTransSells'], 2) }}</td>
+          <td>{{ number_format((float)$cYReport['totalTransSells'], 2) }}</td>
+          <td>{{ number_format((float)$cDReport['totalTransCost'], 2) }}</td>
+          <td>{{ number_format((float)$cMReport['totalTransCost'], 2) }}</td>
+          <td>{{ number_format((float)$cYReport['totalTransCost'], 2) }}</td>
+          <td>{{ number_format((float)$cDReport['totalAccountedTransProfit'], 2) }}</td>
+          <td>{{ number_format((float)$cMReport['totalAccountedTransProfit'], 2) }}</td>
+          <td>{{ number_format((float)$cYReport['totalAccountedTransProfit'], 2) }}</td>
+          <td>Transfers</td>
+          <td>{{ number_format((float)$cYReport['totalUnAccountedTransSell'], 2) }}</td>
+          <td>Transfers Count</td>
+      </tr>
+      <tr>
+          <td>Hotel</td>
+          <td>{{ number_format((float)$cDReport['totalHotelSP'], 2) }}</td>
+          <td>{{ number_format((float)$cMReport['totalHotelSP'], 2) }}</td>
+          <td>{{ number_format((float)$cYReport['totalHotelSP'], 2) }}</td>
+          <td>{{ number_format((float)$cDReport['totalHotelCost'], 2) }}</td>
+          <td>{{ number_format((float)$cMReport['totalHotelCost'], 2) }}</td>
+          <td>{{ number_format((float)$cYReport['totalHotelCost'], 2) }}</td>
+          <td>{{ number_format((float)$cDReport['PLHotel'], 2) }}</td>
+          <td>{{ number_format((float)$cMReport['PLHotel'], 2) }}</td>
+          <td>{{ number_format((float)$cYReport['PLHotel'], 2) }}</td>
+          <td>Total</td>
+          <td>Hotel Value</td>
+          <td>Hotel Count</td>
+      </tr>
+      <tr>
+          <th>Total</th>
+          <th>{{ number_format((float)($cDReport['totalSells'] + $cDReport['totalTransSells'] + $cDReport['totalHotelSP']), 2) }}</th>
+          <th>{{ number_format((float)($cMReport['totalSells'] + $cMReport['totalTransSells'] + $cMReport['totalHotelSP']), 2) }}</th>
+          <th>{{ number_format((float)($cYReport['totalSells'] + $cYReport['totalTransSells'] + $cYReport['totalHotelSP']), 2) }}</th>
+          <th>{{ number_format((float)($cDReport['totalCost'] + $cDReport['totalTransCost'] + $cDReport['totalHotelCost']), 2) }}</th>
+          <th>{{ number_format((float)($cMReport['totalCost'] + $cMReport['totalTransCost'] + $cMReport['totalHotelCost']), 2) }}</th>
+          <th>{{ number_format((float)($cYReport['totalCost'] + $cYReport['totalTransCost'] + $cYReport['totalHotelCost']), 2) }}</th>
+          <th>{{ number_format((float)($cDReport['totalAccountedProfit'] + $cDReport['totalAccountedTransProfit'] + $cDReport['PLHotel']), 2) }}</th>
+          <th>{{ number_format((float)($cMReport['totalAccountedProfit'] + $cMReport['totalAccountedTransProfit'] + $cMReport['PLHotel']), 2) }}</th>
+          <th>{{ number_format((float)($cYReport['totalAccountedProfit'] + $cYReport['totalAccountedTransProfit'] + $cYReport['PLHotel']), 2) }}</th>
+          <th>Total</th>
+          <th>Total Sales Value</th>
+          <th>Total Sales Count</th>
+      </tr>
+  </tbody>
 </table>
+
+
 
 
 

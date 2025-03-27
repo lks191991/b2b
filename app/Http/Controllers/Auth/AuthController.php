@@ -730,31 +730,38 @@ public function getDashboardMasterReport($startDate,$endDate=null)
 		$hotelData = $hotelData->first();
 
 		$data = [
-			'activeAgents' => User::where('role_id', 3)->count(),
-			'no_ofBkgs' => $zoneResult ? number_format($zoneResult->no_ofBkgs, 2) : '0.00',
-			'no_ofServices' => $zoneResult ? number_format($zoneResult->no_ofServices, 2) : '0.00',
-			'totalAccountedSell' => $zoneResult ? number_format($zoneResult->totalAccountedSell-$zoneResult->totalAccountedSellDis, 2) : '0.00',
-			'totalUnAccountedSell' => $zoneResult ? number_format($zoneResult->totalUnAccountedSell-$zoneResult->totalUnAccountedSellDis, 2) : '0.00',
-			'totalSells' => $zoneResult ? number_format($zoneResult->totalSells-$zoneResult->totalSellsDis, 2) : '0.00',
-			'totalAccountedSellDis' => $zoneResult ? number_format($zoneResult->totalAccountedSellDis, 2) : '0.00',
-			'totalUnAccountedSellDis' => $zoneResult ? number_format($zoneResult->totalUnAccountedSellDis, 2) : '0.00',
-			'totalSellsDis' => $zoneResult ? number_format($zoneResult->totalSellsDis, 2) : '0.00',
-			'totalCost' => isset($zoneResult->totalCost) ? number_format($zoneResult->totalCost, 2) : '0.00',
-			'totalAccountedProfit' => $zoneResult ? number_format($zoneResult->totalAccountedSell - $zoneResult->totalCost-$zoneResult->totalAccountedSellDis, 2) : '0.00',
-			'totalAccountedTransSell' => $zoneResult ? number_format($zoneResult->totalAccountedTransSell-$zoneResult->totalAccountedTransSellDis, 2) : '0.00',
-			'totalUnAccountedTransSell' => $zoneResult ? number_format($zoneResult->totalUnAccountedTransSell-$zoneResult->totalUnAccountedTransSellDis, 2) : '0.00',
-			'totalTransSells' => $zoneResult ? number_format($zoneResult->totalTransSells-$zoneResult->totalTransSellsDis, 2) : '0.00',
-
-			'totalAccountedTransSellDis' => $zoneResult ? number_format($zoneResult->totalAccountedTransSellDis, 2) : '0.00',
-			'totalUnAccountedTransSellDis' => $zoneResult ? number_format($zoneResult->totalUnAccountedTransSellDis, 2) : '0.00',
-			'totalTransSellsDis' => $zoneResult ? number_format($zoneResult->totalTransSellsDis, 2) : '0.00',
-
-			'totalTransCost' => isset($zoneResult->totalCost) ? number_format($zoneResult->totalTransCost, 2) : '0.00',
-			'totalAccountedTransProfit' => $zoneResult ? number_format($zoneResult->totalAccountedTransSell - $zoneResult->totalTransCost, 2) : '0.00',
-			'totalHotelSP' => $hotelData ? number_format($hotelData->totalHotelSP, 2) : '0.00',
-			'totalHotelCost' => $hotelData ? number_format($hotelData->totalHotelCost, 2) : '0.00',
-			'PLHotel' => $hotelData ? number_format($hotelData->totalHotelSP - $hotelData->totalHotelCost, 2) : '0.00',
-		];
+            'activeAgents' => User::where('role_id', 3)->count(),
+            'no_ofBkgs' => $zoneResult ? (float)$zoneResult->no_ofBkgs : 0.00,
+            'no_ofServices' => $zoneResult ? (float)$zoneResult->no_ofServices : 0.00,
+        
+            'totalAccountedSell' => $zoneResult ? (float)$zoneResult->totalAccountedSell - (float)$zoneResult->totalAccountedSellDis : 0.00,
+            'totalUnAccountedSell' => $zoneResult ? (float)$zoneResult->totalUnAccountedSell - (float)$zoneResult->totalUnAccountedSellDis : 0.00,
+            'totalSells' => $zoneResult ? (float)$zoneResult->totalSells - (float)$zoneResult->totalSellsDis : 0.00,
+        
+            'totalAccountedSellDis' => $zoneResult ? (float)$zoneResult->totalAccountedSellDis : 0.00,
+            'totalUnAccountedSellDis' => $zoneResult ? (float)$zoneResult->totalUnAccountedSellDis : 0.00,
+            'totalSellsDis' => $zoneResult ? (float)$zoneResult->totalSellsDis : 0.00,
+        
+            'totalCost' => isset($zoneResult->totalCost) ? (float)$zoneResult->totalCost : 0.00,
+            'totalAccountedProfit' => $zoneResult ? (float)$zoneResult->totalAccountedSell - (float)$zoneResult->totalCost - (float)$zoneResult->totalAccountedSellDis : 0.00,
+        
+            'totalAccountedTransSell' => $zoneResult ? (float)$zoneResult->totalAccountedTransSell - (float)$zoneResult->totalAccountedTransSellDis : 0.00,
+            'totalUnAccountedTransSell' => $zoneResult ? (float)$zoneResult->totalUnAccountedTransSell - (float)$zoneResult->totalUnAccountedTransSellDis : 0.00,
+            'totalTransSells' => $zoneResult ? (float)$zoneResult->totalTransSells - (float)$zoneResult->totalTransSellsDis : 0.00,
+        
+            'totalAccountedTransSellDis' => $zoneResult ? (float)$zoneResult->totalAccountedTransSellDis : 0.00,
+            'totalUnAccountedTransSellDis' => $zoneResult ? (float)$zoneResult->totalUnAccountedTransSellDis : 0.00,
+            'totalTransSellsDis' => $zoneResult ? (float)$zoneResult->totalTransSellsDis : 0.00,
+        
+            'totalTransCost' => isset($zoneResult->totalCost) ? (float)$zoneResult->totalTransCost : 0.00,
+            'totalAccountedTransProfit' => $zoneResult ? (float)$zoneResult->totalAccountedTransSell - (float)$zoneResult->totalTransCost : 0.00,
+        
+            'totalHotelSP' => $hotelData ? (float)$hotelData->totalHotelSP : 0.00,
+            'totalHotelCost' => $hotelData ? (float)$hotelData->totalHotelCost : 0.00,
+            'PLHotel' => $hotelData ? (float)$hotelData->totalHotelSP - (float)$hotelData->totalHotelCost : 0.00,
+        ];
+        
+        
 		
 		return $data;
 }
