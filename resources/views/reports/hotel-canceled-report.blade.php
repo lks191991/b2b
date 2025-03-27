@@ -37,7 +37,7 @@
               <!-- /.card-header -->
               <div class="card-body">
 			  <div class="row">
-            <form id="filterForm" class="form-inline" method="get" action="{{ route('voucherActivtyCanceledReport') }}" >
+            <form id="filterForm" class="form-inline" method="get" action="{{ route('voucherHotelCanceledReport') }}" >
               <div class="form-row align-items-center">
 			   <div class="col-auto col-md-3">
                 <div class="input-group mb-2">
@@ -73,7 +73,7 @@
                
               <div class="col-auto col-md-2">
                 <button class="btn btn-info mb-2" type="submit">Filter</button>
-                <a class="btn btn-default mb-2  mx-sm-2" href="{{ route('voucherActivtyCanceledReport') }}">Clear</a>
+                <a class="btn btn-default mb-2  mx-sm-2" href="{{ route('voucherHotelCanceledReport') }}">Clear</a>
               </div>
             </form>
           </div>

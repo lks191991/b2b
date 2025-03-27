@@ -24,7 +24,8 @@ class APITourData extends Command
         $token = config('services.rayna.token');
         $postData = [
             "countryId" => 13063,
-            "cityId" => 13668
+           // "cityId" => 13668 // Dubai City
+           "cityId" => 13236 //Abu Dhabi
         ];
 
         try {

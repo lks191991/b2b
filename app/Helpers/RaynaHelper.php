@@ -348,7 +348,7 @@ class RaynaHelper
     ];
 }
 
-public static function cancelBooking($referenceNo, $bookingId,$vid=0,$vaid=0,)
+public static function cancelBooking($referenceNo, $bookingId,$vid=0,$vaid=0)
 {
     $postData = [
         "bookingId" => (int) $bookingId,

@@ -1,6 +1,11 @@
 @extends('layouts.app')
 @section('content')
-
+<style>td.json-data {
+  min-width: 300px; /* Jitni chahiye utni badha sakte hain */
+  max-width: 600px; /* Maximum width limit */
+  word-wrap: break-word;
+  white-space: pre-wrap; /* JSON ko properly wrap karne ke liye */
+}</style>
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
@@ -34,8 +39,9 @@
 				   </div>
               </div>
               <!-- /.card-header -->
-			  <div class="card-body">
-			  <div class="row">
+			  <div class="card-body" style="overflow-x: auto;
+    width: 100%;">
+			  <div class="row" >
             <form id="filterForm" class="form-inline" method="get" action="{{ route('logs.rayna.booking') }}" >
               <div class="form-row align-items-center">
 			   
@@ -63,14 +69,15 @@
             </form>
           </div>
         </div>
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="example1" class="table table-bordered table-striped" >
                   <thead>
                   <tr>
-                    <th>#</th>
-                    <th>Payload</th>
-					<th>Responce</th>
-                    <th>EndPoint</th>
-                    <th>Created</th>
+                    <th width="10%">#</th>
+                    <th width="10%">V-Code</th>
+                    <th width="30%">Payload</th>
+					          <th width="40%">Responce</th>
+                    <th width="10%">EndPoint</th>
+                    <th width="10%">Created</th>
                   </tr>
 				  
                   </thead>
@@ -79,8 +86,26 @@
 				  
                   <tr>
                     <td>{{ $loop->index + 1 }}</td>
-                    <td>{{ json_encode($record->payload) }}</td>
-					 <td>{{ json_encode($record->response) }}</td>
+                    <td>
+                      @if(!empty($record->voucher->code))
+                      @if($record->voucher->status_main < 5)
+                      <a class="btn btn-info btn-sm" target="_blank" title="Checkout" href="{{route('vouchers.show',$record->voucher->id)}}">
+                        {{ $record->voucher->code }}
+                                    </a>
+                        @else
+                     <a class="btn btn-info btn-sm" target="_blank" href="{{route('voucherView',$record->voucher->id)}}">
+                      {{ $record->voucher->code }}
+                                    </a>
+                                    @endif
+
+                      @else
+                          N/A
+                      @endif
+                  </td>
+                  
+                  
+                    <td class="json-data">{{ json_encode($record->payload) }}</td>
+					 <td class="json-data">{{ json_encode($record->response) }}</td>
 					  <td>{{ $record->endpoint }}</td>
                     <td>{{ $record->created_at ? date(config('app.date_format'),strtotime($record->created_at)) : null }}</td>
                      
