@@ -214,7 +214,7 @@
 		<div class="col-lg-12">
 		<div class="card">
 		<div class="card-body">
-    <div class="row">
+    <div class="row" style="display:none">
         <h2 class="text-center mb-3">Sell Report</h2>
       <style>
     table, th, td {
@@ -227,7 +227,7 @@
     }
 </style>
 
-<table class="table text-center mb-4">
+<table class="table text-center mb-4" >
     <thead class="table-light">
         <tr>
             <th rowspan="2">Service</th>
