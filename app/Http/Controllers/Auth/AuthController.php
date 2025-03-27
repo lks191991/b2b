@@ -304,6 +304,7 @@ if(($request->input('country_id') == '94') && (strlen($request->input('mobile'))
        $currentDate = Carbon::now()->format('Y-m-d');
        $expiringDate = Carbon::now()->addMonths(1)->format('Y-m-d');
 
+
         if(Auth::check()){
             
 				$todayDate = date("Y-m-d");
@@ -390,13 +391,15 @@ if(($request->input('country_id') == '94') && (strlen($request->input('mobile'))
 					->orWhere('status', '=', 4)->orWhere('status', '=', 5);
 					});
                     if(!empty(Auth::user()->zone)){
-			
                         $query->where('zone', '=', Auth::user()->zone);
-                    
-        }
+					}
+					
+					$cDReport = $this->getDashboardMasterReport($currentDate);
+					$cMReport = $this->getDashboardMasterReport($currentMonthStartDate,$currentDate);
+					$cYReport = $this->getDashboardMasterReport($startDateOfYear,$endDateOfYear);
           
 					$vouchers = $query->orderBy('booking_date', 'DESC')->paginate(50);
-                return view('dashboard', compact('totalUserRecords','totalAgentRecords','totalSupplierRecords','totalCustomerRecords','totalActivityRecords','totalHotelRecords','vouchers','vouchersCurrentDate','vouchersMonth','vouchersYear'));
+                return view('dashboard', compact('totalUserRecords','totalAgentRecords','totalSupplierRecords','totalCustomerRecords','totalActivityRecords','totalHotelRecords','vouchers','vouchersCurrentDate','vouchersMonth','vouchersYear','cDReport','cMReport','cYReport'));
 				}
            
         }
@@ -650,5 +653,109 @@ return view('auth.updatePage', compact('allrecords','notifications','announcment
     echo "<pre>";
     print_r($responseArray);
     exit;
+}
+
+public function getDashboardMasterReport($startDate,$endDate=null)
+{
+    
+    $result = DB::table('voucher_activity as va')
+	->select(
+		DB::raw('COUNT(DISTINCT va.voucher_id) AS no_ofBkgs'),
+		DB::raw('COUNT(*) AS no_ofServices'),
+		
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) > 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_tkt_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedSell'),
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) > 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_tkt AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedSellDis'),
+		
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) = 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_tkt_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedSell'),
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) = 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_tkt AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedSellDis'),
+		
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.original_tkt_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalSells'),
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.discount_tkt AS DECIMAL(10,2)) ELSE 0 END) AS totalSellsDis'),
+		
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.actual_total_cost AS DECIMAL(10,2)) ELSE 0 END) AS totalCost'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) > 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_trans_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedTransSell'),
+				  
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) = 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_trans_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedTransSell'),
+				  
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) IS NOT NULL 
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_trans_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalTransSells'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) > 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedTransSellDis'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) = 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedTransSellDis'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) IS NOT NULL 
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalTransSellsDis'),
+	
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.actual_transfer_cost AS DECIMAL(10,2)) ELSE 0 END) AS totalTransCost')
+	)->leftJoin('vouchers as v', 'va.voucher_id', '=', 'v.id')
+        ->leftJoin('voucher_hotels as vh', 'v.id', '=', 'vh.voucher_id')
+        ->where('v.status_main', '5')
+        ->where('va.zone', '!=', '');
+
+    
+
+          
+
+           if (!empty($startDate) && !empty($endDate)) {
+                $result->whereDate('v.booking_date', '>=', $startDate)
+                    ->whereDate('v.booking_date', '<=', $endDate);
+            } elseif (!empty($startDate) && empty($endDate)) {
+                $result->whereDate('v.booking_date',  $startDate);
+			}
+
+    $result = $result->first();
+
+    $data = [];
+        $zoneResult = $result;
+        $hotelData = DB::table('voucher_hotels as vh')
+			->join('vouchers as v', 'vh.voucher_id', '=', 'v.id')
+			->select(
+				DB::raw('COALESCE(sum(vh.total_price), 0) as totalHotelSP'),
+				DB::raw('COALESCE(sum(vh.net_cost), 0) as totalHotelCost')
+			);
+
+		if (!empty($startDate) && !empty($endDate)) {
+			$hotelData->whereDate('vh.check_in_date', '>=', $startDate)
+					  ->whereDate('vh.check_in_date', '<=', $endDate);
+		} elseif (!empty($startDate) && empty($endDate)) {
+			$hotelData->whereDate('vh.check_in_date', $startDate);
+		}
+
+		$hotelData = $hotelData->first();
+
+		$data = [
+			'activeAgents' => User::where('role_id', 3)->count(),
+			'no_ofBkgs' => $zoneResult ? number_format($zoneResult->no_ofBkgs, 2) : '0.00',
+			'no_ofServices' => $zoneResult ? number_format($zoneResult->no_ofServices, 2) : '0.00',
+			'totalAccountedSell' => $zoneResult ? number_format($zoneResult->totalAccountedSell-$zoneResult->totalAccountedSellDis, 2) : '0.00',
+			'totalUnAccountedSell' => $zoneResult ? number_format($zoneResult->totalUnAccountedSell-$zoneResult->totalUnAccountedSellDis, 2) : '0.00',
+			'totalSells' => $zoneResult ? number_format($zoneResult->totalSells-$zoneResult->totalSellsDis, 2) : '0.00',
+			'totalAccountedSellDis' => $zoneResult ? number_format($zoneResult->totalAccountedSellDis, 2) : '0.00',
+			'totalUnAccountedSellDis' => $zoneResult ? number_format($zoneResult->totalUnAccountedSellDis, 2) : '0.00',
+			'totalSellsDis' => $zoneResult ? number_format($zoneResult->totalSellsDis, 2) : '0.00',
+			'totalCost' => isset($zoneResult->totalCost) ? number_format($zoneResult->totalCost, 2) : '0.00',
+			'totalAccountedProfit' => $zoneResult ? number_format($zoneResult->totalAccountedSell - $zoneResult->totalCost-$zoneResult->totalAccountedSellDis, 2) : '0.00',
+			'totalAccountedTransSell' => $zoneResult ? number_format($zoneResult->totalAccountedTransSell-$zoneResult->totalAccountedTransSellDis, 2) : '0.00',
+			'totalUnAccountedTransSell' => $zoneResult ? number_format($zoneResult->totalUnAccountedTransSell-$zoneResult->totalUnAccountedTransSellDis, 2) : '0.00',
+			'totalTransSells' => $zoneResult ? number_format($zoneResult->totalTransSells-$zoneResult->totalTransSellsDis, 2) : '0.00',
+
+			'totalAccountedTransSellDis' => $zoneResult ? number_format($zoneResult->totalAccountedTransSellDis, 2) : '0.00',
+			'totalUnAccountedTransSellDis' => $zoneResult ? number_format($zoneResult->totalUnAccountedTransSellDis, 2) : '0.00',
+			'totalTransSellsDis' => $zoneResult ? number_format($zoneResult->totalTransSellsDis, 2) : '0.00',
+
+			'totalTransCost' => isset($zoneResult->totalCost) ? number_format($zoneResult->totalTransCost, 2) : '0.00',
+			'totalAccountedTransProfit' => $zoneResult ? number_format($zoneResult->totalAccountedTransSell - $zoneResult->totalTransCost, 2) : '0.00',
+			'totalHotelSP' => $hotelData ? number_format($hotelData->totalHotelSP, 2) : '0.00',
+			'totalHotelCost' => $hotelData ? number_format($hotelData->totalHotelCost, 2) : '0.00',
+			'PLHotel' => $hotelData ? number_format($hotelData->totalHotelSP - $hotelData->totalHotelCost, 2) : '0.00',
+		];
+		
+		return $data;
 }
 }
