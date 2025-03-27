@@ -1578,25 +1578,13 @@ public function voucherActivtyRefundedReport(Request $request)
 				$q->where('code', 'like', '%' . $data['vouchercode']);
 			});
 		}
-		// if(isset($data['booking_status']) && !empty($data['booking_status'])) {
-		// 	$filter = 1;
-		// 		$query->where('status',$data['booking_status']);
-			
-		// }
-		// if(isset($data['voucher_status']) && !empty($data['voucher_status'])) {
-		// 	$filter = 1;
-		// $query->whereHas('voucher', function($q)  use($data){
-		// 		$q->where('status_main', '=', $data['voucher_status']);
-		// 	});
-		// }	
+		
 		$query->whereHas('voucher', function($q)  use($data){
 			$q->where('status_main', '=', 5);
 		});
 		if(isset($data['zone']) && !empty($data['zone'])) {
 			$filter = 1;
-		$query->whereHas('voucher', function($q)  use($data){
-				$q->where('zone', '=', $data['zone']);
-			});
+		$query->where('zone', '=', $data['zone']);
 		}	
 			$query->whereHas('voucher', function($q)  use($data){
 				$q->orderBy('booking_date', 'DESC');
@@ -1635,26 +1623,39 @@ public function voucherActivtyRefundedReport(Request $request)
     {
 		$this->checkPermissionMethod('list.masterreport');
 		$data = $request->all();
+		$filter = 0;
 		$perPage = config("constants.ADMIN_PAGE_LIMIT");
+		$voucherActivityStatus = config("constants.voucherActivityStatus");
 		$voucherStatus = config("constants.voucherStatus");
-		
+		$zones = config("constants.agentZone");
 		$twoDaysAgo = date("Y-m-d", strtotime(date("Y-m-d") . " -2 days"));
 		$twoDaysNull = date("Y-m-d", strtotime(date("Y-m-d") . " +2 days"));
-		$supplier_ticket = User::where("service_type",'Ticket')->orWhere('service_type','=','Both')->get();
+
+				$supplier_ticket = User::where("service_type",'Ticket')->orWhere('service_type','=','Both')->get();
 		$supplier_transfer = User::where("service_type",'Transfer')->orWhere('service_type','=','Both')->get();
 		
-		$query = VoucherActivity::where('id','!=', null)->whereNotIn('status',[1,2,11,12]);
 		//$query = VoucherActivity::where('id','!=', null)->whereIn('status',[0,3,4,9]);
-
-		if(isset($data['agent_id_select']) && !empty($data['agent_id_select'])) {
-			$filter = 1;
+		$query = VoucherActivity::where('id','!=', null)->whereNotIn('status',[1,2,11,12]);
+		if(Auth::user()->role_id == '3')
+		{
 			$query->whereHas('voucher', function($q)  use($data){
-			$q->where('agent_id', '=',$data['agent_id_select']);
-		});
-	}
+				$q->where('agent_id', '=', Auth::user()->id);
+			});
+		}
+		else
+		{
+			if(isset($data['agent_id_select']) && !empty($data['agent_id_select'])) {
+				$filter = 1;
+				$query->whereHas('voucher', function($q)  use($data){
+				$q->where('agent_id', '=',$data['agent_id_select']);
+			});
+			
+			}
+		}
 		if(isset($data['booking_type']) && !empty($data['booking_type'])) {
 			
 			if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
+				$filter = 1;
 			$startDate = $data['from_date'];
 			$endDate =  $data['to_date'];
 				if($data['booking_type'] == 2) {
@@ -1671,42 +1672,49 @@ public function voucherActivtyRefundedReport(Request $request)
 				}
 				
 			}
-		
+			
         if(isset($data['vouchercode']) && !empty($data['vouchercode'])) {
+			$filter = 1;
 			$query->whereHas('voucher', function($q)  use($data){
 				$q->where('code', 'like', '%' . $data['vouchercode']);
 			});
 		}
 		
-		// if(isset($data['booking_status']) && !empty($data['booking_status'])) {
-		// 	$filter = 1;
-		// 		$query->where('status',$data['booking_status']);
-			
-		// }
-		// if(isset($data['voucher_status']) && !empty($data['voucher_status'])) {
-		// 	$filter = 1;
-		// $query->whereHas('voucher', function($q)  use($data){
-		// 		$q->where('status_main', '=', $data['voucher_status']);
-		// 	});
-		// }	
 		$query->whereHas('voucher', function($q)  use($data){
 			$q->where('status_main', '=', 5);
 		});
-
 		if(isset($data['zone']) && !empty($data['zone'])) {
 			$filter = 1;
-		$query->whereHas('voucher', function($q)  use($data){
-				$q->where('zone', '=', $data['zone']);
-			});
+		$query->where('zone', '=', $data['zone']);
 		}	
-
 			$query->whereHas('voucher', function($q)  use($data){
 				$q->orderBy('booking_date', 'DESC');
 			});
 			
+			
         //$records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
 		//$records = $query->orderBy('created_at', 'DESC')->get();
 		
+		$agetid = '';
+		$agetName = '';
+		
+		if(old('agent_id')){
+		$agentTBA = User::where('id', old('agent_id_select'))->where('status', 1)->first();
+		$agetid = $agentTBA->id;
+		$agetName = $agentTBA->company_name;
+		}
+		
+		$records = [];
+		$vouchers = Voucher::withCount('voucherActivities')
+		->where("status_main", 5)
+		->get();
+
+		$totalVoucher = $vouchers->count();
+		$totalVoucherActivity = $vouchers->sum('voucher_activities_count');
+
+		$records = [];
+		
+
 		$records = $query->get();
 		return Excel::download(new MasterReportExport($records), 'master_report'.date('d-M-Y s').'.csv');
 
@@ -1723,43 +1731,59 @@ public function voucherActivtyRefundedReport(Request $request)
     // Determine zones to process
     if (isset($input['zone']) && !empty($input['zone'])) {
         $zones = [$input['zone'] => $input['zone']];
+		
     } else {
         $zones = config("constants.agentZone");
     }
-
+	
     // Start the query for voucher activity
     $result = DB::table('voucher_activity as va')
 	->select(
-		'v.zone',
+		'va.zone',
 		DB::raw('COUNT(DISTINCT va.voucher_id) AS no_ofBkgs'),
 		DB::raw('COUNT(*) AS no_ofServices'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost > 0 AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalAccountedSell'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost > 0 AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalAccountedSellDis'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost = 0 AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalUnAccountedSell'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost = 0 AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalUnAccountedSellDis'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalSells'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalSellsDis'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.actual_total_cost ELSE 0 END) AS totalCost'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) > 0 AND va.original_trans_rate IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalAccountedTransSell'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) = 0 AND va.original_trans_rate IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalUnAccountedTransSell'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalTransSells'),
-
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) > 0 AND va.discount_sic_pvt_price IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalAccountedTransSellDis'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) = 0 AND va.discount_sic_pvt_price IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalUnAccountedTransSellDis'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalTransSellsDis'),
-		DB::raw('SUM(CASE WHEN va.actual_transfer_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.actual_transfer_cost ELSE 0 END) AS totalTransCost')
-	)
+		
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) > 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_tkt_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedSell'),
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) > 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_tkt AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedSellDis'),
+		
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) = 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_tkt_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedSell'),
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) = 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_tkt AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedSellDis'),
+		
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.original_tkt_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalSells'),
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.discount_tkt AS DECIMAL(10,2)) ELSE 0 END) AS totalSellsDis'),
+		
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.actual_total_cost AS DECIMAL(10,2)) ELSE 0 END) AS totalCost'),
 	
-        ->leftJoin('vouchers as v', 'va.voucher_id', '=', 'v.id')
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) > 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_trans_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedTransSell'),
+				  
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) = 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_trans_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedTransSell'),
+				  
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) IS NOT NULL 
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_trans_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalTransSells'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) > 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedTransSellDis'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) = 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedTransSellDis'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) IS NOT NULL 
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalTransSellsDis'),
+	
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.actual_transfer_cost AS DECIMAL(10,2)) ELSE 0 END) AS totalTransCost')
+	)->leftJoin('vouchers as v', 'va.voucher_id', '=', 'v.id')
         ->leftJoin('voucher_hotels as vh', 'v.id', '=', 'vh.voucher_id')
         ->where('v.status_main', 5)
-        ->where('v.zone', '!=', '')
-        ->groupBy('v.zone');
+        ->where('va.zone', '!=', '')
+        ->groupBy('va.zone');
 
     // Apply zone filter if zones are set
     if (isset($zones) && !empty($zones)) {
-        $result->whereIn('v.zone', array_keys($zones)); // This filters based on zones
+        $result->whereIn('va.zone', array_keys($zones)); // This filters based on zones
     }
+	
 
     // Apply date filter if booking_type and date range are set
     if (isset($input['booking_type']) && !empty($input['booking_type'])) {
@@ -1786,7 +1810,6 @@ public function voucherActivtyRefundedReport(Request $request)
     $data = [];
     foreach ($zones as $zone) {
         $zoneResult = $result->firstWhere('zone', $zone);
-
         // Fetch hotel data with check_in_date filter
         $hotelData = DB::table('voucher_hotels as vh')
             ->join('vouchers as v', 'vh.voucher_id', '=', 'v.id')
@@ -1858,35 +1881,51 @@ public function voucherActivtyRefundedReport(Request $request)
 
 	$result = DB::table('voucher_activity as va')
 	->select(
-		'v.zone',
+		'va.zone',
 		DB::raw('COUNT(DISTINCT va.voucher_id) AS no_ofBkgs'),
 		DB::raw('COUNT(*) AS no_ofServices'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost > 0 AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalAccountedSell'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost > 0 AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalAccountedSellDis'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost = 0 AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalUnAccountedSell'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost = 0 AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalUnAccountedSellDis'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_tkt_rate ELSE 0 END) AS totalSells'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_tkt ELSE 0 END) AS totalSellsDis'),
-		DB::raw('SUM(CASE WHEN va.actual_total_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.actual_total_cost ELSE 0 END) AS totalCost'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) > 0 AND va.original_trans_rate IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalAccountedTransSell'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) = 0 AND va.original_trans_rate IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalUnAccountedTransSell'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.original_trans_rate ELSE 0 END) AS totalTransSells'),
-
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) > 0 AND va.discount_sic_pvt_price IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalAccountedTransSellDis'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) = 0 AND va.discount_sic_pvt_price IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalUnAccountedTransSellDis'),
-		DB::raw('SUM(CASE WHEN (va.actual_transfer_cost + va.actual_transfer_cost2) IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.discount_sic_pvt_price ELSE 0 END) AS totalTransSellsDis'),
-		DB::raw('SUM(CASE WHEN va.actual_transfer_cost IS NOT NULL AND va.status NOT IN (1,2,11,12) THEN va.actual_transfer_cost ELSE 0 END) AS totalTransCost')
-	)
-        ->leftJoin('vouchers as v', 'va.voucher_id', '=', 'v.id')
+		
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) > 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_tkt_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedSell'),
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) > 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_tkt AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedSellDis'),
+		
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) = 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_tkt_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedSell'),
+		DB::raw('SUM(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) = 0 AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_tkt AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedSellDis'),
+		
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.original_tkt_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalSells'),
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.discount_tkt AS DECIMAL(10,2)) ELSE 0 END) AS totalSellsDis'),
+		
+		DB::raw('SUM(CAST(va.actual_total_cost AS DECIMAL(10,2))) AS totalCost'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) > 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_trans_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedTransSell'),
+				  
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) = 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_trans_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedTransSell'),
+				  
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) IS NOT NULL 
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.original_trans_rate AS DECIMAL(10,2)) ELSE 0 END) AS totalTransSells'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) > 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalAccountedTransSellDis'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) = 0  
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalUnAccountedTransSellDis'),
+	
+		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) IS NOT NULL 
+				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalTransSellsDis'),
+	
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.actual_transfer_cost AS DECIMAL(10,2)) ELSE 0 END) AS totalTransCost')
+	)->leftJoin('vouchers as v', 'va.voucher_id', '=', 'v.id')
         ->leftJoin('voucher_hotels as vh', 'v.id', '=', 'vh.voucher_id')
         ->where('v.status_main', 5)
-        ->where('v.zone', '!=', '')
-        ->groupBy('v.zone');
+        ->where('va.zone', '!=', '')
+        ->groupBy('va.zone');
 
     // Apply zone filter if zones are set
     if (isset($zones) && !empty($zones)) {
-        $result->whereIn('v.zone', array_keys($zones)); // This filters based on zones
+        $result->whereIn('va.zone', array_keys($zones)); // This filters based on zones
     }
+	
 
     // Apply date filter if booking_type and date range are set
     if (isset($input['booking_type']) && !empty($input['booking_type'])) {
@@ -1916,12 +1955,13 @@ public function voucherActivtyRefundedReport(Request $request)
 
         // Fetch hotel data with check_in_date filter
         $hotelData = DB::table('voucher_hotels as vh')
-            ->join('vouchers as v', 'vh.voucher_id', '=', 'v.id')
-            ->where('v.zone', $zone)
-            ->select(
-                DB::raw('COALESCE(sum(vh.total_price), 0) as totalHotelSP'),
-                DB::raw('COALESCE(sum(vh.net_cost), 0) as totalHotelCost')
-            );
+    ->join('vouchers as v', 'vh.voucher_id', '=', 'v.id')
+    ->where('v.zone', $zone)
+    ->select(
+        DB::raw('COALESCE(SUM(CAST(vh.total_price AS DECIMAL(10,2))), 0) AS totalHotelSP'),
+        DB::raw('COALESCE(SUM(CAST(vh.net_cost AS DECIMAL(10,2))), 0) AS totalHotelCost')
+    );
+
 
         // Apply date range filter for hotel check-in date
         if (isset($input['from_date'], $input['to_date']) && !empty($input['from_date']) && !empty($input['to_date'])) {

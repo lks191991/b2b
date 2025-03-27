@@ -242,6 +242,7 @@ return [
 		'SPDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
 		'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
 		'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'ZoneReportHelper' => App\Helpers\ZoneReportHelper::class,
 
     ],
 

@@ -562,16 +562,18 @@ $zonePriceAr = [];
 {
     $voucherActivity = VoucherActivity::where('id', $vid)->first();
     $returnTotalPrice = 0;
+
     if (!empty($voucherActivity)) {
-        // Ensure the values are numeric
-        $totalPrice = (float) $voucherActivity->original_tkt_rate;
-        $discounTkt = (float) $voucherActivity->discount_tkt;
+        // NULL ko handle karne ke liye ?? 0 ka use karein
+        $totalPrice = (float) ($voucherActivity->original_tkt_rate ?? 0);
+        $discounTkt = (float) ($voucherActivity->discount_tkt ?? 0);
 
         $returnTotalPrice = $totalPrice - $discounTkt;
     }
     
     return $returnTotalPrice;
 }
+
 
 
 	public static function getTotalActivitySP($vid,$aid) 

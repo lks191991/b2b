@@ -1195,7 +1195,8 @@ class VouchersController extends Controller
 				'cancellation_chart' => json_encode($cancellation),
 				'totalprice' => number_format($priceCal['totalprice'], 2, '.', ''),
 				'created_by' => Auth::user()->id,
-				'updated_by' => Auth::user()->id,	
+				'updated_by' => Auth::user()->id,
+				'zone' => $voucher->zone,	
 					];
 
 				$total_activity_amount += $priceCal['totalprice'];
@@ -2244,7 +2245,8 @@ class VouchersController extends Controller
 					'totalprice' => $total[$ik],
 					'discountPrice' => "0",
 					'created_by' => Auth::user()->id,
-					'updated_by' => Auth::user()->id,	
+					'updated_by' => Auth::user()->id,
+					'zone' => $voucher->zone,	
 						];
 			}
 
