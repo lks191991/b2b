@@ -692,7 +692,11 @@ public function getDashboardMasterReport($startDate,$endDate=null)
 		DB::raw('SUM(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) IS NOT NULL 
 				  AND va.status NOT IN (1,2,11,12) THEN CAST(va.discount_sic_pvt_price AS DECIMAL(10,2)) ELSE 0 END) AS totalTransSellsDis'),
 	
-		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.actual_transfer_cost AS DECIMAL(10,2)) ELSE 0 END) AS totalTransCost')
+		DB::raw('SUM(CASE WHEN va.status NOT IN (1,2,11,12) THEN CAST(va.actual_transfer_cost AS DECIMAL(10,2)) ELSE 0 END) AS totalTransCost'),
+		DB::raw('COUNT(CASE WHEN CAST(va.actual_total_cost AS DECIMAL(10,2)) = 0 AND va.status NOT IN (1,2,11,12) THEN 1 END) AS countUnAccountedSell'),
+		DB::raw('COUNT(CASE WHEN (CAST(va.actual_transfer_cost AS DECIMAL(10,2)) + CAST(va.actual_transfer_cost2 AS DECIMAL(10,2))) = 0 
+                  AND va.status NOT IN (1,2,11,12) THEN 1 END) AS countUnAccountedTransSell'),
+				  
 	)->leftJoin('vouchers as v', 'va.voucher_id', '=', 'v.id')
         ->leftJoin('voucher_hotels as vh', 'v.id', '=', 'vh.voucher_id')
         ->where('v.status_main', '5')
@@ -716,6 +720,7 @@ public function getDashboardMasterReport($startDate,$endDate=null)
         $hotelData = DB::table('voucher_hotels as vh')
 			->join('vouchers as v', 'vh.voucher_id', '=', 'v.id')
 			->select(
+				DB::raw('COUNT(*) as totalHotelCount'),
 				DB::raw('COALESCE(sum(vh.total_price), 0) as totalHotelSP'),
 				DB::raw('COALESCE(sum(vh.net_cost), 0) as totalHotelCost')
 			);
@@ -755,9 +760,13 @@ public function getDashboardMasterReport($startDate,$endDate=null)
         
             'totalTransCost' => isset($zoneResult->totalCost) ? (float)$zoneResult->totalTransCost : 0.00,
             'totalAccountedTransProfit' => $zoneResult ? (float)$zoneResult->totalAccountedTransSell - (float)$zoneResult->totalTransCost : 0.00,
+			
+			'countUnAccountedSell' => $zoneResult ? (float)$zoneResult->countUnAccountedSell : 0,
+			'countUnAccountedTransSell' => $zoneResult ? (int)$zoneResult->countUnAccountedTransSell : 0,
         
             'totalHotelSP' => $hotelData ? (float)$hotelData->totalHotelSP : 0.00,
             'totalHotelCost' => $hotelData ? (float)$hotelData->totalHotelCost : 0.00,
+			'totalHotelCount' => $hotelData ? (int)$hotelData->totalHotelCount : 0,
             'PLHotel' => $hotelData ? (float)$hotelData->totalHotelSP - (float)$hotelData->totalHotelCost : 0.00,
         ];
         

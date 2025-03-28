@@ -247,7 +247,7 @@
       
       
       <th colspan="5">
-          <strong>MTD</strong> <a href="{{ route('zoneReport', ['booking_type' => '1', 'from_date' => $currentMonthStartDate->format('Y-m-d'), 'to_date' => $currentDate->format('d-m-Y')]) }}" 
+          <strong>MTD</strong> <a href="{{ route('zoneReport', ['booking_type' => '1', 'from_date' => $currentMonthStartDate->format('Y-m-d'), 'to_date' => $currentDate->format('Y-m-d')]) }}" 
             class="d-inline btn btn-success btn-sm">
             Zone Report ({{ $currentMonthStartDate->format('d-m-Y') }} - {{ $currentDate->format('d-m-Y') }})
          </a>
@@ -255,7 +255,7 @@
       </th>
 
       <th colspan="4">
-        <strong>YTD</strong> <a href="{{ route('zoneReport', ['booking_type' => '1', 'from_date' => $startDateOfYear->format('Y-m-d'), 'to_date' => $endDateOfYear->format('d-m-Y')]) }}" 
+        <strong>YTD</strong> <a href="{{ route('zoneReport', ['booking_type' => '1', 'from_date' => $startDateOfYear->format('Y-m-d'), 'to_date' => $endDateOfYear->format('Y-m-d')]) }}" 
           class="d-inline btn btn-success btn-sm">
           Zone Report ({{ $startDateOfYear->format('d-m-Y') }} - {{ $endDateOfYear->format('d-m-Y') }})
        </a>
@@ -301,7 +301,7 @@
           <td>{{ number_format((float)$cYReport['totalAccountedProfit'], 2) }}</td>
           <td>Ticket</td>
           <td>{{ number_format((float)$cYReport['totalUnAccountedSell'], 2) }}</td>
-          <td>Ticket Count</td>
+          <td>{{ $cYReport['countUnAccountedSell']}}</td>
       </tr>
       <tr>
           <td>Transfers</td>
@@ -316,7 +316,7 @@
           <td>{{ number_format((float)$cYReport['totalAccountedTransProfit'], 2) }}</td>
           <td>Transfers</td>
           <td>{{ number_format((float)$cYReport['totalUnAccountedTransSell'], 2) }}</td>
-          <td>Transfers Count</td>
+          <td>{{ $cYReport['countUnAccountedTransSell'] }}</td>
       </tr>
       <tr>
           <td>Hotel</td>
@@ -330,8 +330,8 @@
           <td>{{ number_format((float)$cMReport['PLHotel'], 2) }}</td>
           <td>{{ number_format((float)$cYReport['PLHotel'], 2) }}</td>
           <td>Total</td>
-          <td>Hotel Value</td>
-          <td>Hotel Count</td>
+          <td>0</td>
+          <td>{{ $cYReport['totalHotelCount'] }}</td>
       </tr>
       <tr>
           <th>Total</th>
@@ -345,8 +345,8 @@
           <th>{{ number_format((float)($cMReport['totalAccountedProfit'] + $cMReport['totalAccountedTransProfit'] + $cMReport['PLHotel']), 2) }}</th>
           <th>{{ number_format((float)($cYReport['totalAccountedProfit'] + $cYReport['totalAccountedTransProfit'] + $cYReport['PLHotel']), 2) }}</th>
           <th>Total</th>
-          <th>Total Sales Value</th>
-          <th>Total Sales Count</th>
+          <th>{{ number_format((float)($cYReport['totalUnAccountedTransSell'] + $cYReport['totalUnAccountedSell']), 2) }}</th>
+          <th>{{ ((int)$cYReport['countUnAccountedSell'] + (int)$cYReport['countUnAccountedTransSell']+ (int)$cYReport['totalHotelCount'])}}</th>
       </tr>
   </tbody>
 </table>
