@@ -229,16 +229,7 @@
            
         </style>
     
-        @php
-            use Carbon\Carbon;
-    
-            $todayDate = date("d-m-Y");
-            $currentDate = Carbon::now();
-            $currentYear = $currentDate->year;
-            $currentMonthStartDate = $currentDate->startOfMonth()->format('d-m-Y');
-            $startDateOfYear = Carbon::createFromDate($currentYear, 1, 1)->format('d-m-Y');
-            $endDateOfYear = Carbon::createFromDate($currentYear, 12, 31)->format('d-m-Y');
-        @endphp
+       
     
         
     
@@ -246,11 +237,34 @@
   
   <thead class="table-light">
     <tr>
-      <th colspan="4"><strong>Current Date</strong> : <span>({{ $todayDate }})</span></th>
-      <th colspan="5"><strong>MTD</strong> : ({{ $currentMonthStartDate }} - {{ $todayDate }})</span></th>
-      <th colspan="4"><strong>YTD</strong><span> : ({{ $startDateOfYear }} - {{ $endDateOfYear }})</span></th>
+      <th colspan="4">
+          <a href="{{ route('zoneReport', ['booking_type' => '1', 'from_date' => $currentDate->format('Y-m-d'), 'to_date' => $currentDate->format('Y-m-d')]) }}" 
+            class="d-inline btn btn-success btn-sm">
+            Zone Report ({{ $currentDate->format('Y-m-d') }})
+         </a>
+      </th>
+
       
+      
+      <th colspan="5">
+          <strong>MTD</strong> <a href="{{ route('zoneReport', ['booking_type' => '1', 'from_date' => $currentMonthStartDate->format('Y-m-d'), 'to_date' => $currentDate->format('d-m-Y')]) }}" 
+            class="d-inline btn btn-success btn-sm">
+            Zone Report ({{ $currentMonthStartDate->format('d-m-Y') }} - {{ $currentDate->format('d-m-Y') }})
+         </a>
+        
+      </th>
+
+      <th colspan="4">
+        <strong>YTD</strong> <a href="{{ route('zoneReport', ['booking_type' => '1', 'from_date' => $startDateOfYear->format('Y-m-d'), 'to_date' => $endDateOfYear->format('d-m-Y')]) }}" 
+          class="d-inline btn btn-success btn-sm">
+          Zone Report ({{ $startDateOfYear->format('d-m-Y') }} - {{ $endDateOfYear->format('d-m-Y') }})
+       </a>
+      
+    </th>
+      
+     
   </tr>
+  
       <tr>
           <th rowspan="2">Service</th>
           <th colspan="3">Total Sales</th>

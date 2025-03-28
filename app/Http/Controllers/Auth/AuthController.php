@@ -399,7 +399,7 @@ if(($request->input('country_id') == '94') && (strlen($request->input('mobile'))
 					$cYReport = $this->getDashboardMasterReport($startDateOfYear,$endDateOfYear);
           
 					$vouchers = $query->orderBy('booking_date', 'DESC')->paginate(50);
-                return view('dashboard', compact('totalUserRecords','totalAgentRecords','totalSupplierRecords','totalCustomerRecords','totalActivityRecords','totalHotelRecords','vouchers','vouchersCurrentDate','vouchersMonth','vouchersYear','cDReport','cMReport','cYReport'));
+                return view('dashboard', compact('totalUserRecords','totalAgentRecords','totalSupplierRecords','totalCustomerRecords','totalActivityRecords','totalHotelRecords','vouchers','vouchersCurrentDate','vouchersMonth','vouchersYear','cDReport','cMReport','cYReport','currentDate','currentMonthStartDate','startDateOfYear','endDateOfYear'));
 				}
            
         }
