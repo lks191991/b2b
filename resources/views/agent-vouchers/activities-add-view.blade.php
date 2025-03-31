@@ -4,7 +4,7 @@
 			$currency = SiteHelpers::getCurrencyPrice();
 			@endphp
 			@if(!empty($variantData))
-				<form action="{{route('voucher.activity.save')}}" method="post" class="form" id="cartForm" >
+				<form action="{{route('agent-voucher.activity.save')}}" method="post" class="form" id="cartForm" >
 				{{ csrf_field() }}
 				 <input type="hidden" id="activity_id" name="activity_id" value="{{ $aid }}"  />
 				 <input type="hidden" id="v_id" name="v_id" value="{{ $vid }}"  />
@@ -13,6 +13,8 @@
 				 <input type="hidden" id="activity_type" name="activity_type" value="{{ $activity->product_type }}"  />
 				 <input type="hidden" id="ucode" name="ucode" value="{{$variantData['activityVariants']['0']['ucode']}}"  />
 				 <input type="hidden" id="timeslot" name="timeslot" value=""  />
+				 <input type="hidden" id="timeSlotId" name="timeSlotId" value="0"  />
+				<input type="hidden" id="isRayna" name="isRayna" value="false"  />
 				
 				 <table class="table rounded-corners" style="border-radius: 10px !important;font-size:10pt;">
                   <thead>

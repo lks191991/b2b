@@ -547,11 +547,6 @@ function adultChildReq(a,c,inputnumber) {
         var tk = 0;
 
         $.each(slots, function(index, slot) {
-            // var radio = $('<input type="radio" name="timeSlotRadio">')
-            //     .attr('value', slot)
-            //     .prop('checked', slot === selectedSlot);
-            // var label = $('<label>').text(slot).prepend(radio);
-            // radioGroup.append(label);
             var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
             radioGroup.append(radio);
             tk++;

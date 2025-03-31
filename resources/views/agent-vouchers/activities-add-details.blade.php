@@ -102,79 +102,64 @@
 
           @include("inc.sidebar_cart")       
                    
-    <div class="modal login-modal " id="timeSlotModal" data-bs-keyboard="false" tabindex="-1"  aria-modal="true" role="dialog" style="display: none;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-clode-btn" data-bs-dismiss="modal"></div>
-                <div class="modal-header">
-                  <!-- Select Time Slot -->
-                </div>
-                <div class="modal-body">
-                    <div class="login-registration-form">
-                        <div class="form-title">
-                           <p>Select Time Slot</p>
-                             <!-- <p>Enter your email address for Login.</p> -->
-                        </div>
-                        <form>
-                            <div class="form-inner mb-20">
-                              <select class="form-control" required id="timeSlotDropdown">
-                       
-                              </select>
-                            </div>
-                            
-                        </form>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="secondary-btn1 btn-sm" id="selectTimeSlotBtn">Add To Cart</button>
-              
+				   <div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Select Time Slot</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            <div class="modal-body">
+              <div class="form-group" id="radioSlotGroup">
+                  <!-- Radio buttons will be dynamically added here -->
+              </div>
+          </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-primary-flip btn-sm" id="selectTimeSlotBtn"><i class="fa fa-cart-plus"></i></button>
+                <!-- You can add a button here for further actions if needed -->
             </div>
         </div>
-    </div> 
-                    
-                    <!-- <h4>Tour Options</h4>
-                    <div class="accordion tour-plan" id="tourPlan">
-                        <div class="accordion-item">
-                          <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                <span>Varaint 01 :</span>  Preparation and Departure
-                            </button>
-                          </h2>
-                          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#tourPlan">
-                            <div class="accordion-body">
-                              <h4>Included and Excluded</h4>
-                                <div class="includ-and-exclud-area mb-20">
-                                    <ul>
-                                        <li><i class="bi bi-check-lg"></i> Meal as per hotel Plan and drinks free too.</li>
-                                        <li><i class="bi bi-check-lg"></i> Return airport and round trip transfers.</li>
-                                        <li><i class="bi bi-check-lg"></i> Accommodation on twin sharing basis.</li>
-                                        <li><i class="bi bi-check-lg"></i> The above rates are on per day disposal basi</li>
-                                        <li><i class="bi bi-check-lg"></i> Enjoy Brussels day tours. Overnight Brussels</li>
-                                    </ul>
-                                    <ul class="exclud">
-                                        <li><i class="bi bi-x-lg"></i> AC will not be functional on Hills or Slopes.</li>
-                                        <li><i class="bi bi-x-lg"></i> Any other service not mentioned</li>
-                                        <li><i class="bi bi-x-lg"></i> Additional entry fees other than specified</li>
-                                        <li><i class="bi bi-x-lg"></i> Amsterdam canal cruise not included for basic</li>
-                                    </ul>
-                                </div>
-                                <div class="highlight-tour mb-20">
-                                    <h4>Highlights of the Tour</h4>
-                                    <ul>
-                                        <li><span><i class="bi bi-check"></i></span> Our team of knowledgeable guides and travel experts are dedicated to making your journey memorable and worry-free</li>
-                                        <li><span><i class="bi bi-check"></i></span> Dive into rich cultures and traditions. Explore historic sites, savor authentic cuisine, and connect with locals.</li>
-                                        <li><span><i class="bi bi-check"></i></span> We take care of all the details, so you can focus on creating memories. Rest assured that your journey is in capable hands</li>
-                                        <li><span><i class="bi bi-check"></i></span> Sip cocktails on the beach as you watch the sun dip below the horizon.</li>
-                                        <li><span><i class="bi bi-check"></i></span> From accommodations to dining experiences, we select the best partners to ensure your comfort and enjoyment throughout your journey.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                          </div>
-                        </div>
-                       
-                        
-                      </div> -->
+    </div>
+</div>
+
+<div class="modal fade" id="Noslot" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Slot Unavailable</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <span id="messageSlot" class="row p-2"></span>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="PriceModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Price</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <span id="pad" class="row"></span>
+			   <span id="pchd" class="row"></span>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+     
                 </div>
             </div>
         </div>
@@ -346,29 +331,46 @@
  });
 
   $(document).on('click', '.addToCart', function(evt) {
+    const loaderOverlay = $("body #loader-overlay");
 	  evt.preventDefault();
+    loaderOverlay.show();
 	 if($('body #cartForm').validate({})){
 		 variant_id = $(this).data('variantid');
 		 inputnumber = $(this).data('inputnumber');
 		 const transferOptionName = $("body #transfer_option" + inputnumber).find(':selected').val();
+     const tour_date = $("body #tour_date" + inputnumber).val();
+     const adult = $("body #adult" + inputnumber).val();
+     const child = $("body #child" + inputnumber).val();
+     const infant = $("body #infant" + inputnumber).val();
 		 $.ajax({
 			  url: "{{ route('get.variant.slots') }}",
 			  type: 'POST',
 			  dataType: "json",
 			  data: {
 				  variant_id:variant_id,
-				  transferOptionName:transferOptionName
+				  transferOptionName:transferOptionName,
+          tour_date:tour_date,
+          adult:adult,
+          child:child,
+          infant:infant
 				  },
-			  success: function(data) {
+          success: function(data) {
 				  if(data.status == 1) {
 						
 						var timeslot = $('#timeslot').val();
+						$('#isRayna').val(data.is_rayna);
 						if(timeslot==''){
-							openTimeSlotModal(data.slots);
+							openTimeSlotModal(data.slots,data.is_rayna);
+              loaderOverlay.hide();
 						} 
+					} else if(data.status == 4) {
+						 $('#Noslot .modal-body #messageSlot').text(data.message).css("color", "red");
+						 $('#Noslot').modal('show');
 					} else if (data.status == 2) {
 						$("body #cartForm").submit();
 					}
+
+          loaderOverlay.hide();
 				//console.log(data);
 			  },
 			  error: function(error) {
@@ -413,45 +415,38 @@ function adultChildReq(a,c,inputnumber) {
   }
 }
 
+
   function openTimeSlotModal(slots, selectedSlot) {
     var isValid = $('body #cartForm').valid();
     if (isValid) {
         $('#timeSlotModal').modal('show');
 
-        var dropdown = $('#timeSlotDropdown');
-        dropdown.empty();
+        var radioGroup = $('#radioSlotGroup');
+        radioGroup.empty();
+        var tk = 0;
 
         $.each(slots, function(index, slot) {
-            var option = $('<option></option>').attr('value', slot).text(slot);
-            if (slot === selectedSlot) {
-                option.attr('selected', 'selected');
-            }
-            dropdown.append(option);
-        });
-
-        dropdown.on('change', function() {
-            var selectedValue = dropdown.val();
-			$('body #timeslot').val('');
-            if (selectedValue !== 'select') {
-                $('#timeslot').val(selectedValue);
-				$("body #timeSlotDropdown").removeClass('error-rq');
-            }
+            var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
+            radioGroup.append(radio);
+            tk++;
         });
 
         $('#selectTimeSlotBtn').on('click', function() {
-				var timeslot = $('body #timeslot').val();
-				$("body #timeSlotDropdown").removeClass('error-rq');
-				//if(timeslot==''){
-				//$("body #timeSlotDropdown").addClass('error-rq');
-				//} else { 
-					$("body #cartForm").submit();
-				//}
-						
-            
+            var selectedRadio = $('input[name="timeSlotRadio"]:checked');
+			var selectedValue = selectedRadio.val();
+			var timeSlotId = selectedRadio.data('id');
+            if (selectedValue) {
+                $('#timeslot').val(selectedValue);
+				$('#isRayna').val(isRayna);
+				$('#timeSlotId').val(timeSlotId);
+                $("body #cartForm").submit();
+            } else {
+                $("body #cartForm").addClass('error-rq');
+            }
+
         });
 
         $('#timeSlotModal .close').on('click', function() {
-            $('body #timeslot').val('');
             $('#timeSlotModal').modal('hide');
         });
     }

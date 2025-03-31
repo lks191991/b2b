@@ -420,31 +420,7 @@ $(document).on('click', '.loadvari', function(evt) {
             $("body #pdivvar"+actid).css('display','block');
             $("body #loader-overlay").hide();
            
-		// 	$(".tour_datepicker").datepicker({
-    //     beforeShowDay: function(date) {
-    //     var day = date.getDay();
-    //     return [(day != 1 && day != 2)];
-    // },
-    //     // beforeShowDay: function(date) {
-    //     //                     var dateString = $.datepicker.formatDate('yy-mm-dd', date);
-		// 		// 			if(disabledDay.length > 0){
-		// 		// 				if (disabledDay.indexOf(date.getDay()) != -1) {
-		// 		// 					return [false, "disabled-day", "This day is disabled"];
-		// 		// 				}
-		// 		// 			}
-    //     //                     // if (availableDates.indexOf(dateString) != -1) {
-    //     //                     //     return [true, "available-date", "This date is available"];
-    //     //                     // }
-    //     //                     return [true];
-    //     //                 },
-		// 					minDate: new Date(),
-		// 					weekStart: 1,
-		// 					daysOfWeekHighlighted: "6,0",
-		// 					autoclose: true,
-		// 					todayHighlight: true,
-		// 					dateFormat: 'dd-mm-yy'
-    //                 });
-					
+		
 			// Onload change price 
 			var pvttr =  $("body #transfer_option0").find(':selected').val();
 			$("body #adult0").trigger("change");
@@ -863,11 +839,6 @@ function adultChildReq(a,c,inputnumber) {
         radioGroup.empty();
         var tk = 0;
         $.each(slots, function(index, slot) {
-            // var radio = $('<input type="radio" name="timeSlotRadio">')
-            //     .attr('value', slot)
-            //     .prop('checked', slot === selectedSlot);
-            // var label = $('<label>').text(slot).prepend(radio);
-            // radioGroup.append(label);
             var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
             radioGroup.append(radio);
             tk++;

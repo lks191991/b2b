@@ -29,6 +29,9 @@ use App\Mail\VoucheredBookingEmailMailable;
 use App\Models\Tag;
 use App\Mail\VoucheredCancelEmail;
 
+use App\Models\ReportLog;
+use RaynaHelper;
+
 class AgentVouchersController extends Controller
 {
 	
@@ -710,6 +713,7 @@ class AgentVouchersController extends Controller
 		$voucher_id = $request->input('v_id');
 		$activity_id = $request->input('activity_id');
 		$activity_variant_id = $request->input('activity_variant_id');
+		$activity_variant_code = @$request->input('activity_variant_code');
 		$voucher = Voucher::find($voucher_id);
 		$startDate = $voucher->travel_from_date;
 		$endDate = $voucher->travel_to_date;
@@ -720,6 +724,7 @@ class AgentVouchersController extends Controller
 		$child = $request->input('child');
 		$infant = $request->input('infant');
 		$discount = $request->input('discount');
+		$isRayna = $request->input('isRayna');
 		//dd($request->input('ucode'));
 		//dd($request->all());
 		$data = [];
@@ -791,6 +796,8 @@ class AgentVouchersController extends Controller
 			'vat_percentage' => $priceCal['vat_per'],
 			'discountPrice' => $discount[$k],
 			'time_slot' => $timeslot,
+   			'timeSlotId' => ($isRayna)?$timeSlotId:0,
+			'isRayna' => ($isRayna)?1:0,
 			'cancellation_chart' => json_encode($cancellation),
 			'totalprice' => number_format($priceCal['totalprice'], 2, '.', ''),
 			'created_by' => Auth::user()->id,
@@ -803,17 +810,55 @@ class AgentVouchersController extends Controller
 		}
 		
 		
-		
 		if(count($data) > 0)
-		{
-			VoucherActivity::insert($data);
-			$voucher = Voucher::find($voucher_id);
-			$voucher->total_activity_amount += $total_activity_amount;
-			$voucher->save();
-		}
+			{
+				if ($isRayna) {
+					if (!empty($data) && isset($data[0])) {
+						$payload = $data[0];
+				
+						$pData = [
+							"travelDate" => $payload['tour_date'] ?? null,
+							"adult"      => $payload['adult'] ?? 0,
+							"child"      => $payload['child'] ?? 0,
+							"infant"     => $payload['infant'] ?? 0,
+						];
+				
+						$availability = RaynaHelper::getTourAvailability($variant->touroption_id, $pData);
+				
+						if (!empty($availability['status']) && $availability['status'] === true) {
+							$tourOptionDetails = RaynaHelper::getTourOptionByTourId($variant->touroption_id, $pData);
+							if (!empty($tourOptionDetails) && $tourOptionDetails['status'] === true) {
+								$data[0]['rayna_adultPrice']  = $tourOptionDetails['rayna_adultPrice'] * $payload['adult'];
+								$data[0]['rayna_childPrice']  = $tourOptionDetails['rayna_childPrice'] * $payload['child'];
+								$data[0]['rayna_infantPrice'] = $tourOptionDetails['rayna_infantPrice'] * $payload['infant'];
+							} else {
+								$errorMessage = $tourOptionDetails['message'] ?? 'Unknown error occurred';
+								return redirect()->back()->with('error', $errorMessage);
+							}
+
+
+							VoucherActivity::insert($data);
+							$voucher = Voucher::find($voucher_id);
+							$voucher->total_activity_amount += $total_activity_amount;
+							$voucher->save();
+						} else {
+							$errorMessage = $availability['message'] ?? 'Unknown error occurred';
+							return redirect()->back()->with('error', $errorMessage);
+						}
+					} else {
+						return redirect()->back()->with('error', 'Invalid tour data.');
+					}
+				}
+				else{
+					VoucherActivity::insert($data);
+							$voucher = Voucher::find($voucher_id);
+							$voucher->total_activity_amount += $total_activity_amount;
+							$voucher->save();
+				}
+			}
 
 		} else {
-			return redirect()->back()->with('error', $variant->title.' Please Select Tour Option.');
+			return redirect()->back()->with('error',' Please Select Tour Option.');
 		}
 		
 		
@@ -978,6 +1023,26 @@ class AgentVouchersController extends Controller
 			
 			$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
 			
+			try {
+				$bk = RaynaHelper::tourBooking($record);
+				if (isset($bk['status']) && $bk['status'] == false) {
+					$errorDescription = $bk['error']; 
+					$record->status_main = 4;
+					$saveResult = $record->save();
+					$agent->agent_amount_balance += $grandTotal;
+					$agent->save();
+					
+					return redirect()->route('agent-vouchers.show',$record->id)->with('error', $errorDescription);
+				}
+			} catch (\Exception $e) {
+						$record->status_main = 4;
+						$saveResult = $record->save();
+						
+						$agent->agent_amount_balance += $grandTotal;
+						$agent->save();
+					
+			}
+					
 			Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
 			
 			}else{
@@ -1064,7 +1129,21 @@ class AgentVouchersController extends Controller
 		//if($record->ticket_downloaded == '0'){
 		$record->status = 1;
 		$record->canceled_date = Carbon::now()->toDateTimeString();
+		if($record->isRayna == '1'){
+			if ($record && !empty($record->rayna_booking_details)) {
+			$bookingDetails = json_decode($record->rayna_booking_details, true);
+			$referenceNo = $record->referenceNo;
+			$bookingId = $bookingDetails[0]['bookingId'];
+			$cancel = RaynaHelper::cancelBooking($referenceNo,$bookingId,$record->voucher_id,$record->id);
+				if ($cancel['status']) {
+					$record->isRaynaCancel = '1';
+				}
+			}
+		}
+		
 		$record->save();
+		
+		
 		
 		$tickets = Ticket::where("voucher_activity_id",$record->id)->where("voucher_id",$record->voucher_id)->where("ticket_generated",'1')->where("ticket_downloaded",'0')->get();
 		foreach($tickets as $tc){

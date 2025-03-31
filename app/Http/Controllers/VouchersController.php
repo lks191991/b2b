@@ -626,7 +626,7 @@ class VouchersController extends Controller
 					
 					
 					
-					//Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
+					Mail::to($agent->email,'Booking Confirmation.')->cc($zoneUserEmails)->bcc('bookings@abaterab2b.com')->send(new VoucheredBookingEmailMailable($emailData)); 	
 					} catch (\Exception $e) {
 					//DB::rollback(); 
 					return redirect()->back()->with('error', $e->getMessage() ?? 'Something went wrong.');

@@ -328,12 +328,12 @@ $aid = 0;
                                         
 				@if(($validTime['btm'] > 0) && ($ap->status > 2))
 
-                @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff'))
+                @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff') && ($ap->ticket_downloaded == '0'))
                   <form id="cancel-form-{{$ap->id}}" method="post" action="{{route('agent-voucher.activity.cancel',$ap->id)}}" style="display:none;">
                   {{csrf_field()}}
                   </form>
                       <a class="btn-danger  float-right cancelAct  btn-sm ml-2" href="javascript:void(0)" data-variantcode="{{$ap->variant_code}}" href="javascript:void(0)" data-apid="{{$ap->id}}"> Cancel</a>
-                      @elseif($caid != $ap->activity_id)
+                      @elseif(($caid != $ap->activity_id) && ($ap->ticket_downloaded == '0'))
 
                       <form id="cancel-form-{{$ap->id}}" method="post" action="{{route('agent-voucher.activity.cancel',$ap->id)}}" style="display:none;">
                   {{csrf_field()}}
@@ -349,9 +349,16 @@ $aid = 0;
                       <input type="hidden" id="statusv" value="2" name="statusv"  /> 
                       <input type="hidden" id="payment_date" name="payment_date"  /> 
                                   </form>
-                                  @if(($voucher->status_main == 5) and ($ap->ticket_generated == '0') and ($ticketCount > '0') and ($ap->status == '3'))
+					  @if(!empty($ap->referenceNo) && ($ap->isRayna == '1') && ($ap->ticket_generated == '0') && ($voucher->status_main == 5) && ($voucher->status == 3))
+						  <a class="" href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')">Download Ticket</a>
+					  
+                                  @elseif(($voucher->status_main == 5) and ($ap->ticket_generated == '0') and ($ticketCount > '0') and ($ap->status == '3'))
                     <a class="" href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')">Download Ticket</a>
                     
+					@elseif($ap->ticket_generated == '1' && $ap->isRayna == '1' && $ap->status > 3 && $ap->status < 6)
+
+					 <a class=""  href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')" >Download Ticket</a>
+							
                     @elseif(($ap->ticket_generated == '1') and ($ap->status == '4'))
                     <a class=""  href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')" >Download Ticket</a>
                     @endif
