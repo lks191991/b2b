@@ -617,16 +617,26 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
 	  evt.preventDefault();
 	  loaderOverlay.show();
 	 if($('body #cartForm').validate({})){
-		 variant_id = $(this).data('variantid');
+		
+     variant_id = $(this).data('variantid');
 		 inputnumber = $(this).data('inputnumber');
 		 const transferOptionName = $("body #transfer_option" + inputnumber).find(':selected').val();
+     const tour_date = $("body #tour_date" + inputnumber).val();
+     const adult = $("body #adult" + inputnumber).val();
+     const child = $("body #child" + inputnumber).val();
+     const infant = $("body #infant" + inputnumber).val();
+
 		 $.ajax({
 			  url: "{{ route('get.variant.slots') }}",
 			  type: 'POST',
 			  dataType: "json",
-			  data: {
+        data: {
 				  variant_id:variant_id,
-				  transferOptionName:transferOptionName
+				  transferOptionName:transferOptionName,
+          tour_date:tour_date,
+          adult:adult,
+          child:child,
+          infant:infant
 				  },
 			  success: function(data) {
 				  
@@ -690,7 +700,7 @@ function adultChildReq(a,c,inputnumber) {
   }
 }
 
-   function openTimeSlotModal(slots, selectedSlot) {
+   function openTimeSlotModal(slots, isRayna) {
     var isValid = $('body #cartForm').valid();
     if (isValid) {
 		$("body #cartForm").removeClass('error-rq');
@@ -714,7 +724,7 @@ function adultChildReq(a,c,inputnumber) {
                 $('#timeslot').val(selectedValue);
 				$('#isRayna').val(isRayna);
 				$('#timeSlotId').val(timeSlotId);
-                $("body #cartForm").submit();
+               $("body #cartForm").submit();
             } else {
                 $("body #cartForm").addClass('error-rq');
             }

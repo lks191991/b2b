@@ -731,6 +731,7 @@ class AgentVouchersController extends Controller
 		$total_activity_amount = 0;
 		$k  = $request->input('ucode');
 		$timeslot  = $request->input('timeslot');
+		$timeSlotId  = $request->input('timeSlotId');
 		$activitySelectNew[$k] = $k;
 		if(!empty($k)){
 		foreach($activitySelectNew as $k => $v)

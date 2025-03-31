@@ -36,25 +36,25 @@ $currency = SiteHelpers::getCurrencyPrice();
                               <div class="col-md-6">
                                     <div class="form-inner mb-30">
                                         <label>First Name*</label>
-                                        <input type="text" name="fname" value="{{$fname}}" class="form-control"  required>
+                                        <input type="text" name="fname" value="{{$fname}}" class="form-control"  placeholder="First Name*" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-inner mb-30">
                                         <label>Last Name*</label>
-                                        <input type="text" name="lname" value="{{$lname}}" class="form-control"  required>
+                                        <input type="text" name="lname" value="{{$lname}}" class="form-control" placeholder="Last Name*"  required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-inner mb-30">
                                         <label>Email</label>
-                                        <input type="text" name="customer_email" value="{{(!empty($voucher->guest_email))?$voucher->guest_email:$voucher->agent->email}}" class="form-control" >
+                                        <input type="text" name="customer_email" value="{{(!empty($voucher->guest_email))?$voucher->guest_email:$voucher->agent->email}}" placeholder="Email ID" class="form-control" >
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-inner mb-30">
                                         <label>Mobile No.*</label>
-                                        <input type="text" name="customer_mobile" value="{{(!empty($voucher->guest_phone))?$voucher->guest_phone:$voucher->agent->mobile}}" class="form-control" >
+                                        <input type="text" name="customer_mobile" value="{{(!empty($voucher->guest_phone))?$voucher->guest_phone:$voucher->agent->mobile}}" class="form-control" placeholder="Mobile No." >
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -903,6 +903,33 @@ $('#cusDetails').validate({
        document.getElementById('cusDetails').submit();
       
     }
-   
+    $('#btn_paynow').on('click', function(event) {
+  event.preventDefault();
+
+  const loaderOverlay = $("body #loader-overlay");
+
+  var buttonName = $(this).attr('name');
+  var buttonValue = $(this).val();
+
+  $('#cusDetails').append(`<input type="hidden" name="${buttonName}" value="${buttonValue}" />`);
+
+  if ($('#cusDetails').valid()) {
+    loaderOverlay.show();
+
+    setTimeout(function() {
+      $('#cusDetails').submit(); 
+    }, 500);
+  } else {
+    var name = '';
+    $('#cusDetails').find(':input').each(function() {
+      if (!$(this).valid()) {
+        name = $(this).attr('placeholder'); 
+        return false; 
+      }
+    });
+
+    alert("Please fill " + name); 
+  }
+});
     </script>
 @endsection

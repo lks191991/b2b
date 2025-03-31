@@ -828,7 +828,7 @@ function adultChildReq(a,c,inputnumber) {
   }
 }
 
-  function openTimeSlotModal(slots, isRayna,timeSlotId) {
+  function openTimeSlotModal(slots, isRayna) {
 	  
     var isValid = $('body #cartForm').valid();
     if (isValid) {
