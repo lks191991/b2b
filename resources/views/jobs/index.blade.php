@@ -47,9 +47,10 @@
       </div>
       <!-- /.container-fluid -->
     </section>
+    @endsection
     <!-- /.content -->
-
-    <script>
+    @section('scripts')
+    <script type="text/javascript">
       $(document).ready(function() {
           $('#startJobsBtn').click(function() {
               let button = $(this);
