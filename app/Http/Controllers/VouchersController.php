@@ -1207,7 +1207,8 @@ class VouchersController extends Controller
 		
 			if(count($data) > 0)
 			{
-				if ($isRayna) {
+				if ($isRayna == true) {
+					
 					if (!empty($data) && isset($data[0])) {
 						$payload = $data[0];
 				

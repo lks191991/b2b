@@ -813,7 +813,9 @@ class AgentVouchersController extends Controller
 		
 		if(count($data) > 0)
 			{
-				if ($isRayna) {
+				
+				if ($isRayna == true) {
+					
 					if (!empty($data) && isset($data[0])) {
 						$payload = $data[0];
 				
@@ -834,7 +836,7 @@ class AgentVouchersController extends Controller
 								$data[0]['rayna_infantPrice'] = $tourOptionDetails['rayna_infantPrice'] * $payload['infant'];
 							} else {
 								$errorMessage = $tourOptionDetails['message'] ?? 'Unknown error occurred';
-								return redirect()->back()->with('error', $errorMessage);
+								return redirect()->back()->with('error', 'aaaaaaaaaaaaaa');
 							}
 
 
@@ -844,7 +846,7 @@ class AgentVouchersController extends Controller
 							$voucher->save();
 						} else {
 							$errorMessage = $availability['message'] ?? 'Unknown error occurred';
-							return redirect()->back()->with('error', $errorMessage);
+							return redirect()->back()->with('error', '$errorMessage');
 						}
 					} else {
 						return redirect()->back()->with('error', 'Invalid tour data.');

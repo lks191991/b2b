@@ -12,9 +12,9 @@
 				 <input type="hidden" id="vat_invoice" name="vat_invoice" value="{{ $voucher->vat_invoice }}"  />
 				 <input type="hidden" id="activity_type" name="activity_type" value="{{ $activity->product_type }}"  />
 				 <input type="hidden" id="ucode" name="ucode" value="{{$variantData['activityVariants']['0']['ucode']}}"  />
-				 <input type="text" id="timeslot" name="timeslot" value=""  />
-				 <input type="text" id="timeSlotId" name="timeSlotId" value="0"  />
-				<input type="text" id="isRayna" name="isRayna" value="false"  />
+				 <input type="hidden" id="timeslot" name="timeslot" value=""  />
+				 <input type="hidden" id="timeSlotId" name="timeSlotId" value="0"  />
+				<input type="hidden" id="isRayna" name="isRayna" value="false"  />
 				
 				 <table class="table rounded-corners" style="border-radius: 10px !important;font-size:10pt;">
                   <thead>
@@ -102,7 +102,7 @@ $inf = ($abap->prices->infant_min_no_allowed > 0)?$abap->prices->infant_min_no_a
 			$dates = SiteHelpers::getDisableDates($bap->variant->black_out,$bap->variant->sold_out);
 			$disabledDay = SiteHelpers::getNovableActivityDays($bap->variant->availability);
 						@endphp
-				<input type="text" id="tour_date{{$kk}}" value="{{date('d-m-Y',strtotime($voucher->travel_from_date))}}"  name="tour_date[{{ $ap->ucode }}]" placeholder="Tour Date" class="form-control tour_datepicker priceChange" data-inputnumber="{{$kk}}" required    />
+				<input type="text" id="tour_date{{$kk}}" value="{{date('d-m-Y',strtotime($voucher->travel_from_date))}}"  name="tour_date[{{ $ap->ucode }}]" placeholder="Tour Date" class="form-control  priceChange" data-inputnumber="{{$kk}}" required    />
 				
 					
 				<script>
@@ -338,7 +338,7 @@ $dates = $disabledDay = "";
 				
 					</td>
 				<td>
-					<input type="text" id="tour_date{{$kk}}" value="{{date('d-m-Y',strtotime($voucher->travel_from_date))}}"  name="tour_date[{{ $ap->ucode }}]" placeholder="Tour Date" class="form-control tour_datepicker priceChange" data-inputnumber="{{$kk}}" required @if($kk > '0') disabled="disabled" @endif     />
+					<input type="text" id="tour_date{{$kk}}" value="{{date('d-m-Y',strtotime($voucher->travel_from_date))}}"  name="tour_date[{{ $ap->ucode }}]" placeholder="Tour Date" class="form-control  priceChange" data-inputnumber="{{$kk}}" required @if($kk > '0') disabled="disabled" @endif     />
 
 					<script>
 $(function() {
@@ -501,7 +501,7 @@ $(function() {
 				  @if($ap->variant->cancellation_policy != '') 
 					
 				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
-						<td colspan="9" style="color:#fff!important;">
+					<td colspan="9" style="color:#fff!important;background:green">
 							{!! $ap->variant->cancellation_policy !!}
 						</td>
 					</tr>
@@ -555,7 +555,7 @@ $dates = $disabledDay = "";
 				
 					</td>
 				<td>
-					<input type="text" id="tour_date{{$kk}}" value="{{date('d-m-Y',strtotime($voucher->travel_from_date))}}"  name="tour_date[{{ $ap->ucode }}]" placeholder="Tour Date" class="form-control tour_datepicker priceChange" data-inputnumber="{{$kk}}" required @if($kk > '0') disabled="disabled" @endif     />
+					<input type="text" id="tour_date{{$kk}}" value="{{date('d-m-Y',strtotime($voucher->travel_from_date))}}"  name="tour_date[{{ $ap->ucode }}]" placeholder="Tour Date" class="form-control  priceChange" data-inputnumber="{{$kk}}" required @if($kk > '0') disabled="disabled" @endif     />
 
 					<script>
 $(function() {
@@ -713,7 +713,7 @@ $(function() {
 				  @if($ap->variant->cancellation_policy != '') 
 					
 				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
-						<td colspan="9" style="color:#fff!important;">
+					<td colspan="9" style="color:#fff!important;background:green">
 							{!! $ap->variant->cancellation_policy !!}
 						</td>
 					</tr>

@@ -255,7 +255,7 @@ $('.actcsk:first').prop('checked', true).trigger("change");
 		var tomorrow = new Date(today);
 		tomorrow.setDate(today.getDate() + 1); // Set tomorrow's date
     
-        $('.tour_datepicker').daterangepicker({
+      /*   $('.tour_datepicker').daterangepicker({
 		singleDatePicker: true,
 		showDropdowns: false,
 		minDate: today,
@@ -265,7 +265,7 @@ $('.actcsk:first').prop('checked', true).trigger("change");
 		},autoApply: true
 		}, function (start, end, label) {
 		var years = moment().diff(start, 'years');
-		});
+		}); */
 
             }
           });
