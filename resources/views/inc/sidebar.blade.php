@@ -1038,6 +1038,23 @@ $controller = preg_replace('/.*\\\/', '', $controller);
 				
               </li>
 			  
+			   @php
+        $class=''; $active='';
+        if($controller == 'JobsController' and in_array($action,array('tourJobsView'))){
+          $class = 'menu-open';
+          $active = 'active';
+        }
+   
+    
+        @endphp 
+			  <li class="nav-item ">
+              <a href="{{ route('tour.jobs.view') }}" class="nav-link {{$active}}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Sync Tour & Option Data</p>
+                </a>
+				
+              </li>
+			  
             </ul>
           </li>
           <li class="nav-item has-treeview ">

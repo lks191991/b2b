@@ -40,6 +40,12 @@ use App\Http\Controllers\VariantCanellationController;
 use App\Http\Controllers\APITourDataController;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\LogsController;
+use App\Jobs\ProcessTourData;
+use App\Jobs\ProcessTourOptionData;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\JobsController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +62,18 @@ use App\Http\Controllers\LogsController;
     return view('welcome');
 });
 */
+
+Route::get('/run-tour-data', function (Request $request) {
+    ProcessTourData::dispatch();
+    return response()->json(['message' => 'Tour data update started in the background!']);
+});
+
+Route::get('/run-tour-option-data', function () {
+    ProcessTourOptionData::dispatch();
+    return response()->json(['message' => 'Tour option job started in background']);
+});
+
+
 
 Route::get('/artisan', function () {
     // Call the Artisan command
@@ -336,6 +354,8 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
         Route::get('/search/prefill-tour-option', [VariantsController::class, 'prefill'])->name('search.prefill.tour.option');
         Route::get('/rayna-logs', [LogsController::class, 'raynaBookingLogs'])->name('logs.rayna.booking');
 
+		Route::get('/tour-jobs', [JobsController::class, 'tourJobsView'])->name('tour.jobs.view');
+		Route::post('/process-tour-jobs', [JobsController::class, 'processTourJobs'])->name('processTourJobs');
     });
 });
 
