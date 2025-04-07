@@ -103,102 +103,129 @@ class SlotsController extends Controller
     }
 	
 	public function variantSlotGet(Request $request)
-{
-    $variantId = $request->input('variant_id');
-    $transferOption = $request->input('transferOptionName');
-    $tourDate = $request->input('tour_date');
-    $adult = (int) ($request->input('adult') ?? 0);
-    $child = (int) ($request->input('child') ?? 0);
-    
-    $variant = Variant::find($variantId);
-    if (!$variant) {
-        return response()->json(["status" => 0, "message" => "Invalid variant."]);
-    }
-
-    $data = [];
-    $isRayna = false;
-    if ($variant->is_slot == 1) {
-	
-		if (!empty($variant->touroption_id)) {
-			$optionDetails = RaynaHelper::getTourOptionById($variant->touroption_id);
-			
-			if (!empty($optionDetails['tourId'])) {
-				$tour = RaynaHelper::getTourDetailsById($optionDetails['tourId']);
-				$isRayna = !empty($tour['isSlot']) ? true : false;
-			}
-
-
-			if ($isRayna) {
-				$postData = [
-					"travelDate" => date('Y-m-d', strtotime($tourDate)),
-					"tourId" => $optionDetails['tourId'],
-					"tourOptionId" => $optionDetails['tourOptionId'],
-					"transferId" => 41865, // Without Transfer
-					"adult" => $adult,
-					"child" => $child,
-					"contractId" => $optionDetails['contractId'] ?? null
-				];
-
-				$raynaSlot = RaynaHelper::getSlot($postData);
-				if (!is_array($raynaSlot) || empty($raynaSlot)) {
-					return response()->json(["status" => 4, "message" => "No slots available for the selected date or tour."]);
-				}
-				
-				$data = $raynaSlot;
-				return response()->json([
-				"status" => 1,
-				"slots" => $data,
-				"sstatus" => $variant->is_slot,
-				"variant" => $variant,
-				"is_rayna" => $isRayna
-				]);
-			}else{
-				 return response()->json(["status" => 4, "message" => "No slots available for the selected date or tour."]);
-			}
-			
-		} else 	if ($variant->slot_type < 3) {
-			if (empty($data) && !empty($variantId)) {
-				$query = Slot::where('variant_id', $variantId);
-				$transferOptions = [
-					'Ticket Only' => 'ticket_only',
-					'Shared Transfer' => 'sic',
-					'Pvt Transfer' => 'pvt'
-				];
-				
-				if (isset($transferOptions[$transferOption])) {
-					$query->where($transferOptions[$transferOption], 1);
-				}
-
-				$slots = $query->get();
-
-				foreach($slots as $slot)
-				{
-				$data[$slot->slot_timing] = $slot->slot_timing;
-				}
-			}
-			
-			return response()->json([
-				"status" => 1,
-				"slots" => $data,
-				"sstatus" => $variant->is_slot,
-				"variant" => $variant,
-				"is_rayna" => $isRayna
-			]);
+	{
+		$variantId = $request->input('variant_id');
+		$transferOption = $request->input('transferOptionName');
+		$tourDate = $request->input('tour_date');
+		$adult = (int) ($request->input('adult') ?? 0);
+		$child = (int) ($request->input('child') ?? 0);
+		
+		$variant = Variant::find($variantId);
+		if (!$variant) {
+			return response()->json(["status" => 0, "message" => "Invalid variant."]);
 		}
+
+		$data = [];
+		$isRayna = false;
+		if ($variant->is_slot == 1) {
+		
+			if (!empty($variant->touroption_id)) {
+				$optionDetails = RaynaHelper::getTourOptionById($variant->touroption_id);
+				
+				if (!empty($optionDetails['tourId'])) {
+					$tour = RaynaHelper::getTourDetailsById($optionDetails['tourId']);
+					$isRayna = !empty($tour['isSlot']) ? true : false;
+				}
+				
+				
+
+				if ($isRayna==true) {
+					$postData = [
+						"travelDate" => date('Y-m-d', strtotime($tourDate)),
+						"tourId" => $optionDetails['tourId'],
+						"tourOptionId" => $optionDetails['tourOptionId'],
+						"transferId" => 41865, // Without Transfer
+						"adult" => $adult,
+						"child" => $child,
+						"contractId" => $optionDetails['contractId'] ?? null
+					];
+
+					$raynaSlot = RaynaHelper::getSlot($postData);
+					if (!is_array($raynaSlot) || empty($raynaSlot)) {
+						return response()->json(["status" => 4, "message" => "No slots available for the selected date or tour."]);
+					}
+					
+					
+					
+					$data = $raynaSlot;
+					if($transferOption=='Shared Transfer'){
+						$matchSlot = $this->matchSlotWithinternalAndRayna($raynaSlot,$variantId);
+						if(empty($matchSlot)){
+							return response()->json(["status" => 4, "message" => "No slots available for the selected date or tour."]);
+						}
+						
+						$data = $matchSlot;
+					}
+				
+					return response()->json([
+					"status" => 1,
+					"slots" => $data,
+					"sstatus" => $variant->is_slot,
+					"variant" => $variant,
+					"is_rayna" => $isRayna
+					]);
+				}else{
+					 return response()->json(["status" => 4, "message" => "No slots available for the selected date or tour."]);
+				}
+				
+			} else 	if ($variant->slot_type < 3) {
+				if (empty($data) && !empty($variantId)) {
+					$query = Slot::where('variant_id', $variantId);
+					$transferOptions = [
+						'Ticket Only' => 'ticket_only',
+						'Shared Transfer' => 'sic',
+						'Pvt Transfer' => 'pvt'
+					];
+					
+					if (isset($transferOptions[$transferOption])) {
+						$query->where($transferOptions[$transferOption], 1);
+					}
+
+					$slots = $query->get();
+
+					foreach($slots as $slot)
+					{
+					$data[$slot->slot_timing] = $slot->slot_timing;
+					}
+				}
+				
+				return response()->json([
+					"status" => 1,
+					"slots" => $data,
+					"sstatus" => $variant->is_slot,
+					"variant" => $variant,
+					"is_rayna" => $isRayna
+				]);
+			}
+		}
+		
+		 return response()->json([
+			"status" => 2,
+			"slots" => $data,
+			"sstatus" => $variant->is_slot,
+			"variant" => $variant,
+			"is_rayna" => $isRayna
+		]);
+		
+	   
 	}
-	
-	 return response()->json([
-        "status" => 2,
-        "slots" => $data,
-        "sstatus" => $variant->is_slot,
-        "variant" => $variant,
-        "is_rayna" => $isRayna
-    ]);
-    
-   
-}
+
+	public function matchSlotWithinternalAndRayna($raynaSlots, $variantId)
+	{
+		$internalSlots = Slot::where('variant_id', $variantId)
+							 ->where('sic', 1)
+							 ->pluck('slot_timing')
+							 ->toArray(); 
+
+		$matchedSlots = [];
+		foreach ($raynaSlots as $slotId => $slotTime) {
+			if (in_array($slotTime, $internalSlots)) {
+				$matchedSlots[$slotId] = $slotTime;
+			}
+		}
+
+		return $matchedSlots;
+	}
 
 
-
-	
 }
