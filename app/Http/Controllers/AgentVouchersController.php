@@ -835,8 +835,9 @@ class AgentVouchersController extends Controller
 								$data[0]['rayna_childPrice']  = $tourOptionDetails['rayna_childPrice'] * $payload['child'];
 								$data[0]['rayna_infantPrice'] = $tourOptionDetails['rayna_infantPrice'] * $payload['infant'];
 							} else {
-								$errorMessage = $tourOptionDetails['message'] ?? 'Unknown error occurred';
-								return redirect()->back()->with('error', 'aaaaaaaaaaaaaa');
+								$errorMessage = (!empty($tourOptionDetails['message'])) ? $tourOptionDetails['message'] : 'Unknown error occurred';
+								return redirect()->back()->with('error', $errorMessage);
+
 							}
 
 
