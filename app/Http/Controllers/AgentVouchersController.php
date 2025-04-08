@@ -846,8 +846,8 @@ class AgentVouchersController extends Controller
 							$voucher->total_activity_amount += $total_activity_amount;
 							$voucher->save();
 						} else {
-							$errorMessage = $availability['message'] ?? 'Unknown error occurred';
-							return redirect()->back()->with('error', '$errorMessage');
+							$errorMessage = (!empty($availability['message'])) ? $availability['message'] : 'Unknown error occurred';
+							return redirect()->back()->with('error', $errorMessage);
 						}
 					} else {
 						return redirect()->back()->with('error', 'Invalid tour data.');
