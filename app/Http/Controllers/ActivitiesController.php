@@ -139,7 +139,7 @@ class ActivitiesController extends Controller
         $record->status = $request->input('status');
 		$record->popularity = $request->input('popularity');
 		$record->created_by = Auth::user()->id;
-		$record->tourstaticdata_id = $request->input('tourId');
+		$record->tourstaticdata_id = $request->input('tourName') ? $request->input('tourId') : null;
 		$record->save();
 		
 		//Upload Additional images
@@ -278,7 +278,7 @@ class ActivitiesController extends Controller
         $record->status = $request->input('status');
 		$record->popularity = $request->input('popularity');
 		$record->updated_by = Auth::user()->id;
-		$record->tourstaticdata_id = $request->input('tourId');
+		$record->tourstaticdata_id = $request->input('tourName') ? $request->input('tourId') : null;
 		if($request->has('tags') && !empty($request->tags)){
            $tags = implode(",",$request->tags);
 			$record->tags = $tags;

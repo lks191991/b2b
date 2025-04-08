@@ -241,7 +241,7 @@ class VariantsController extends Controller
 		$ucode = 'UV'.$record->id;
 		$vrt = Variant::find($record->id);
 		$vrt->ucode = $ucode;
-		$record->touroption_id = $request->input('tourOptionId');
+		$record->touroption_id = $request->input('optionName') ? $request->input('tourOptionId') : null;
 		$vrt->save();
 		
 		//Upload Additional images
@@ -361,6 +361,7 @@ class VariantsController extends Controller
      */
     public function update(Request $request, $id)
     {
+		
 		
 		$options['allow_img_size'] = 10;
 		
@@ -513,7 +514,7 @@ class VariantsController extends Controller
 		//$record->sell_price = $request->input('sell_price');
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
-		$record->touroption_id = $request->input('tourOptionId');
+		$record->touroption_id = $request->input('optionName') ? $request->input('tourOptionId') : null;
 		$record->is_slot = in_array($request->slot_type, [1, 2]) ? 1 : 0;
         $record->save();
 		

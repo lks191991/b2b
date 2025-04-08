@@ -814,7 +814,7 @@ class AgentVouchersController extends Controller
 		if(count($data) > 0)
 			{
 				
-				if ($isRayna == true) {
+				if ($isRayna === "true") {
 					
 					if (!empty($data) && isset($data[0])) {
 						$payload = $data[0];
