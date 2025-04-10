@@ -163,10 +163,11 @@
 				@if(auth()->user()->role_id == '3')
 			@php
 				$lastVoucher = SiteHelpers::getAgentlastVoucher();
-				$voucherActivityCount==1;
+               
+				$voucherActivityCount=1;
 				if(!empty($lastVoucher)){
 				$voucherActivityCount = App\Models\VoucherActivity::where('voucher_id',$lastVoucher->id)->count();
-				}
+            }
 			@endphp
 			@if(!empty($lastVoucher) && $voucherActivityCount==0)
 			<li class="nav-item dropdown" >

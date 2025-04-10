@@ -903,18 +903,19 @@ return $dates;
     }
 	
 	public static function getAgentlastVoucher()
-    {
-		$user = auth()->user();
-		$startDate = date("Y-m-d");
-		$voucher = Voucher::where('status_main','1')->where('agent_id',$user->id)->whereDate('travel_from_date','>=', $startDate)->first();
-		if(!empty($voucher)){
-			return $voucher;
-		}
-		else{
-		return 0;	
-		}
-		
-    }
+	{
+    $user = auth()->user();
+    $startDate = date("Y-m-d");
+
+    $voucher = Voucher::where('status_main', '1')
+        ->where('agent_id', $user->id)
+        ->whereDate('travel_from_date', '>=', $startDate)
+        ->orderBy('id', 'desc') // 👈 latest by travel_from_date
+        ->first();
+
+    return $voucher ?: 0;
+	}
+
 	
 	public static function checkCancelBookingTime($u_code,$activity_id,$tourDt,$transfer_option)
     {

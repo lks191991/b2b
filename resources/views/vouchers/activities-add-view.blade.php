@@ -264,7 +264,16 @@ $(function() {
 						</td>
 						
                   </tr>
-				  @if($ap->variant->cancellation_policy != '') 
+				  
+				  @if($ap->variant->touroption_id != '') 
+					
+				  	<tr style="background:green;color:#fff!important;">
+					  <td colspan="9" style="color:#fff!important;">
+							{!! $ap->variant->rayna_cancellation_policy !!}
+						</td>
+					</tr>
+
+					@elseif($ap->variant->cancellation_policy != '') 
 					
 				  	<tr style="background:green;color:#fff!important;">
 					  <td colspan="9" style="color:#fff!important;">
@@ -497,7 +506,15 @@ $(function() {
 						@endif
 						
                   </tr>
-				  @if($ap->variant->cancellation_policy != '') 
+				   @if($ap->variant->touroption_id != '') 
+					
+					<tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
+						<td colspan="9" style="color:#fff!important;">
+							{!! $ap->variant->rayna_cancellation_policy !!}
+						</td>
+					</tr>
+
+					@elseif($ap->variant->cancellation_policy != '') 
 					
 				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
 						<td colspan="9" style="color:#fff!important;">
@@ -709,7 +726,15 @@ $(function() {
 						</td>
 						
                   </tr>
-				  @if($ap->variant->cancellation_policy != '') 
+				  @if($ap->variant->touroption_id != '') 
+					
+				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
+						<td colspan="9" style="color:#fff!important;">
+							{!! $ap->variant->rayna_cancellation_policy !!}
+						</td>
+					</tr>
+
+				  @elseif($ap->variant->cancellation_policy != '') 
 					
 				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
 						<td colspan="9" style="color:#fff!important;">

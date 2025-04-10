@@ -237,11 +237,18 @@ class VariantsController extends Controller
 		//$record->sell_price = $request->input('sell_price');
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
+		$record->touroption_id = $request->input('optionName') ? $request->input('tourOptionId') : null;
+		if (!empty($record->touroption_id)) {
+			$raynaCancellationPolicy = $this->raynaGetCancellationPolicy($record->touroption_id);
+			$record->rayna_cancellation_policy = $raynaCancellationPolicy;
+		}
+		
 		$record->save();
 		$ucode = 'UV'.$record->id;
 		$vrt = Variant::find($record->id);
 		$vrt->ucode = $ucode;
-		$record->touroption_id = $request->input('optionName') ? $request->input('tourOptionId') : null;
+		
+		
 		$vrt->save();
 		
 		//Upload Additional images
@@ -515,6 +522,11 @@ class VariantsController extends Controller
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
 		$record->touroption_id = $request->input('optionName') ? $request->input('tourOptionId') : null;
+		if (!empty($record->touroption_id)) {
+			$raynaCancellationPolicy = $this->raynaGetCancellationPolicy($record->touroption_id);
+			$record->rayna_cancellation_policy = $raynaCancellationPolicy;
+		}
+
 		$record->is_slot = in_array($request->slot_type, [1, 2]) ? 1 : 0;
         $record->save();
 		
@@ -610,4 +622,36 @@ class VariantsController extends Controller
 		$tour = tourOptionStaticData::where('tourOptionId', $id)->first(['tourOptionId', 'optionName']); // Find the selected record by ID
 		return response()->json($tour);
 	}
+
+	public function raynaGetCancellationPolicy($touroptionId)
+{
+    $record = DB::table('tour_option_static_data')->where('tourOptionId', $touroptionId)->first();
+
+    if (!$record) {
+        return 'No policy data available.';
+    }
+
+    $fieldsToCombine = [
+        'cancellationPolicy',
+        'cancellationPolicyDescription',
+        'childPolicyDescription',
+        // Add more if needed
+    ];
+
+    $lines = [];
+
+    foreach ($fieldsToCombine as $field) {
+        if (!empty($record->$field)) {
+            $cleanedText = trim(strip_tags($record->$field));
+            if (!empty($cleanedText)) {
+                $lines[] = $cleanedText;
+            }
+        }
+    }
+
+    // Join with a single <br> for each line
+    return implode('<br>', $lines);
+}
+
+
 }
