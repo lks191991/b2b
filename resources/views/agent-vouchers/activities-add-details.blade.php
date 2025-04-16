@@ -32,15 +32,16 @@
      overflow-y: auto;
    }
 
-   .close {
-     float: right;
-     font-size: 24px;
-     font-weight: bold;
-     color: #888;
-     cursor: pointer;
-   }
+    .modal-header .close {
+      float: right !important;
+      font-size: 24px !important;
+      font-weight: bold !important;
+      color: #888 !important;
+      cursor: pointer !important;
+	  padding:15px 25px !important;
+    }
 
-   .close:hover {
+   .modal-header .close:hover {
      color: #000;
    }
 
@@ -172,13 +173,13 @@
             </div>
             <div class="modal-body">
             <div class="row">
-            <div class="col-sm-3">
-
-           
-            <input type="text" id="dateTS" value=""  placeholder="Tour Date" class="form-control  timeS"  disabled    />
- 
-    </div>
     <div class="row">
+	<div class="col-sm-3">
+          Tour Date
+          <input type="text" id="dateTS" value=""  placeholder="Tour Date" class="form-control  timeS"   disabled   />
+		  <input type="hidden" id="s_variant_id" value=""  />
+			<input type="hidden" id="s_transferOptionName" value=""  />
+        </div>
         <div class="col-sm-3">
           Adult
            <input type="number" id="adultsTS" min="1"  class="form-control timeS onlynumbr" value="" placeholder="Adults" >
@@ -195,10 +196,20 @@
   </div>
   <div class="row">
   <div class="col-md-12">
-      <h6>Select Time Slot</h6>
+      <h6 class="pt-3">Select Time Slot</h6>
 
-      <div class="form-group" id="radioSlotGroup">
-                    <!-- Radio buttons will be dynamically added here -->
+      <div class="form-group m-1">
+			<div id="slotLoader" style="display:none; text-align:left; padding: 2px;">
+			<div class="spinner-border text-primary" role="status">
+			<span class="sr-only">Loading...</span>
+			</div>
+			<div>Loading available time slots...</div>
+			</div>
+
+    <!-- Radio Slot Buttons -->
+    <div id="radioSlotGroup">
+        <!-- Radio buttons will be dynamically added here -->
+    </div>
                 </div>
   </div>
   </div>
@@ -209,7 +220,7 @@
             </div>
             
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary btn-sm" id="selectTimeSlotBtn">Add to Cart</button>
+                <button type="button" class="primary-btn2 " id="selectTimeSlotBtn">Add to Cart</button>
                
             </div>
         </div>
@@ -518,16 +529,19 @@ $(document).on('click', '.priceModalBtn', function(evt) {
      const child = $("body #child" + inputnumber).val();
      const infant = $("body #infant" + inputnumber).val();
      const title = $("body #activity_variant_title" + inputnumber).val();
+	  const disabledDates = $("body #disabledDates" + inputnumber).val();
+	   const disabledDay = $("body #disabledDay" + inputnumber).val();
      const vdata = {
-				  variant_id:variant_id,
-          title : title,
-          key : inputnumber,
-           variant_id:variant_id,
-				  transferOptionName:transferOptionName,
-          tour_date:tour_date,
-          adult:adult,
-          child:child,
-          infant:infant
+					variant_id:variant_id,
+					title : title,
+					key : inputnumber,
+					transferOptionName:transferOptionName,
+					tour_date:tour_date,
+					adult:adult,
+					child:child,
+					infant:infant,
+					disabledDates:disabledDates,
+					disabledDay:disabledDay
 				  };
 		 $.ajax({
 			  url: "{{ route('get.variant.slots') }}",
@@ -535,7 +549,6 @@ $(document).on('click', '.priceModalBtn', function(evt) {
 			  dataType: "json",
 			  data: {
 				  variant_id:variant_id,
-          variant_id:variant_id,
 				  transferOptionName:transferOptionName,
           tour_date:tour_date,
           adult:adult,
@@ -602,92 +615,106 @@ function adultChildReq(a,c,inputnumber) {
 }
 
 
-  function openTimeSlotModal(slots, isRayna,vdata) {
-	  
+  function openTimeSlotModal(slots, isRayna, vdata) {
     var isValid = $('body #cartForm').valid();
-    if (isValid) {
-      document.getElementById('dateTS').value = vdata.tour_date;
-      document.getElementById('adultsTS').value = vdata.adult;
-      document.getElementById('childrenTS').value = vdata.child;
-      document.getElementById('infantTS').value = vdata.infant;
-		$('#timeSlotModal').modal({
-		  backdrop: 'static',
-		  keyboard: false
-		});
-		$('#timeSlotModal').modal('show');
-		
-        $("#exampleModalLabelHeading").html(vdata.title); 
-        var radioGroup = $('#radioSlotGroup');
-        radioGroup.empty();
-        var tk = 0;
+    if (!isValid) return;
 
-        $.each(slots, function(index, slot) {
+    // Fill modal fields
+    $('#dateTS').val(vdata.tour_date);
+    $('#adultsTS').val(vdata.adult);
+    $('#childrenTS').val(vdata.child);
+    $('#infantTS').val(vdata.infant);
+    $('#s_variant_id').val(vdata.variant_id);
+    $('#s_transferOptionName').val(vdata.transferOptionName);
+
+    var disabledDates = vdata.disabledDates || [];
+    var disabledWeekdays = vdata.disabledDay || [];
+
+    $('#timeSlotModal').modal({
+        backdrop: 'static',
+        keyboard: false
+    }).modal('show');
+
+    $("#exampleModalLabelHeading").html(vdata.title);
+    var radioGroup = $('#radioSlotGroup');
+    radioGroup.empty();
+ var tk = 0;
+     $.each(slots, function(index, slot) {
             var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
             radioGroup.append(radio);
             tk++;
         });
-       
 
-       
-        var inputnumber = vdata.key;
-	var priceText = $("body #price" + inputnumber).text();
-     $("body #total-price").html("Total Price: ₹"+priceText);
-	 
-$('.timeS').on('input', function () {
-   // const dateVal = $('#dateTS').val();
-    const adultVal = $('#adultsTS').val();
-    const childVal = $('#childrenTS').val();
-    const infantVal = $('#infantTS').val();
+    var inputnumber = vdata.key;
+    var priceText = $("#price" + inputnumber).text();
+    $("#total-price").html("Total Price: ₹" + priceText);
 
-    
-    //var $tourDate = $('input[name="tour_date[' + inputnumber + ']"]');
-    var $adult = $('#adult' + inputnumber);
-    var $child = $('#child' + inputnumber);
-    var $infant = $('#infant' + inputnumber);
+    $('.timeS').off('change').on('change', function () {
+    $('#tour_date' + inputnumber).val($('#dateTS').val());
+    $('#adult' + inputnumber).val($('#adultsTS').val());
+    $('#child' + inputnumber).val($('#childrenTS').val());
+    $('#infant' + inputnumber).val($('#infantTS').val());
 
-    //$tourDate.val(dateVal);  
-    $adult.val(adultVal);    
-    $child.val(childVal);     
-    $infant.val(infantVal);   
-	
-	$('.priceChange').first().trigger('change');
-	
+    $('.priceChange').first().trigger('change');
+    //refressTimeSlotModal();
 });
 
+    
+    $('body #selectTimeSlotBtn').off('click').on('click', function () {
+        const $btn = $(this).prop('disabled', true)
+            .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...')
+            .css({ color: '', backgroundColor: '', border: '' });
 
-        $('body #selectTimeSlotBtn').on('click', function() {
-			const $btn = $(this);
-			$btn.prop('disabled', true)
-        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...')
-        .css({'color': '', 'background-color': '','border': ''});
-            var selectedRadio = $('input[name="timeSlotRadio"]:checked');
-			var selectedValue = selectedRadio.val();
-			var timeSlotId = selectedRadio.data('id');
-            if (selectedValue) {
-                $('#timeslot').val(selectedValue);
-				$('#isRayna').val(isRayna);
-				$('#timeSlotId').val(timeSlotId);
-                $("body #cartForm").submit();
-            } else {
-                $("body #cartForm").addClass('error-rq');
-				 $btn.prop('disabled', false).html('Please Select Time Slot').css({
-                'color': 'red',
-                'background-color': '#ffcccc', 
-                'border': '2px solid red'  
-				});
-            }
+        var selectedRadio = $('input[name="timeSlotRadio"]:checked');
+        var selectedValue = selectedRadio.val();
+        var timeSlotId = selectedRadio.data('id');
 
-        });
-		
-			$('#timeSlotModal').modal({
-			backdrop: 'static',
-			keyboard: false
-			});
-        $('#timeSlotModal .close').on('click', function() {
-		  $('#timeSlotModal').modal('hide');
-		});
+        if (selectedValue) {
+            $('#timeslot').val(selectedValue);
+            $('#isRayna').val(isRayna);
+            if ($.isNumeric(timeSlotId)) {
+			$('#timeSlotId').val(timeSlotId);
+			} else {
+			$('#timeSlotId').val(0);
+			}
+            $('#cartForm').submit();
+        } else {
+            $('#cartForm').addClass('error-rq');
+            $btn.prop('disabled', false).html('Please Select Time Slot').css({
+                color: 'red',
+                backgroundColor: '#ffcccc',
+                border: '2px solid red'
+            });
+        }
+    });
+
+    // Setup Datepicker
+    var formattedDisabledDates = disabledDates.map(function(date) {
+        return $.datepicker.parseDate('yy-mm-dd', date);
+    });
+
+    $('#dateTS').datepicker('destroy').datepicker({
+        beforeShowDay: function(date) {
+            var day = date.getDay();
+            var isDisabledDate = formattedDisabledDates.some(function(d) {
+                return d.getTime() === date.getTime();
+            });
+            return [!(isDisabledDate || disabledWeekdays.includes(day))];
+        },
+        minDate: new Date(),
+        dateFormat: 'dd-mm-yy'
+    });
+
+    if (vdata.tour_date) {
+        $('#dateTS').datepicker('setDate', vdata.tour_date);
     }
+
+    // Close button handler
+    $('#timeSlotModal .close').off('click').on('click', function() {
+        $('#timeSlotModal').modal('hide');
+    });
 }
+
 $('#PriceModal .close').on('click', function() {
             $('#PriceModal').modal('hide');
         });
@@ -707,12 +734,64 @@ $('#PriceModal .close').on('click', function() {
  
  });
  
-function syncModalToParent(inputnumber) {
-   // $('#tour_date' + inputnumber).val($('#dateTS').val());
-    $('#adult' + inputnumber).val($('#adultsTS').val());
-    $('#child' + inputnumber).val($('#childrenTS').val());
-    $('#infant' + inputnumber).val($('#infantTS').val());
+function refressTimeSlotModal() {
+	  
+		var tour_date = $('body #dateTS').val();
+		var adult = $('body #adultsTS').val();
+		var child = $('body #childrenTS').val();
+		var infant = $('body #infantTS').val();
+		var variant_id = $('body #s_variant_id').val();
+		var transferOptionName =  $('body #s_transferOptionName').val();
+		
+		
+        var radioGroup = $('#radioSlotGroup');
+        radioGroup.empty();
+        var tk = 0;
+	 $.ajax({
+			  url: "{{ route('get.variant.slots') }}",
+			  type: 'POST',
+			  dataType: "json",
+			data: {
+				variant_id:variant_id,
+				transferOptionName:transferOptionName,
+				tour_date:tour_date,
+				adult:adult,
+				child:child,
+				infant:infant
+				  },
+        beforeSend: function () {
+            $('#slotLoader').show(); 
+        },
+			  success: function(data) {
+				  
+				   if(data.status == 1) {
+					$.each(data.slots, function(index, slot) {
+					var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
+					radioGroup.append(radio);
+					tk++;
+					});
+					} else if(data.status == 4) {
+						radioGroup.text(data.message).css("color", "red");
+					} 
+
+			  },
+        complete: function () {
+            $('#slotLoader').hide(); // Hide loader
+        },
+			  error: function(error) {
+				console.log(error);
+			  }
+		});
+        
+       
 }
 
+$(document).on('click', 'input[name="timeSlotRadio"]', function () {
+    $('#selectTimeSlotBtn')
+        .prop('disabled', false)
+        .html('Add to Cart')
+        .attr('id', 'selectTimeSlotBtn')
+        .attr('class', 'primary-btn2').removeAttr('style');
+});
  </script> 
 @endsection

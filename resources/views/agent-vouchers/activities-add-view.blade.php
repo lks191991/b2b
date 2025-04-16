@@ -103,7 +103,8 @@ $inf = ($abap->prices->infant_min_no_allowed > 0)?$abap->prices->infant_min_no_a
 			$disabledDay = SiteHelpers::getNovableActivityDays($bap->variant->availability);
 						@endphp
 				<input type="text" id="tour_date{{$kk}}" value="{{date('d-m-Y',strtotime($voucher->travel_from_date))}}"  name="tour_date[{{ $ap->ucode }}]" placeholder="Tour Date" class="form-control  priceChange" data-inputnumber="{{$kk}}" required    />
-				
+				<input type="hidden" id="disabledDates{{$kk}}" value="{{$dates}}"   data-inputnumber="{{$kk}}"     />
+				<input type="hidden" id="disabledDay{{$kk}}" value="{{$disabledDay}}" data-inputnumber="{{$kk}}"     />
 					
 				<script>
 $(function() {
