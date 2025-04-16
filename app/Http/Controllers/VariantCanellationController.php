@@ -17,9 +17,29 @@ class VariantCanellationController extends Controller
     public function index($varidid)
     {
 		//$this->checkPermissionMethod('list.hotlecat');
-		$variant = Variant::select("id","title","ucode")->find($varidid);
-        $records = VariantCanellation::where('variant_id',$varidid)->orderBy('duration')->get();
-        return view('variants.canellation_chart', compact('records','varidid','variant'));
+		$variant = Variant::select("id", "title", "ucode")->find($varidid);
+
+    // Step 1: Define expected durations
+    $durationSet = ["0-12", "12-24", "24-48", "48-60", "60-72", "72+"];;
+
+    // Step 2: Fetch existing records and map by duration
+    $existingRecords = VariantCanellation::where('variant_id', $varidid)->get()->keyBy('duration');
+
+    // Step 3: Fill final records with either DB data or default
+    $records = collect();
+    foreach ($durationSet as $duration) {
+        if ($existingRecords->has($duration)) {
+            $records->push($existingRecords[$duration]);
+        } else {
+            $records->push((object)[
+                'duration' => $duration,
+                'ticket_refund' => 0,
+                'transfer_refund' => 0,
+            ]);
+        }
+    }
+
+    return view('variants.canellation_chart', compact('records', 'varidid', 'variant','durationSet'));
 
     }
 
