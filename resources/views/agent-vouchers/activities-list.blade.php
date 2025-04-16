@@ -3,6 +3,65 @@
 @php
 											$currency = SiteHelpers::getCurrencyPrice();
 											@endphp
+
+                      <style>
+   
+
+    /* Modal Container */
+    #timeSlotModal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    /* Modal Content */
+    #timeSlotModal .modal-content {
+      position: absolute;
+      bottom: 0;
+      background-color: #fff;
+      width: 100%;
+      max-width: 100%;
+      padding: 20px;
+      border-radius: 16px 16px 0 0;
+      animation: slideUp 0.3s ease-out;
+      overflow-y: auto;
+    }
+
+    .modal-header .close {
+      float: right !important;
+      font-size: 24px !important;
+      font-weight: bold !important;
+      color: #888 !important;
+      cursor: pointer !important;
+	  padding:15px 25px !important;
+    }
+
+    .modal-header .close:hover {
+      color: #000 !important;
+    }
+
+    @keyframes slideUp {
+      from {
+        bottom: -100%;
+        opacity: 0;
+      }
+      to {
+        bottom: 0;
+        opacity: 1;
+      }
+    }
+
+    @media screen and (max-height: 500px) {
+      #timeSlotModal .modal-content {
+        max-height: 80%;
+      }
+    }
+  </style>
 <div class="breadcrumb-section"
         style="background-image: linear-gradient(270deg, rgba(0, 0, 0, .3), rgba(0, 0, 0, 0.3) 101.02%), url({{asset('front/assets/img/innerpage/inner-banner-bg.png')}});">
         <div class="container">
@@ -119,27 +178,60 @@
 
 
 
-	<div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 100%;">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Select Time Slot</h5>
+                <h5 class="modal-title" id="exampleModalLabelHeading"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group" id="radioSlotGroup">
+            <div class="row">
+            <div class="col-sm-3">
+
+           
+            <input type="text" id="dateTS" value=""  placeholder="Tour Date" class="form-control  timeS"  disabled    />
+ 
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+          Adult
+           <input type="number" id="adultsTS" min="1"  class="form-control timeS onlynumbr" value="" placeholder="Adults" >
+        </div>
+        <div class="col-sm-3">
+          Child
+        <input type="number" id="childrenTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Children" >
+        </div>
+        <div class="col-sm-3">
+          Infant
+        <input type="number" id="infantTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Infant" >
+        </div>
+      
+  </div>
+  <div class="row">
+  <div class="col-md-12">
+      <h6>Select Time Slot</h6>
+
+      <div class="form-group" id="radioSlotGroup">
                     <!-- Radio buttons will be dynamically added here -->
                 </div>
+  </div>
+  </div>
+              
+                <div class="col-md-4">
+                <div id="total-price">Total Price: ₹0</div>
+  </div>
             </div>
+            
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary-flip btn-sm" id="selectTimeSlotBtn"><i class="fa fa-cart-plus"></i></button>
-                <!-- You can add a button here for further actions if needed -->
+                <button type="button" class="btn btn-sm btn-primary btn-sm" id="selectTimeSlotBtn">Add to Cart</button>
+               
             </div>
         </div>
     </div>
-</div>
+</div></div>
 
 <div class="modal fade" id="PriceModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -364,11 +456,13 @@ $('.actcsk:first').prop('checked', true).trigger("change");
   {
     $("body #price0").html(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
 	  $("body #totalprice0").val(parseFloat(price.variantData.totalprice).toFixed(2));
+	  $("body #total-price").html("Total Price: ₹" + parseFloat(price.variantData.totalprice).toFixed(2));
   }
   else
   {
     $("body #price" + inputnumber).html(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
 	  $("body #totalprice" + inputnumber).val(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
+	  $("body #total-price").html("Total Price: ₹" + parseFloat(price.variantData.totalprice*c_val).toFixed(2));
   }
     })
     .catch(function(error) {
@@ -625,7 +719,18 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
      const adult = $("body #adult" + inputnumber).val();
      const child = $("body #child" + inputnumber).val();
      const infant = $("body #infant" + inputnumber).val();
-
+     const title = $("body #activity_variant_title" + inputnumber).val();
+		const vdata = {
+			variant_id:variant_id,
+			title : title,
+			key : inputnumber,
+			variant_id:variant_id,
+			transferOptionName:transferOptionName,
+			tour_date:tour_date,
+			adult:adult,
+			child:child,
+			infant:infant
+		};
 		 $.ajax({
 			  url: "{{ route('get.variant.slots') }}",
 			  type: 'POST',
@@ -645,7 +750,8 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
 						var timeslot = $('#timeslot').val();
 						$('#isRayna').val(data.is_rayna);
 						if(timeslot==''){
-							openTimeSlotModal(data.slots,data.is_rayna);
+             
+							openTimeSlotModal(data.slots,data.is_rayna,vdata);
               loaderOverlay.hide();
 						} 
 					} else if(data.status == 4) {
@@ -700,23 +806,66 @@ function adultChildReq(a,c,inputnumber) {
   }
 }
 
-   function openTimeSlotModal(slots, isRayna) {
+   function openTimeSlotModal(slots, isRayna,vdata) {
+	  
     var isValid = $('body #cartForm').valid();
     if (isValid) {
-		$("body #cartForm").removeClass('error-rq');
-        $('#timeSlotModal').modal('show');
-
+      document.getElementById('dateTS').value = vdata.tour_date;
+      document.getElementById('adultsTS').value = vdata.adult;
+      document.getElementById('childrenTS').value = vdata.child;
+      document.getElementById('infantTS').value = vdata.infant;
+		$('#timeSlotModal').modal({
+		  backdrop: 'static',
+		  keyboard: false
+		});
+		$('#timeSlotModal').modal('show');
+		
+        $("#exampleModalLabelHeading").html(vdata.title); 
         var radioGroup = $('#radioSlotGroup');
         radioGroup.empty();
         var tk = 0;
 
-		$.each(slots, function(index, slot) {
+        $.each(slots, function(index, slot) {
             var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
             radioGroup.append(radio);
             tk++;
         });
-		
-		$('#selectTimeSlotBtn').on('click', function() {
+       
+
+       
+        var inputnumber = vdata.key;
+	var priceText = $("body #price" + inputnumber).text();
+     $("body #total-price").html("Total Price: ₹"+priceText);
+	 
+$('.timeS').on('input', function () {
+   // const dateVal = $('#dateTS').val();
+    const adultVal = $('#adultsTS').val();
+    const childVal = $('#childrenTS').val();
+    const infantVal = $('#infantTS').val();
+
+    
+    //var $tourDate = $('input[name="tour_date[' + inputnumber + ']"]');
+    var $adult = $('#adult' + inputnumber);
+    var $child = $('#child' + inputnumber);
+    var $infant = $('#infant' + inputnumber);
+
+    //$tourDate.val(dateVal);  
+    $adult.val(adultVal);    
+    $child.val(childVal);     
+    $infant.val(infantVal);   
+	
+	$('.priceChange').first().trigger('change');
+	
+});
+
+
+        $('body #selectTimeSlotBtn').on('click', function() {
+			const $btn = $(this);
+			$btn.prop('disabled', true)
+        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...')
+        .css({'color': '', 'background-color': '','border': ''});
+
+	
             var selectedRadio = $('input[name="timeSlotRadio"]:checked');
 			var selectedValue = selectedRadio.val();
 			var timeSlotId = selectedRadio.data('id');
@@ -724,17 +873,25 @@ function adultChildReq(a,c,inputnumber) {
                 $('#timeslot').val(selectedValue);
 				$('#isRayna').val(isRayna);
 				$('#timeSlotId').val(timeSlotId);
-               $("body #cartForm").submit();
+                $("body #cartForm").submit();
             } else {
                 $("body #cartForm").addClass('error-rq');
+				 $btn.prop('disabled', false).html('Please Select Time Slot').css({
+                'color': 'red',
+                'background-color': '#ffcccc', 
+                'border': '2px solid red'  
+				});
             }
 
         });
 		
-
+			$('#timeSlotModal').modal({
+			backdrop: 'static',
+			keyboard: false
+			});
         $('#timeSlotModal .close').on('click', function() {
-            $('#timeSlotModal').modal('hide');
-        });
+		  $('#timeSlotModal').modal('hide');
+		});
     }
 }
 

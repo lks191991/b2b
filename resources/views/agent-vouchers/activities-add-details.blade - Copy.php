@@ -4,63 +4,7 @@
 @php
 											$currency = SiteHelpers::getCurrencyPrice();
 											@endphp
-                      <style>
-   
 
-   /* Modal Container */
-   #timeSlotModal {
-     display: none;
-     position: fixed;
-     z-index: 9999;
-     left: 0;
-     bottom: 0;
-     width: 100%;
-     height: 100%;
-     background-color: rgba(0, 0, 0, 0.4);
-   }
-
-   /* Modal Content */
-   #timeSlotModal .modal-content {
-     position: absolute;
-     bottom: 0;
-     background-color: #fff;
-     width: 100%;
-     max-width: 100%;
-     padding: 20px;
-     border-radius: 16px 16px 0 0;
-     animation: slideUp 0.3s ease-out;
-     overflow-y: auto;
-   }
-
-   .close {
-     float: right;
-     font-size: 24px;
-     font-weight: bold;
-     color: #888;
-     cursor: pointer;
-   }
-
-   .close:hover {
-     color: #000;
-   }
-
-   @keyframes slideUp {
-     from {
-       bottom: -100%;
-       opacity: 0;
-     }
-     to {
-       bottom: 0;
-       opacity: 1;
-     }
-   }
-
-   @media screen and (max-height: 500px) {
-     #timeSlotModal .modal-content {
-       max-height: 80%;
-     }
-   }
- </style>
 
 <div class="breadcrumb-section"
         style="background-image: linear-gradient(270deg, rgba(0, 0, 0, .3), rgba(0, 0, 0, 0.3) 101.02%), url({{asset('front/assets/img/innerpage/inner-banner-bg.png')}});">
@@ -159,62 +103,29 @@
 					</div>
 
           @include("inc.sidebar_cart")       
-          
-
-	<div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 100%;">
+                   
+				   <div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabelHeading"></h5>
+                <h5 class="modal-title" id="exampleModalLabel">Select Time Slot</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-            <div class="row">
-            <div class="col-sm-3">
-
-           
-            <input type="text" id="dateTS" value=""  placeholder="Tour Date" class="form-control  timeS"  disabled    />
- 
-    </div>
-    <div class="row">
-        <div class="col-sm-3">
-          Adult
-           <input type="number" id="adultsTS" min="1"  class="form-control timeS onlynumbr" value="" placeholder="Adults" >
-        </div>
-        <div class="col-sm-3">
-          Child
-        <input type="number" id="childrenTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Children" >
-        </div>
-        <div class="col-sm-3">
-          Infant
-        <input type="number" id="infantTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Infant" >
-        </div>
-      
-  </div>
-  <div class="row">
-  <div class="col-md-12">
-      <h6>Select Time Slot</h6>
-
-      <div class="form-group" id="radioSlotGroup">
-                    <!-- Radio buttons will be dynamically added here -->
-                </div>
-  </div>
-  </div>
-              
-                <div class="col-md-4">
-                <div id="total-price">Total Price: ₹0</div>
-  </div>
-            </div>
-            
+              <div class="form-group" id="radioSlotGroup">
+                  <!-- Radio buttons will be dynamically added here -->
+              </div>
+          </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary btn-sm" id="selectTimeSlotBtn">Add to Cart</button>
-               
+                <button type="button" class="btn btn-sm btn-primary-flip btn-sm" id="selectTimeSlotBtn"><i class="fa fa-cart-plus"></i></button>
+                <!-- You can add a button here for further actions if needed -->
             </div>
         </div>
     </div>
-</div></div>
+</div>
+
 <div class="modal fade" id="Noslot" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -320,7 +231,6 @@
 			// Onload change price 
 			var pvttr =  $("body #transfer_option0").find(':selected').val();
 			$("body #adult0").trigger("change");
-			
 			if(pvttr == 'Pvt Transfer'){
 				setTimeout(function() {
 				$("body .t_option#transfer_option0").trigger("change");
@@ -332,8 +242,6 @@
 			}
 			 $('.actcsk:first').prop('checked', true).trigger("change");
             }
-			
-			
           });
 
 });
@@ -401,7 +309,6 @@
     .then(function(price) {
       $("body #price" + inputnumber).html(price.variantData.totalprice);
 	  $("body #totalprice" + inputnumber).val(price.variantData.totalprice);
-	  $("body #total-price").html("Total Price: ₹" + price.variantData.totalprice);
     })
     .catch(function(error) {
       console.error('Error:', error);
@@ -517,25 +424,12 @@ $(document).on('click', '.priceModalBtn', function(evt) {
      const adult = $("body #adult" + inputnumber).val();
      const child = $("body #child" + inputnumber).val();
      const infant = $("body #infant" + inputnumber).val();
-     const title = $("body #activity_variant_title" + inputnumber).val();
-     const vdata = {
-				  variant_id:variant_id,
-          title : title,
-          key : inputnumber,
-           variant_id:variant_id,
-				  transferOptionName:transferOptionName,
-          tour_date:tour_date,
-          adult:adult,
-          child:child,
-          infant:infant
-				  };
 		 $.ajax({
 			  url: "{{ route('get.variant.slots') }}",
 			  type: 'POST',
 			  dataType: "json",
 			  data: {
 				  variant_id:variant_id,
-          variant_id:variant_id,
 				  transferOptionName:transferOptionName,
           tour_date:tour_date,
           adult:adult,
@@ -548,7 +442,7 @@ $(document).on('click', '.priceModalBtn', function(evt) {
 						var timeslot = $('#timeslot').val();
 						$('#isRayna').val(data.is_rayna);
 						if(timeslot==''){
-							openTimeSlotModal(data.slots,data.is_rayna,vdata);
+							openTimeSlotModal(data.slots,data.is_rayna);
               loaderOverlay.hide();
 						} 
 					} else if(data.status == 4) {
@@ -570,6 +464,9 @@ $(document).on('click', '.priceModalBtn', function(evt) {
  });
  });
  
+
+
+ 
  function getPrice(argsArray) {
 	argsArray.adult = (isNaN(argsArray.adult))?0:argsArray.adult;
 	argsArray.child = (isNaN(argsArray.child))?0:argsArray.child;
@@ -581,7 +478,6 @@ $(document).on('click', '.priceModalBtn', function(evt) {
       data: argsArray,
       success: function(data) {
         resolve(data);
-		
       },
       error: function(error) {
         reject(error);
@@ -602,21 +498,11 @@ function adultChildReq(a,c,inputnumber) {
 }
 
 
-  function openTimeSlotModal(slots, isRayna,vdata) {
-	  
+  function openTimeSlotModal(slots, isRayna) {
     var isValid = $('body #cartForm').valid();
     if (isValid) {
-      document.getElementById('dateTS').value = vdata.tour_date;
-      document.getElementById('adultsTS').value = vdata.adult;
-      document.getElementById('childrenTS').value = vdata.child;
-      document.getElementById('infantTS').value = vdata.infant;
-		$('#timeSlotModal').modal({
-		  backdrop: 'static',
-		  keyboard: false
-		});
-		$('#timeSlotModal').modal('show');
-		
-        $("#exampleModalLabelHeading").html(vdata.title); 
+        $('#timeSlotModal').modal('show');
+
         var radioGroup = $('#radioSlotGroup');
         radioGroup.empty();
         var tk = 0;
@@ -626,40 +512,8 @@ function adultChildReq(a,c,inputnumber) {
             radioGroup.append(radio);
             tk++;
         });
-       
 
-       
-        var inputnumber = vdata.key;
-	var priceText = $("body #price" + inputnumber).text();
-     $("body #total-price").html("Total Price: ₹"+priceText);
-	 
-$('.timeS').on('input', function () {
-   // const dateVal = $('#dateTS').val();
-    const adultVal = $('#adultsTS').val();
-    const childVal = $('#childrenTS').val();
-    const infantVal = $('#infantTS').val();
-
-    
-    //var $tourDate = $('input[name="tour_date[' + inputnumber + ']"]');
-    var $adult = $('#adult' + inputnumber);
-    var $child = $('#child' + inputnumber);
-    var $infant = $('#infant' + inputnumber);
-
-    //$tourDate.val(dateVal);  
-    $adult.val(adultVal);    
-    $child.val(childVal);     
-    $infant.val(infantVal);   
-	
-	$('.priceChange').first().trigger('change');
-	
-});
-
-
-        $('body #selectTimeSlotBtn').on('click', function() {
-			const $btn = $(this);
-			$btn.prop('disabled', true)
-        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...')
-        .css({'color': '', 'background-color': '','border': ''});
+        $('#selectTimeSlotBtn').on('click', function() {
             var selectedRadio = $('input[name="timeSlotRadio"]:checked');
 			var selectedValue = selectedRadio.val();
 			var timeSlotId = selectedRadio.data('id');
@@ -670,22 +524,13 @@ $('.timeS').on('input', function () {
                 $("body #cartForm").submit();
             } else {
                 $("body #cartForm").addClass('error-rq');
-				 $btn.prop('disabled', false).html('Please Select Time Slot').css({
-                'color': 'red',
-                'background-color': '#ffcccc', 
-                'border': '2px solid red'  
-				});
             }
 
         });
-		
-			$('#timeSlotModal').modal({
-			backdrop: 'static',
-			keyboard: false
-			});
+
         $('#timeSlotModal .close').on('click', function() {
-		  $('#timeSlotModal').modal('hide');
-		});
+            $('#timeSlotModal').modal('hide');
+        });
     }
 }
 $('#PriceModal .close').on('click', function() {
@@ -699,20 +544,5 @@ $('#PriceModal .close').on('click', function() {
  
  });
  
-  $(document).on('keypress', '.onlynumbr', function(evt) {
-   var charCode = (evt.which) ? evt.which : evt.keyCode
-   if ((charCode < 48 || charCode > 57))
-     return false;
-   return true;
- 
- });
- 
-function syncModalToParent(inputnumber) {
-   // $('#tour_date' + inputnumber).val($('#dateTS').val());
-    $('#adult' + inputnumber).val($('#adultsTS').val());
-    $('#child' + inputnumber).val($('#childrenTS').val());
-    $('#infant' + inputnumber).val($('#infantTS').val());
-}
-
  </script> 
 @endsection

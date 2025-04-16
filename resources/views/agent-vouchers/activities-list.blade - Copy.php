@@ -119,8 +119,8 @@
 
 
 
-<div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Select Time Slot</h5>
@@ -129,18 +129,18 @@
                 </button>
             </div>
             <div class="modal-body">
-           
                 <div class="form-group" id="radioSlotGroup">
                     <!-- Radio buttons will be dynamically added here -->
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="primary-btn1-sm btn-sm" id="selectTimeSlotBtn"><i class="fa fa-cart-plus"></i></button>
+                <button type="button" class="btn btn-sm btn-primary-flip btn-sm" id="selectTimeSlotBtn"><i class="fa fa-cart-plus"></i></button>
                 <!-- You can add a button here for further actions if needed -->
             </div>
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="PriceModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -172,6 +172,23 @@
             <div class="modal-footer">
 <p>Total Price : <span id="tpbv"></span></p>
 </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="Noslot" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Slot Unavailable</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <span id="messageSlot" class="row p-2"></span>
+            </div>
+            
         </div>
     </div>
 </div>
@@ -225,7 +242,12 @@ $(document).on('click', '.loadvari', function(evt) {
 			if(pvttr == 'Shared Transfer'){
 				$("body .t_option#transfer_option0").trigger("change");
 			}
-			 $('.actcsk:first').prop('checked', true).trigger("change");
+      var actType = $("body #activity_type").val();
+if((actType == 'Bundle_Diff') || (actType == 'Bundle_Same')  || (actType == 'Package'))
+			 $('.actcsk').prop('checked', true).trigger("change");
+else	
+$('.actcsk:first').prop('checked', true).trigger("change");		
+			// $('.actcsk:first').prop('checked', true).trigger("change");
        var disabledDates = data.dates.disabledDates;
 				var availableDates = data.dates.availableDates;
 				var disabledDay = data.disabledDay;
@@ -233,7 +255,7 @@ $(document).on('click', '.loadvari', function(evt) {
 		var tomorrow = new Date(today);
 		tomorrow.setDate(today.getDate() + 1); // Set tomorrow's date
     
-        $('.tour_datepicker').daterangepicker({
+      /*   $('.tour_datepicker').daterangepicker({
 		singleDatePicker: true,
 		showDropdowns: false,
 		minDate: today,
@@ -243,31 +265,8 @@ $(document).on('click', '.loadvari', function(evt) {
 		},autoApply: true
 		}, function (start, end, label) {
 		var years = moment().diff(start, 'years');
-		});
+		}); */
 
-				// $(".tour_datepicker").datepicker({
-        //                 beforeShowDay: function(date) {
-        //                     var dateString = $.datepicker.formatDate('yy-mm-dd', date);
-							
-				// 			if(disabledDay.length > 0){
-				// 				if (disabledDay.indexOf(date.getDay()) != -1) {
-				// 					return [false, "disabled-day", "This day is disabled"];
-				// 				}
-				// 			}
-        //                     if (availableDates.indexOf(dateString) != -1) {
-        //                         return [true, "available-date", "This date is available"];
-        //                     }else{
-				// 				return [false, "disabled-date", "This date is disabled"];
-				// 			}
-        //                     return [true];
-        //                 },
-				// 			minDate: new Date(),
-				// 			weekStart: 1,
-				// 			daysOfWeekHighlighted: "6,0",
-				// 			autoclose: true,
-				// 			todayHighlight: true,
-				// 			dateFormat: 'dd-mm-yy'
-        //             });
             }
           });
 });
@@ -280,6 +279,7 @@ $(document).on('click', '.loadvari', function(evt) {
  
 <script type="text/javascript">
   $(document).ready(function() {
+	  const loaderOverlay = $("body #loader-overlay");
 	  $('body #cartForm').validate({});
    adultChildReq(0,0,0);
  
@@ -338,12 +338,7 @@ $(document).on('click', '.loadvari', function(evt) {
     colTd.css("display", "block");
   }
 
-  //  zonevalue = parseFloat(transferZone.find(':selected').data("zonevalue"));
-  //  zoneValueChild = parseFloat(transferZone.find(':selected').data("zonevaluechild"));
-  // } else if (transferOption == 3) {
-  //   colTd.css("display", "block");
-  // }
-
+  
   loaderOverlay.show();
 	adultChildReq(adult,child,inputnumber);
   const argsArray = {
@@ -364,12 +359,17 @@ $(document).on('click', '.loadvari', function(evt) {
     .then(function(price) {
 
       var code = "{{$currency['code']}}";
-		var c_val = "{{$currency['value']}}";
-		var totalprice = price.variantData.totalprice*c_val;
-		
-console.log(totalprice);
-      $("body #price" + inputnumber).html(totalprice);
-	  $("body #totalprice" + inputnumber).val(totalprice);
+      var c_val = "{{$currency['value']}}";
+      if(actType == 'Bundle_Diff')
+  {
+    $("body #price0").html(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
+	  $("body #totalprice0").val(parseFloat(price.variantData.totalprice).toFixed(2));
+  }
+  else
+  {
+    $("body #price" + inputnumber).html(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
+	  $("body #totalprice" + inputnumber).val(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
+  }
     })
     .catch(function(error) {
       console.error('Error:', error);
@@ -377,6 +377,82 @@ console.log(totalprice);
     .finally(function() {
       loaderOverlay.hide();
     });
+
+    // Select all elements with the class "common-css"
+    const elements = document.querySelectorAll('.priceChangeBDA');
+
+// Loop through each element and add an event listener
+elements.forEach((element) => {
+  element.addEventListener('input', function() {
+    const newValue = this.value; // Get the new value from the changed element
+
+    // Update all elements with the same class with the new value
+    elements.forEach((el) => {
+      if (el !== this) {
+        el.value = newValue; // Update the value of other elements
+      }
+    });
+  });
+});
+
+    // Select all elements with the class "common-css"
+    const elementC = document.querySelectorAll('.priceChangeBDC');
+
+// Loop through each element and add an event listener
+elementC.forEach((element) => {
+  element.addEventListener('input', function() {
+    const newValue = this.value; // Get the new value from the changed element
+
+    // Update all elements with the same class with the new value
+    elementC.forEach((el) => {
+      if (el !== this) {
+        el.value = newValue; // Update the value of other elements
+      }
+    });
+  });
+});
+
+
+    // Select all elements with the class "common-css"
+    const elementsI = document.querySelectorAll('.priceChangeBDI');
+
+// Loop through each element and add an event listener
+elementsI.forEach((element) => {
+  element.addEventListener('input', function() {
+    const newValue = this.value; // Get the new value from the changed element
+
+    // Update all elements with the same class with the new value
+    elementsI.forEach((el) => {
+      if (el !== this) {
+        el.value = newValue; // Update the value of other elements
+      }
+    });
+  });
+
+  
+});
+
+
+   // Select all elements with the class "common-css"
+   const elementsTT = document.querySelectorAll('.priceChangeTT');
+
+// Loop through each element and add an event listener
+elementsTT.forEach((element) => {
+  element.addEventListener('input', function() {
+    const newValue = this.value; // Get the new value from the changed element
+
+    // Update all elements with the same class with the new value
+    elementsTT.forEach((el) => {
+      if (el !== this) {
+        el.value = newValue; // Update the value of other elements
+      }
+    });
+  });
+
+  
+});
+    
+
 });
 
 
@@ -417,6 +493,8 @@ $(document).on('click', '.priceModalBtn', function(evt) {
   const infant = parseInt($("body #infant" + inputnumber).val());
   const discount = parseFloat($("body #discount" + inputnumber).val());
   const tourDate = $("body #tour_date" + inputnumber).val();
+  const activityType = $("body #activity_type").val();
+
   const transferOption = $("body #transfer_option" + inputnumber).find(':selected').data("id");
   const transferOptionName = $("body #transfer_option" + inputnumber).find(':selected').val();
   const variantId = $("body #transfer_option" + inputnumber).find(':selected').data("variant");
@@ -439,12 +517,28 @@ $(document).on('click', '.priceModalBtn', function(evt) {
     transferZoneTd.css("display", "block");
     colTd.css("display", "block");
     transferZone.prop('required', true);
+	 transferZone.prop('disabled', false);
+
+   var actType = $("body #activity_type").val();
+  if(actType == 'Bundle_Diff')
+  {
+    zonevalue = getTotalZoneValueByClass('trfzone');
+    zoneValueChild = getTotalChildZoneValueByClass('trfzone');
+
+    console.log('Total Zone Value:', zonevalue);
+    console.log('Total Child Zone Value:', zoneValueChild);
+
+
+
+  }
+  else
+  {
     zonevalue = parseFloat(transferZone.find(':selected').data("zonevalue"));
-	zoneValueChild = parseFloat(transferZone.find(':selected').data("zonevaluechild"));
+	    zoneValueChild = parseFloat(transferZone.find(':selected').data("zonevaluechild"));
+  }
   } else if (transferOption == 3) {
     colTd.css("display", "block");
   }
-
 var to = $("body #transfer_option" + inputnumber).find(':selected').val();
 
   loaderOverlay.show();
@@ -466,10 +560,12 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
   getPrice(argsArray)
     .then(function(price) {
 		
-		var code = "{{$currency['code']}}";
-		var c_val = "{{$currency['value']}}";
-		var adp = price.variantData.adultTotalPrice*c_val;
-		var chp = price.variantData.childTotalPrice*c_val;
+      var code = "{{$currency['code']}}";
+      var c_val = "{{$currency['value']}}";
+		var adp = parseFloat(price.variantData.adultTotalPrice*c_val/adult).toFixed(2);
+    var chp = 0;
+    if(child > 0)
+		chp = parseFloat(price.variantData.childTotalPrice*c_val/child).toFixed(2);
     var grandTotal = parseFloat((parseFloat(adp)*adult)+(parseFloat(chp)*child)).toFixed(2);
 		$("body #pad").html(code+' '+parseFloat(adp).toFixed(2)+" X "+adult);
 		$("body #pchd").html(code+' '+parseFloat(chp).toFixed(2)+" X "+child);
@@ -493,15 +589,17 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
   const child = parseInt($("body #child" + inputnumber).val());
    adultChildReq(adult,child,inputnumber);
     $("body .priceChange").prop('required',false);
-	$("body .priceChange").prop('disabled',true);
-	$("body .addToCart").prop('disabled',true);
+	//$("body .priceChange").prop('disabled',true);
+	//$("body .addToCart").prop('disabled',true);
+  $("body .note").addClass('d-none');
+
 	$("body #ucode").val('');
 	$('#timeslot').val('');
 	//$("body .priceclass").text(0);
    if ($(this).is(':checked')) {
        $("body #transfer_option"+inputnumber).prop('required',true);
 		$("body #tour_date"+inputnumber).prop('required',true);
-     
+    $("body #note_"+inputnumber).removeClass('d-none');
      $("body #transfer_option"+inputnumber).prop('disabled',false);
      $("body #tour_date"+inputnumber).prop('disabled',false);
 	 $("body #addToCart"+inputnumber).prop('disabled',false);
@@ -517,28 +615,48 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
 
   $(document).on('click', '.addToCart', function(evt) {
 	  evt.preventDefault();
+	  loaderOverlay.show();
 	 if($('body #cartForm').validate({})){
-		 variant_id = $(this).data('variantid');
+		
+     variant_id = $(this).data('variantid');
 		 inputnumber = $(this).data('inputnumber');
 		 const transferOptionName = $("body #transfer_option" + inputnumber).find(':selected').val();
+     const tour_date = $("body #tour_date" + inputnumber).val();
+     const adult = $("body #adult" + inputnumber).val();
+     const child = $("body #child" + inputnumber).val();
+     const infant = $("body #infant" + inputnumber).val();
+
 		 $.ajax({
 			  url: "{{ route('get.variant.slots') }}",
 			  type: 'POST',
 			  dataType: "json",
-			  data: {
+        data: {
 				  variant_id:variant_id,
-				  transferOptionName:transferOptionName
+				  transferOptionName:transferOptionName,
+          tour_date:tour_date,
+          adult:adult,
+          child:child,
+          infant:infant
 				  },
 			  success: function(data) {
-				  if(data.status == 1) {
+				  
+				   if(data.status == 1) {
 						
 						var timeslot = $('#timeslot').val();
+						$('#isRayna').val(data.is_rayna);
 						if(timeslot==''){
-							openTimeSlotModal(data.slots);
+							openTimeSlotModal(data.slots,data.is_rayna);
+              loaderOverlay.hide();
 						} 
+					} else if(data.status == 4) {
+						 $('#Noslot .modal-body #messageSlot').text(data.message).css("color", "red");
+						 $('#Noslot').modal('show');
 					} else if (data.status == 2) {
 						$("body #cartForm").submit();
 					}
+
+			loaderOverlay.hide();
+				  
 				//console.log(data);
 			  },
 			  error: function(error) {
@@ -582,7 +700,7 @@ function adultChildReq(a,c,inputnumber) {
   }
 }
 
-   function openTimeSlotModal(slots, selectedSlot) {
+   function openTimeSlotModal(slots, isRayna) {
     var isValid = $('body #cartForm').valid();
     if (isValid) {
 		$("body #cartForm").removeClass('error-rq');
@@ -591,31 +709,28 @@ function adultChildReq(a,c,inputnumber) {
         var radioGroup = $('#radioSlotGroup');
         radioGroup.empty();
         var tk = 0;
-//         <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off">
-// <label class="btn btn-outline-success" for="success-outlined">Time</label>
-        $.each(slots, function(index, slot) {
-            // var radio = $('<input type="radio" class="btn-check" autocomplete="off" name="timeSlotRadio">')
-            //     .attr('value', slot)
-            //     .prop('checked', slot === selectedSlot);
-            // var label = $('<label>').text(slot).prepend(radio);
-            // radioGroup.append(label);
-var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
-                // .attr('value', slot)
-                // .prop('checked', slot === selectedSlot);
-            //var label = $('<label>').text(slot).prepend(radio);
+
+		$.each(slots, function(index, slot) {
+            var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
             radioGroup.append(radio);
             tk++;
         });
-
-        $('#selectTimeSlotBtn').on('click', function() {
-            var selectedValue = $('input[name="timeSlotRadio"]:checked').val();
+		
+		$('#selectTimeSlotBtn').on('click', function() {
+            var selectedRadio = $('input[name="timeSlotRadio"]:checked');
+			var selectedValue = selectedRadio.val();
+			var timeSlotId = selectedRadio.data('id');
             if (selectedValue) {
                 $('#timeslot').val(selectedValue);
-                $("body #cartForm").submit();
+				$('#isRayna').val(isRayna);
+				$('#timeSlotId').val(timeSlotId);
+               $("body #cartForm").submit();
             } else {
                 $("body #cartForm").addClass('error-rq');
             }
+
         });
+		
 
         $('#timeSlotModal .close').on('click', function() {
             $('#timeSlotModal').modal('hide');
