@@ -198,15 +198,15 @@
         </div>
         <div class="col-sm-3">
           Adult
-           <input type="number" id="adultsTS" min="1"  class="form-control timeS onlynumbr" value="" placeholder="Adults" >
+           <input type="number" id="adultsTS" min="1"  class="form-control  onlynumbr" value="" placeholder="Adults" >
         </div>
         <div class="col-sm-3">
           Child
-        <input type="number" id="childrenTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Children" >
+        <input type="number" id="childrenTS" min="0" class="form-control  onlynumbr" value="0" placeholder="Children" >
         </div>
         <div class="col-sm-3">
           Infant
-        <input type="number" id="infantTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Infant" >
+        <input type="number" id="infantTS" min="0" class="form-control  onlynumbr" value="0" placeholder="Infant" >
         </div>
       
   </div>
