@@ -192,7 +192,7 @@
     <div class="row">
 	<div class="col-sm-3">
           Tour Date
-          <input type="text" id="dateTS" value=""  placeholder="Tour Date" class="form-control  timeS"  disabled    />
+          <input type="text" id="dateTS" value=""  placeholder="Tour Date" class="form-control  timeS"      />
 		  <input type="hidden" id="s_variant_id" value=""  />
 			<input type="hidden" id="s_transferOptionName" value=""  />
         </div>
@@ -861,7 +861,7 @@ function adultChildReq(a,c,inputnumber) {
     $('#infant' + inputnumber).val($('#infantTS').val());
 
     $('.priceChange').first().trigger('change');
-    //refressTimeSlotModal();
+    refressTimeSlotModal();
 });
 
     
