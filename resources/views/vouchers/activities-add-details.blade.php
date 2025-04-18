@@ -1,5 +1,19 @@
 @extends('layouts.app')
 @section('content')
+<style>
+/* Hide the radio button */
+.btn-check:checked + .btn-outline-success {
+    background-color: #28a745; /* Green background when selected */
+    border-color: #28a745; /* Same green border */
+    color: white; /* White text when selected */
+}
+
+/* Optional: You can add a border or other styling to the label when it's selected */
+.btn-check:checked + .btn-outline-success {
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5); /* Optional glow effect */
+}
+
+</style>
     <!-- Content Header (Page header) -->
     <section class="content-header d-done" >
       <div class="container-fluid">
@@ -548,11 +562,11 @@ function adultChildReq(a,c,inputnumber) {
         var tk = 0;
 		
 		$.each(slots, function(index, slot) {
-						var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '">';
-						radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
-						radioGroup.append(radio);
-						tk++;
-					});
+    var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" style="display:none;">';
+    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
+    radioGroup.append(radio);
+    tk++;
+});
 					
         /* $.each(slots, function(index, slot) {
             var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
