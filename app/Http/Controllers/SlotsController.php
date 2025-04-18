@@ -183,9 +183,12 @@ class SlotsController extends Controller
 
 					$slots = $query->get();
 
-					foreach($slots as $slot)
-					{
-					$data[$slot->slot_timing] = $slot->slot_timing;
+					foreach ($slots as $slot) {
+						$data[] = [
+							'id' => 0,
+							'time' => $slot->slot_timing,
+							'available' => 10 
+						];
 					}
 				}
 				
@@ -212,20 +215,26 @@ class SlotsController extends Controller
 
 	public function matchSlotWithinternalAndRayna($raynaSlots, $variantId)
 	{
-		$internalSlots = Slot::where('variant_id', $variantId)
-							 ->where('sic', 1)
-							 ->pluck('slot_timing')
-							 ->toArray(); 
+	$internalSlots = Slot::where('variant_id', $variantId)
+						 ->where('sic', 1)
+						 ->pluck('slot_timing')
+						 ->toArray(); 
 
-		$matchedSlots = [];
-		foreach ($raynaSlots as $slotId => $slotTime) {
-			if (in_array($slotTime, $internalSlots)) {
-				$matchedSlots[$slotId] = $slotTime;
-			}
+	$matchedSlots = [];
+
+	foreach ($raynaSlots as $slot) {
+		if (in_array($slot['time'], $internalSlots)) {
+			$matchedSlots[] = [
+				'id' => $slot['id'],
+				'time' => $slot['time'],
+				'available' => $slot['available']
+			];
 		}
-
-		return $matchedSlots;
 	}
+
+	return $matchedSlots;
+}
+
 
 
 }

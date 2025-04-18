@@ -61,9 +61,13 @@ class RaynaHelper
 			
             if (isset($data['statuscode']) && $data['statuscode'] == 200) {
                 foreach ($data['result'] as $slot) {
-                    $slots[$slot['timeSlotId']] = $slot['timeSlot'];
+                    $slots[] = [
+                        'id' => $slot['timeSlotId'],
+                        'time' => $slot['timeSlot'],
+                        'available' => $slot['available'] ?? 0,
+                    ];
                 }
-            } 
+            }
         }
 
         return $slots;

@@ -198,15 +198,15 @@
         </div>
         <div class="col-sm-3">
           Adult
-           <input type="number" id="adultsTS" min="1"  class="form-control  onlynumbr" value="" placeholder="Adults" >
+           <input type="number" id="adultsTS" min="1"  class="form-control timeS onlynumbr" value="" placeholder="Adults" >
         </div>
         <div class="col-sm-3">
           Child
-        <input type="number" id="childrenTS" min="0" class="form-control  onlynumbr" value="0" placeholder="Children" >
+        <input type="number" id="childrenTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Children" >
         </div>
         <div class="col-sm-3">
           Infant
-        <input type="number" id="infantTS" min="0" class="form-control  onlynumbr" value="0" placeholder="Infant" >
+        <input type="number" id="infantTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Infant" >
         </div>
       
   </div>
@@ -844,11 +844,19 @@ function adultChildReq(a,c,inputnumber) {
     var radioGroup = $('#radioSlotGroup');
     radioGroup.empty();
  var tk = 0;
-     $.each(slots, function(index, slot) {
+     /* $.each(slots, function(index, slot) {
             var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
             radioGroup.append(radio);
             tk++;
-        });
+        }); */
+		
+		$.each(slots, function(index, slot) {
+    var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '">';
+    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
+    radioGroup.append(radio);
+    tk++;
+});
+
 
     var inputnumber = vdata.key;
     var priceText = $("#price" + inputnumber).text();
@@ -861,9 +869,10 @@ function adultChildReq(a,c,inputnumber) {
     $('#infant' + inputnumber).val($('#infantTS').val());
 
     $('.priceChange').first().trigger('change');
-    refressTimeSlotModal();
 });
-
+	$('#dateTS').off('change').on('change', function () {
+		refressTimeSlotModal();
+	});
     
     $('body #selectTimeSlotBtn').off('click').on('click', function () {
         const $btn = $(this).prop('disabled', true)
@@ -1075,11 +1084,18 @@ function refressTimeSlotModal() {
 			  success: function(data) {
 				  
 				   if(data.status == 1) {
-					$.each(data.slots, function(index, slot) {
+					/* $.each(data.slots, function(index, slot) {
 					var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
 					radioGroup.append(radio);
 					tk++;
+					}); */
+					$.each(data.slots, function(index, slot) {
+						var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '">';
+						radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
+						radioGroup.append(radio);
+						tk++;
 					});
+
 					} else if(data.status == 4) {
 						radioGroup.text(data.message).css("color", "red");
 					} 
@@ -1118,6 +1134,12 @@ $(document).on('click', 'input[name="timeSlotRadio"]', function () {
  
  });
  
+ $(document).on('click', '#timeSlotModal .close', function () {
+    $('#timeSlotModal').modal('hide');
+});
+$(document).on('click', '#Noslot .close', function () {
+    $('#Noslot').modal('hide');
+});
  </script> 
 
 @endsection
