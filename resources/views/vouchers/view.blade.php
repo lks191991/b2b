@@ -448,7 +448,7 @@
             @if($voucher->status_main < 3)
             <button type="submit" name="btn_process" class="btn btn-info" {{ $submtBtnTNA == 1 ? 'disabled' : '' }}>In Process</button>
             @endif
-            @if($voucher->status_main < 4)
+            @if($voucher->status_main < 4 && $voucher->is_refundable==1)
             <button type="submit" name="btn_hold" class="btn btn-primary" {{ $submtBtnTNA == 1 ? 'disabled' : '' }}>Hold</button>
             @endif
             @if($voucher->status_main < 5 )

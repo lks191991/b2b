@@ -568,11 +568,7 @@ function adultChildReq(a,c,inputnumber) {
     tk++;
 });
 					
-        /* $.each(slots, function(index, slot) {
-            var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
-            radioGroup.append(radio);
-            tk++;
-        }); */
+       
 
         $('#selectTimeSlotBtn').on('click', function() {
             var selectedRadio = $('input[name="timeSlotRadio"]:checked');

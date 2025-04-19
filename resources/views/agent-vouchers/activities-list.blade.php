@@ -195,6 +195,7 @@
           <input type="text" id="dateTS" value=""  placeholder="Tour Date" class="form-control  timeS"      />
 		  <input type="hidden" id="s_variant_id" value=""  />
 			<input type="hidden" id="s_transferOptionName" value=""  />
+			<input type="hidden" id="s_inputnumber" value=""  />
         </div>
         <div class="col-sm-3">
           Adult
@@ -831,6 +832,7 @@ function adultChildReq(a,c,inputnumber) {
     $('#infantTS').val(vdata.infant);
     $('#s_variant_id').val(vdata.variant_id);
     $('#s_transferOptionName').val(vdata.transferOptionName);
+	$('#s_inputnumber').val(vdata.key);
 
     var disabledDates = vdata.disabledDates || [];
     var disabledWeekdays = vdata.disabledDay || [];
@@ -844,14 +846,10 @@ function adultChildReq(a,c,inputnumber) {
     var radioGroup = $('#radioSlotGroup');
     radioGroup.empty();
  var tk = 0;
-     /* $.each(slots, function(index, slot) {
-            var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
-            radioGroup.append(radio);
-            tk++;
-        }); */
+    
 		
 		$.each(slots, function(index, slot) {
-    var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '">';
+    var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" data-available="' + slot.available + '">';
     radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
     radioGroup.append(radio);
     tk++;
@@ -861,46 +859,96 @@ function adultChildReq(a,c,inputnumber) {
     var inputnumber = vdata.key;
     var priceText = $("#price" + inputnumber).text();
     $("#total-price").html("Total Price: ₹" + priceText);
+	const valMapPre = {
+        adult: $('#adultsTS').val(),
+        child: $('#childrenTS').val(),
+        infant: $('#infantTS').val()
+    };
+	
+  $('.timeS').off('change').on('change', function () {
+    const valMap = {
+        adult: $('#adultsTS').val(),
+        child: $('#childrenTS').val(),
+        infant: $('#infantTS').val()
+    };
 
-    $('.timeS').off('change').on('change', function () {
-    $('#tour_date' + inputnumber).val($('#dateTS').val());
-    $('#adult' + inputnumber).val($('#adultsTS').val());
-    $('#child' + inputnumber).val($('#childrenTS').val());
-    $('#infant' + inputnumber).val($('#infantTS').val());
+    for (let key in valMap) {
+        const val = valMap[key];
+        const $target = $('#' + key + inputnumber);
 
+        if ($target.is('select')) {
+            if ($target.find('option[value="' + val + '"]').length === 0) {
+               alert(`Max limit reached for ${key.charAt(0).toUpperCase() + key.slice(1)}!`);
+			   
+			   if(key=='adult'){
+				 $('#adultsTS').val(valMapPre[key]);
+				  $target.val(valMapPre[key]);
+			   }
+			   if(key=='child'){
+				 $('#childrenTS').val(valMapPre[key]);
+				  $target.val(valMapPre[key]);
+			   }
+			   if(key=='infant'){
+				 $('#infantTS').val(valMapPre[key]);
+				  $target.val(valMapPre[key]);
+			   }
+                continue; 
+            }
+            $target.val(val);
+        } else {
+            $target.val(val); 
+        }
+    }
+	
     $('.priceChange').first().trigger('change');
 });
+
+
 	$('#dateTS').off('change').on('change', function () {
+		
 		refressTimeSlotModal();
 	});
     
     $('body #selectTimeSlotBtn').off('click').on('click', function () {
-        const $btn = $(this).prop('disabled', true)
-            .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...')
-            .css({ color: '', backgroundColor: '', border: '' });
+    const $btn = $(this).prop('disabled', true)
+        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...')
+        .css({ color: '', backgroundColor: '', border: '' });
 
-        var selectedRadio = $('input[name="timeSlotRadio"]:checked');
-        var selectedValue = selectedRadio.val();
-        var timeSlotId = selectedRadio.data('id');
+    var selectedRadio = $('input[name="timeSlotRadio"]:checked');
+    var selectedValue = selectedRadio.val();
+    var timeSlotId = selectedRadio.data('id');
+    var availableSlot = parseInt(selectedRadio.data('available'), 10);
 
-        if (selectedValue) {
-            $('#timeslot').val(selectedValue);
-            $('#isRayna').val(isRayna);
-			if ($.isNumeric(timeSlotId)) {
-			$('#timeSlotId').val(timeSlotId);
-			} else {
-			$('#timeSlotId').val(0);
-			}
-            $('#cartForm').submit();
-        } else {
-            $('#cartForm').addClass('error-rq');
-            $btn.prop('disabled', false).html('Please Select Time Slot').css({
-                color: 'red',
-                backgroundColor: '#ffcccc',
-                border: '2px solid red'
-            });
-        }
-    });
+    var adults = parseInt($('#adultsTS').val());
+    var children = parseInt($('#childrenTS').val());
+    var infants = parseInt($('#infantTS').val());
+    var totalpats = adults + children + infants;
+
+    if (totalpats > availableSlot) {
+        alert("Please enter pax count based on availability.");
+		$('#selectTimeSlotBtn')
+        .prop('disabled', false)
+        .html('Add to Cart')
+        .attr('id', 'selectTimeSlotBtn')
+        .attr('class', 'primary-btn2').removeAttr('style');
+        return false;
+    }
+
+    if (selectedValue) {
+        $('#timeslot').val(selectedValue);
+        $('#isRayna').val("ture"); 
+        $('#timeSlotId').val($.isNumeric(timeSlotId) ? timeSlotId : 0);
+        $('#cartForm').submit();
+    } else {
+        $('#cartForm').addClass('error-rq');
+        $btn.prop('disabled', false).html('Please Select Time Slot').css({
+            color: 'red',
+            backgroundColor: '#ffcccc',
+            border: '2px solid red'
+        });
+    }
+});
+
 
     // Setup Datepicker
     var formattedDisabledDates = disabledDates.map(function(date) {
@@ -1084,17 +1132,16 @@ function refressTimeSlotModal() {
 			  success: function(data) {
 				  
 				   if(data.status == 1) {
-					/* $.each(data.slots, function(index, slot) {
-					var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
-					radioGroup.append(radio);
-					tk++;
-					}); */
+					
 					$.each(data.slots, function(index, slot) {
-						var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '">';
-						radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
-						radioGroup.append(radio);
-						tk++;
-					});
+				var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" data-available="' + slot.available + '">';
+				radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
+				radioGroup.append(radio);
+				tk++;
+   
+    radioGroup.append(radio);
+    tk++;
+});
 
 					} else if(data.status == 4) {
 						radioGroup.text(data.message).css("color", "red");

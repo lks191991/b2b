@@ -851,12 +851,7 @@ function adultChildReq(a,c,inputnumber) {
         var radioGroup = $('#radioSlotGroup');
         radioGroup.empty();
         var tk = 0;
-       /*  $.each(slots, function(index, slot) {
-            var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_'+tk+'" data-id="'+index+'" name="timeSlotRadio" value ="'+slot+'"><label class="btn btn-outline-success"  style="margin:10px;" for="input_'+tk+'">'+slot+'</label>';
-            radioGroup.append(radio);
-            tk++;
-        }); */
-		
+       
 		$.each(slots, function(index, slot) {
     var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" style="display:none;">';
     radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
