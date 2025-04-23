@@ -170,7 +170,7 @@
             }
 			@endphp
 			@if(!empty($lastVoucher) && $voucherActivityCount==0)
-			<li class="nav-item dropdown" >
+			<li class="nav-item dropdown cartBTNIcon" >
 		<a class="nav-link"  href="{{route('agent-vouchers.add.activity',$lastVoucher->id)}}">
 				<b ><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/></svg>(1)</b>
 			</a>
@@ -204,10 +204,12 @@
                
                 <ul class="icon-list">
                 
-                <li class="right-sidebar-button">
+                <li class="right-sidebar-button cartBTNIcon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/></svg>({{$voucherActivityCount}})
                 </li>
-                <script>
+               
+            </ul>
+			<script>
                     jQuery(window).on('load', function () {
 		$( ".right-sidebar-button" ).trigger( "click" );
         setTimeout(function() {
@@ -215,11 +217,16 @@
   
 	});
                 </script>
-            </ul>
             @endif
 				@endif
 				@endif
-				
+				<ul class="icon-list cartBTNIconAjax ">
+                
+                <li class="right-sidebar-button"  style="display:none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/></svg>({{$voucherActivityCount}})
+                </li>
+               
+            </ul>
 
      
             <div class="sidebar-button mobile-menu-btn">
@@ -390,6 +397,10 @@ PO BOX 117900
             duplicated: true,
             startVisible: true,
         });
+		
+		$('body').on('click', '.right-sidebar-close-btn', function () {
+    $('.right-sidebar-menu').removeClass('show-right-menu');
+});
 		});
     </script>
 <script>
@@ -407,6 +418,8 @@ PO BOX 117900
         }
     }
 </script>
+
+ 
  @yield('scripts')
 </body>
 

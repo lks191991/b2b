@@ -1196,6 +1196,18 @@ class AgentVouchersController extends Controller
 		}
 	}
 	
-
+	public function sidebarCart($vid)
+    {
+		$redirectResponse = $this->chekAgentLogin();
+		
+       
+		$typeActivities = config("constants.typeActivities"); 
+        $perPage = config("constants.AGENT_PAGE_LIMIT");
+		$voucher = Voucher::find($vid);
+		
+		$voucherActivity = VoucherActivity::where('voucher_id',$vid)->orderBy('tour_date','ASC')->get();
+		$voucherActivityCount = VoucherActivity::where('voucher_id',$vid)->count();
+        return view('inc.sidebar_cart', compact('vid','voucher','voucherActivityCount','voucherActivity'));
+    }
 
 }

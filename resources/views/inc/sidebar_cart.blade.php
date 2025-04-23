@@ -14,7 +14,7 @@
                     $caid  = 0;
 					$currency = SiteHelpers::getCurrencyPrice();
 					@endphp
-				
+				<input type="hidden" id="cartCount" value="{{$voucherActivityCount}}">
 			  
 					@if(!empty($voucherActivity))
 					  @foreach($voucherActivity as $ap)
@@ -243,6 +243,7 @@
         </div>
     </div>
 
+ 
 <!-- END CART VIEW -->
 
 

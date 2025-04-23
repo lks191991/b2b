@@ -174,8 +174,9 @@
 
 <!-- CART VIEW -->
 
+<div id="sidebar-cart-container">
 @include("inc.sidebar_cart")
-
+</div>
 
 
 	<div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -773,7 +774,8 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
 						 $('#Noslot .modal-body #messageSlot').text(data.message).css("color", "red");
 						 $('#Noslot').modal('show');
 					} else if (data.status == 2) {
-						$("body #cartForm").submit();
+            addToCart();
+						//$("body #cartForm").submit();
 					}
 
 			loaderOverlay.hide();
@@ -909,7 +911,7 @@ function adultChildReq(a,c,inputnumber) {
 		refressTimeSlotModal();
 	});
     
-    $('body #selectTimeSlotBtn').off('click').on('click', function () {
+    $('body #selectTimeSlotBtn').off('click').on('click', function (e) {
     const $btn = $(this).prop('disabled', true)
         .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...')
         .css({ color: '', backgroundColor: '', border: '' });
@@ -938,7 +940,10 @@ function adultChildReq(a,c,inputnumber) {
         $('#timeslot').val(selectedValue);
         $('#isRayna').val("ture"); 
         $('#timeSlotId').val($.isNumeric(timeSlotId) ? timeSlotId : 0);
-        $('#cartForm').submit();
+        //$('#cartForm').submit();
+        e.preventDefault(); 
+        addToCart();
+
     } else {
         $('#cartForm').addClass('error-rq');
         $btn.prop('disabled', false).html('Please Select Time Slot').css({
@@ -1187,6 +1192,48 @@ $(document).on('click', 'input[name="timeSlotRadio"]', function () {
 $(document).on('click', '#Noslot .close', function () {
     $('#Noslot').modal('hide');
 });
+
+function addToCart() {
+ 
+  let form = $('#cartForm');
+
+if (!form.valid()) return; // validate the form if using jQuery Validation
+
+// Submit the form via AJAX
+$.ajax({
+    type: form.attr('method'),
+    url: form.attr('action'),
+    data: form.serialize(),
+    success: function (response) {
+      $('#sidebar-cart-container').load("{{ route('sidebar.cart.partial',['vid' => $vid]) }}");
+        $('#timeSlotModal').modal('hide');
+        $('.cartBTNIcon').html('');
+        $('.cartBTNIconAjax li').removeAttr('style').addClass('right-sidebar-button');
+        
+               setTimeout(function() {
+            $(".right-sidebar-button").trigger("click");
+            var cartCount =  $('#cartCount').val();
+            $('.cartBTNIconAjax li').html(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/>
+            </svg>(${cartCount})`);  
+    }, 1000);
+    $('#selectTimeSlotBtn')
+        .prop('disabled', false)
+        .html('Add to Cart')
+        .attr('id', 'selectTimeSlotBtn')
+        .attr('class', 'primary-btn2').removeAttr('style');
+    },
+    error: function (xhr) {
+      $('#selectTimeSlotBtn')
+        .prop('disabled', false)
+        .html('Add to Cart')
+        .attr('id', 'selectTimeSlotBtn')
+        .attr('class', 'primary-btn2').removeAttr('style');
+        console.log(xhr.responseText);
+    }
+});  
+}
  </script> 
 
 @endsection

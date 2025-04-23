@@ -356,6 +356,7 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
 
 		Route::get('/tour-jobs', [JobsController::class, 'tourJobsView'])->name('tour.jobs.view');
 		Route::post('/process-tour-jobs', [JobsController::class, 'processTourJobs'])->name('processTourJobs');
+        Route::get('/sidebar-cart/{vid}', [AgentVouchersController::class, 'sidebarCart'])->name('sidebar.cart.partial');
     });
 });
 
