@@ -68,6 +68,7 @@
                   success: function(response) {
                       if (response.success) {
                           jobStatus.removeClass('alert-warning alert-danger').addClass('alert alert-success').text(response.message);
+                          button.prop('disabled', false).text('Start Tour Data Sync'); 
                       } else {
                           jobStatus.removeClass('alert-warning alert-success').addClass('alert alert-danger').text(response.message);
                           button.prop('disabled', false).text('Start Tour Data Sync'); 
