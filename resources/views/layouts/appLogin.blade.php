@@ -216,6 +216,7 @@
             $( ".right-sidebar-close-btn" ).trigger( "click" ) }, 5000);
   
 	});
+    
                 </script>
             @endif
 				@endif
