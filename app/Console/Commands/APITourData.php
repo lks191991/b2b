@@ -19,7 +19,7 @@ class APITourData extends Command
 
 	public function handle()
 	{
-			$url = "https://sandbox.raynatours.com/api/Tour/tourstaticdata";
+			$url = config('services.rayna.base_url') . "/Tour/tourstaticdata";
 			$token = config('services.rayna.token');
 
 			// 13668 // Dubai City
