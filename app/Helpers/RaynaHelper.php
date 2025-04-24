@@ -18,7 +18,7 @@ use App\Models\RaynaBookingLog;
 
 class RaynaHelper
 {
-    protected static $token = 'eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkNWU4YWZhMC1mNGJhLTQ2NWUtYTAzOS1mZGJiYzMxZWZlZGUiLCJVc2VySWQiOiIzNzU0NSIsIlVzZXJUeXBlIjoiQWdlbnQiLCJQYXJlbnRJRCI6IjAiLCJFbWFpbElEIjoidHJhdmVsZ2F0ZXhAcmF5bmF0b3Vycy5jb20iLCJpc3MiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20iLCJhdWQiOiJodHRwOi8vcmF5bmFhcGkucmF5bmF0b3Vycy5jb20ifQ.i6GaRt-RVSlJXKPz7ZVx-axAPLW_hkl7usI_Dw8vP5w'; 
+    protected static $token = config('services.rayna.token');
     public static  function getTourDetailsById($id)
     {
         if(!empty($id)){
@@ -40,7 +40,8 @@ class RaynaHelper
     public static  function getSlot($postData)
     {
         $slots = [];
-        $url = "https://sandbox.raynatours.com/api/Tour/timeslot";
+        $url = config('services.rayna.base_url') . "/Tour/timeslot";
+
         $token = config('services.rayna.token');
         $response = Http::withOptions(['verify' => false])
 			->withHeaders([
@@ -89,7 +90,7 @@ class RaynaHelper
 		];
 
         $data = [];
-        $url = "https://sandbox.raynatours.com/api/Tour/availability";
+        $url = config('services.rayna.base_url') . "/Tour/availability";
         $token = config('services.rayna.token');
         $response = Http::withOptions(['verify' => false])
 			->withHeaders([
@@ -150,7 +151,7 @@ class RaynaHelper
                 ]
             ];
             //dd($postData);
-            $url = "https://sandbox.raynatours.com/api/Booking/bookings"; // It's better to store URLs in config
+          $url = config('services.rayna.base_url') . "/Booking/bookings"; 
             $token = config('services.rayna.token');
 
             // API request to Rayna
@@ -308,7 +309,7 @@ class RaynaHelper
         "noOfInfant"      => (int)($payload['infant'] ?? 0)
     ];
 
-    $url = "https://sandbox.raynatours.com/api/Tour/touroption";
+   $url = config('services.rayna.base_url') . "/Tour/touroption";
     $token = config('services.rayna.token');
 
     $response = Http::withOptions(['verify' => false])
@@ -360,7 +361,7 @@ public static function cancelBooking($referenceNo, $bookingId,$vid=0,$vaid=0)
         "cancellationReason" => "cancel booking other"
     ];
 
-    $url = "https://sandbox.raynatours.com/api/Booking/cancelbooking";
+  $url = config('services.rayna.base_url') . "/Booking/cancelbooking";
     $token = config('services.rayna.token');
 
     $response = Http::withOptions(['verify' => false])
@@ -414,7 +415,7 @@ public static function getBookedTicket($acvt)
             ],
     ];
 
-    $url = "https://sandbox.raynatours.com/api/Booking/GetBookedTickets";
+  $url = config('services.rayna.base_url') . "/Booking/GetBookedTickets";
     $token = trim(config('services.rayna.token'));
 
     $response = Http::withOptions(['verify' => false])

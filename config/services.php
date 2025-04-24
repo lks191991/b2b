@@ -31,9 +31,16 @@ return [
     ],
 	 'flyremit' => [
         'api_key' => env('FLYREMIT_API_KEY'),
-    ],
-    'rayna' => [
-       'token' => env('RAYNA_TOKEN'),
-   ],
+     ],
+     'rayna' => [
+        'base_url' => env('APP_ENV') === 'production' 
+            ? env('RAYNA_API_BASE_URL_PROD') 
+            : env('RAYNA_API_BASE_URL_DEV'),
+
+        'token' => env('APP_ENV') === 'production' 
+            ? env('RAYNA_TOKEN_PROD') 
+            : env('RAYNA_TOKEN_DEV'),
+        ],
+
 
 ];

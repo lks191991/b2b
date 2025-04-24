@@ -22,7 +22,7 @@ class ProcessTourData implements ShouldQueue
 
     public function handle()
     {
-        $url = "https://sandbox.raynatours.com/api/Tour/tourstaticdata";
+        $url = $url = config('services.rayna.base_url') . "/Tour/tourstaticdata";
         $token = config('services.rayna.token');
         $cities = [13668, 13236];
 

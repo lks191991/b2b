@@ -27,7 +27,7 @@ class ProcessTourOptionData implements ShouldQueue
     public function handle()
     {
         $sourceData = DB::table('tourstaticdata')->get();
-        $url = 'https://sandbox.raynatours.com/api/Tour/touroptionstaticdata';
+        $url = config('services.rayna.base_url') . '/Tour/touroptionstaticdata';
         $token = config('services.rayna.token');
 
         foreach ($sourceData as $data) {
