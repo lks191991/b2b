@@ -1144,8 +1144,7 @@ function refressTimeSlotModal() {
 				radioGroup.append(radio);
 				tk++;
    
-    radioGroup.append(radio);
-    tk++;
+   
 });
 
 					} else if(data.status == 4) {
