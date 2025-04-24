@@ -18,7 +18,6 @@ use App\Models\RaynaBookingLog;
 
 class RaynaHelper
 {
-    protected static $token = config('services.rayna.token');
     public static  function getTourDetailsById($id)
     {
         if(!empty($id)){
