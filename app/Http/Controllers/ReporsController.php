@@ -2149,13 +2149,19 @@ public function productMaster(Request $request)
 		$filter = 0;
 		$records = [];
         $query = VariantPrice::with("createdBy","updatedBy","av","av.activity","av.variant");
-		if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
-		$filter = 1;
+		if (isset($data['from_date']) && !empty($data['from_date']) && isset($data['to_date']) && !empty($data['to_date'])) {
+			$filter = 1;
 			$startDate = date("Y-m-d", strtotime($data['from_date']));
 			$endDate = date("Y-m-d", strtotime($data['to_date']));
-			$query->whereDate('rate_valid_from', '>=', $startDate);
-			$query->whereDate('rate_valid_to', '<=', $endDate);
+		} else {
+			$filter = 1; 
+			$endDate = date("Y-m-d"); 
+			$startDate = date("Y-m-d", strtotime("+1 month"));
 		}
+		
+		$query->whereDate('rate_valid_from', '>=', $startDate);
+		$query->whereDate('rate_valid_to', '<=', $endDate);
+		
 		
 		
 		if(isset($data['vcode']) && !empty($data['vcode'])) {
