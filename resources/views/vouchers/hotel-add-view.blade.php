@@ -224,21 +224,20 @@
                     <td><input type="text" id="ppa_cwb1" name="ppa_cwb[]" value="0" required readonly class="form-control onlynumbrf" data-inputnumber="1" /></td>
                     <td><input type="text" id="ppa_cnb1"  name="ppa_cnb[]" value="0" required readonly class="form-control onlynumbrf" data-inputnumber="1" /></td>
                   </tr>
-				   <tr>
-                    <th>Mark Up in % (Default Value (5%)</th>
-					<td><input type="text" id="markup_p_s1"  name="markup_p_s[]" required tabindex="6"  class="form-control onlynumbrf psingle" value="5" data-inputnumber="1" required /></td>
-					<td><input type="text" id="markup_p_d1" value="5" name="markup_p_d[]" tabindex="9" required class="form-control onlynumbrf pdouble" data-inputnumber="1"  /></td>
-					<td><input type="text" id="markup_p_eb1" value="5"  name="markup_p_eb[]"  tabindex="12" required class="form-control onlynumbrf peb" data-inputnumber="1"  /></td>
-                    <td><input type="text" id="markup_p_cwb1" value="5" name="markup_p_cwb[]" tabindex="15" required class="form-control onlynumbrf pcwb" data-inputnumber="1" /></td>
-                    <td><input type="text" id="markup_p_cnb1" value="5" name="markup_p_cnb[]" tabindex="18" required class="form-control onlynumbrf pcnb" data-inputnumber="1" /></td>
-                  </tr>
+				   
+					<td><input type="hidden" id="markup_p_s1"  name="markup_p_s[]" required tabindex="6"  class="form-control onlynumbrf psingle" value="0" data-inputnumber="1" required /></td>
+					<td><input type="hidden" id="markup_p_d1" value="0" name="markup_p_d[]" tabindex="9" required class="form-control onlynumbrf pdouble" data-inputnumber="1"  /></td>
+					<td><input type="hidden" id="markup_p_eb1" value="0"  name="markup_p_eb[]"  tabindex="12" required class="form-control onlynumbrf peb" data-inputnumber="1"  /></td>
+                    <td><input type="hidden" id="markup_p_cwb1" value="0" name="markup_p_cwb[]" tabindex="15" required class="form-control onlynumbrf pcwb" data-inputnumber="1" /></td>
+                    <td><input type="hidden" id="markup_p_cnb1" value="0" name="markup_p_cnb[]" tabindex="18" required class="form-control onlynumbrf pcnb" data-inputnumber="1" /></td>
+                 
 				   <tr>
                     <th>Mark up Value</th>
-					<td><input type="text" id="markup_v_s1"  name="markup_v_s[]" value="0"  class="form-control onlynumbrf " readonly data-inputnumber="1"  /></td>
-					<td><input type="text" id="markup_v_d1"  name="markup_v_d[]" value="0"  class="form-control onlynumbrf " readonly data-inputnumber="1"   /></td>
-					<td><input type="text" id="markup_v_eb1"  name="markup_v_eb[]"  class="form-control onlynumbrf" readonly data-inputnumber="1" value="0"  /></td>
-                    <td><input type="text" id="markup_v_cwb1" name="markup_v_cwb[]"  class="form-control onlynumbrf" readonly data-inputnumber="1" value="0"  /></td>
-                    <td><input type="text" id="markup_v_cnb1"  name="markup_v_cnb[]"  class="form-control onlynumbrf" readonly data-inputnumber="1" value="0"  /></td>
+					<td><input type="text" id="markup_v_s1"  name="markup_v_s[]" value="0"  class="form-control onlynumbrf "  data-inputnumber="1"  /></td>
+					<td><input type="text" id="markup_v_d1"  name="markup_v_d[]" value="0"  class="form-control onlynumbrf "  data-inputnumber="1"   /></td>
+					<td><input type="text" id="markup_v_eb1"  name="markup_v_eb[]"  class="form-control onlynumbrf"  data-inputnumber="1" value="0"  /></td>
+                    <td><input type="text" id="markup_v_cwb1" name="markup_v_cwb[]"  class="form-control onlynumbrf"  data-inputnumber="1" value="0"  /></td>
+                    <td><input type="text" id="markup_v_cnb1"  name="markup_v_cnb[]"  class="form-control onlynumbrf"  data-inputnumber="1" value="0"  /></td>
                   </tr>
 				  </table>
               </div>
@@ -344,9 +343,9 @@ $(document).on('change', '.psingle', function(evt) {
 	$("body #ppa_s"+inputnumber).val(perPax.toFixed(2));
 	
 	//Markup Cal
-	let markUpP = $("body #markup_p_s"+inputnumber).val() / 100;
-	let taxvalu = markUpP*netRate;
-	$("body #markup_v_s"+inputnumber).val(taxvalu.toFixed(2));
+	//let markUpP = $("body #markup_p_s"+inputnumber).val() / 100;
+	//let taxvalu = markUpP*netRate;
+	//$("body #markup_v_s"+inputnumber).val(taxvalu.toFixed(2));
 });
 
 $(document).on('change', '.pdouble', function(evt) {
@@ -363,9 +362,9 @@ $(document).on('change', '.pdouble', function(evt) {
 	$("body #ppa_d"+inputnumber).val(perPax.toFixed(2));
 	
 	//Markup Cal
-	let markUpP = $("body #markup_p_d"+inputnumber).val() / 100;
-	let taxvalu = markUpP*netRate;
-	$("body #markup_v_d"+inputnumber).val(taxvalu.toFixed(2));
+	//let markUpP = $("body #markup_p_d"+inputnumber).val() / 100;
+	//let taxvalu = markUpP*netRate;
+	//$("body #markup_v_d"+inputnumber).val(taxvalu.toFixed(2));
 });
 
 $(document).on('change', '.peb', function(evt) {
@@ -382,9 +381,9 @@ $(document).on('change', '.peb', function(evt) {
 	$("body #ppa_eb"+inputnumber).val(perPax.toFixed(2));
 	
 	//Markup Cal
-	let markUpP = $("body #markup_p_eb"+inputnumber).val() / 100;
-	let taxvalu = markUpP*netRate;
-	$("body #markup_v_eb"+inputnumber).val(taxvalu.toFixed(2));
+	//let markUpP = $("body #markup_p_eb"+inputnumber).val() / 100;
+	//let taxvalu = markUpP*netRate;
+	//$("body #markup_v_eb"+inputnumber).val(taxvalu.toFixed(2));
 });
 
 $(document).on('change', '.pcwb', function(evt) {
@@ -420,9 +419,9 @@ $(document).on('change', '.pcnb', function(evt) {
 	$("body #ppa_cnb"+inputnumber).val(perPax.toFixed(2));
 	
 	//Markup Cal
-	let markUpP = $("body #markup_p_cnb"+inputnumber).val() / 100;
-	let taxvalu = markUpP*netRate;
-	$("body #markup_v_cnb"+inputnumber).val(taxvalu.toFixed(2));
+	//let markUpP = $("body #markup_p_cnb"+inputnumber).val() / 100;
+	//let taxvalu = markUpP*netRate;
+	//$("body #markup_v_cnb"+inputnumber).val(taxvalu.toFixed(2));
 });
 
 
