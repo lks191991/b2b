@@ -777,6 +777,7 @@ function openTimeSlotModal(slots, isRayna, vdata) {
 	$('#dateTS').off('change').on('change', function () {
 		
 		refressTimeSlotModal();
+    $("body #tour_date" + inputnumber).val($('#dateTS').val());
 	});
     
     $('body #selectTimeSlotBtn').off('click').on('click', function () {
