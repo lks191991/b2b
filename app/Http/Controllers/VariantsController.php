@@ -237,11 +237,15 @@ class VariantsController extends Controller
 		//$record->sell_price = $request->input('sell_price');
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
-		$record->touroption_id = $request->input('optionName') ? $request->input('tourOptionId') : null;
-		if (!empty($record->touroption_id)) {
+		if (!empty($request->input('optionName'))) {
+			$record->touroption_id = $request->input('tourOptionId');
 			$raynaCancellationPolicy = $this->raynaGetCancellationPolicy($record->touroption_id);
 			$record->rayna_cancellation_policy = $raynaCancellationPolicy;
+		} else {
+			$record->touroption_id = null;
+			$record->rayna_cancellation_policy = null;
 		}
+
 		
 		$record->save();
 		$ucode = 'UV'.$record->id;
