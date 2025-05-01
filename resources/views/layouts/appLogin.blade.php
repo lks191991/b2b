@@ -188,38 +188,50 @@
        
 
 
-        @if(auth()->check())
-				@if(auth()->user()->role_id == '3')
-				@php
+            @if(auth()->check() && auth()->user()->role_id == '3')
+            @php
                 $voucherActivityCount = 0;
-				$lastVoucher = SiteHelpers::getAgentlastVoucher();
-				if(!empty($lastVoucher)){
-				$voucherActivityCount = App\Models\VoucherActivity::where('voucher_id',$lastVoucher->id)->count();
-				}
-				
-				
-				@endphp
-				
-                @if($voucherActivityCount > 0)
-               
-                <ul class="icon-list">
-                
-                <li class="right-sidebar-button cartBTNIcon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/></svg>({{$voucherActivityCount}})
+                $lastVoucher = SiteHelpers::getAgentlastVoucher();
+        
+                if (!empty($lastVoucher)) {
+                    $voucherActivityCount = \App\Models\VoucherActivity::where('voucher_id', $lastVoucher->id)->count();
+                }
+        
+                $rvid = request()->routeIs('agent-vouchers.add.activity') ? request()->route('vid') : null;
+            @endphp
+        
+            @if($lastVoucher && $lastVoucher->id != $rvid)
+            <ul class="icon-list">
+                <li class="nav-item dropdown cartBTNIcon">
+                    <a class="nav-link" href="{{ route('agent-vouchers.add.activity', $lastVoucher->id) }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/>
+                    </svg>
+                    ({{ $voucherActivityCount }}) </a>
                 </li>
-               
             </ul>
-			<script>
+
+               
+            @elseif($voucherActivityCount > 0)
+                <ul class="icon-list">
+                    <li class="right-sidebar-button cartBTNIcon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/>
+                        </svg>
+                        ({{ $voucherActivityCount }})
+                    </li>
+                </ul>
+                <script>
                     jQuery(window).on('load', function () {
-		$( ".right-sidebar-button" ).trigger( "click" );
-        setTimeout(function() {
-            $( ".right-sidebar-close-btn" ).trigger( "click" ) }, 5000);
-  
-	});
+                        $(".right-sidebar-button").trigger("click");
+                        setTimeout(function () {
+                            $(".right-sidebar-close-btn").trigger("click");
+                        }, 5000);
+                    });
                 </script>
             @endif
-				@endif
-				@endif
+        @endif
+        
 				<ul class="icon-list cartBTNIconAjax ">
                 
                 <li class="right-sidebar-button"  style="display:none">

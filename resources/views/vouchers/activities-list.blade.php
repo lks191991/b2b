@@ -2,16 +2,77 @@
 @section('content')
 <style>
 /* Hide the radio button */
+.btn-check {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
 .btn-check:checked + .btn-outline-success {
-    background-color: #28a745; /* Green background when selected */
-    border-color: #28a745; /* Same green border */
-    color: white; /* White text when selected */
+    background-color: #28a745;
+    border-color: #28a745; 
+    color: white;
+    /* box-shadow removed */
 }
 
 /* Optional: You can add a border or other styling to the label when it's selected */
 .btn-check:checked + .btn-outline-success {
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5); /* Optional glow effect */
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5); 
 }
+
+ /* Modal Container */
+ #timeSlotModal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    /* Modal Content */
+    #timeSlotModal .modal-content {
+      position: absolute;
+      bottom: 0;
+      background-color: #fff;
+      width: 100%;
+      max-width: 100%;
+      padding: 20px;
+      border-radius: 16px 16px 0 0;
+      animation: slideUp 0.3s ease-out;
+      overflow-y: auto;
+    }
+
+    .modal-header .close {
+      float: right !important;
+      font-size: 24px !important;
+      font-weight: bold !important;
+      color: #888 !important;
+      cursor: pointer !important;
+	  padding:15px 25px !important;
+    }
+
+    .modal-header .close:hover {
+      color: #000 !important;
+    }
+
+    @keyframes slideUp {
+      from {
+        bottom: -100%;
+        opacity: 0;
+      }
+      to {
+        bottom: 0;
+        opacity: 1;
+      }
+    }
+
+    @media screen and (max-height: 500px) {
+      #timeSlotModal .modal-content {
+        max-height: 80%;
+      }
+    }
 
 </style>
     <!-- Content Header (Page header) -->
@@ -82,7 +143,7 @@
                 <!-- /.card-body -->
                 </form>
                 </div>
-             <div class="card-body @if($voucherActivityCount > 0) col-md-9 @else offset-1 col-md-10 @endif">
+             <div class="card-body @if($voucherActivityCount > 0) col-md-9 @else offset-1 col-md-10 @endif" id="list-data">
              <table id="tbl-activites" class="dataTable" style="width:100%" cellpadding="0px;" cellspaccing="0px" aria-describedby="example2_info">
               <thead>
                 <tr>
@@ -158,174 +219,11 @@
 </table> 
                  
 				<div class="pagination pull-right mt-3"> {!! $records->appends(request()->query())->links() !!} </div> 
-</div>
-@php
-$caid = 0;
-$ty=0;
-$aid = 0;
-					$total = 0;
-					@endphp
- @if(!empty($voucherActivity) && $voucher->is_activity == 1)
- <div class="col-md-3  mt-2 " id="div-cart-list" >
-				
-			  
-					@if(!empty($voucherActivity))
-					  @foreach($voucherActivity as $ap)
-				  @php
-          $total += $ap->totalprice;
-		  $activityImg = SiteHelpers::getActivityImageName($ap->activity_id);
-$delKey = $ap->id;
-
-					@endphp
-          @if(($ap->activity_product_type == 'Bundle_Same') || ($ap->activity_product_type == 'Bundle_Diff') || ($ap->activity_product_type == 'Package'))
-          @php
-          $aid = $ap->activity_id;
-          $delKey = $ap->voucher_id;
-          $total_sp  = 0;
-          
-		  $total_sp = PriceHelper::getTotalActivitySP($ap->voucher_id,$ap->activity_id);
-
-
-					@endphp
-          @endif
-          @if(($ap->activity_product_type == 'Bundle_Same') && ($caid != $ap->activity_id))
-          @php
-          $dis = 1;
-          @endphp
-          @elseif(($ap->activity_product_type != 'Bundle_Same'))
-          @php
-          $dis = 1;
-          @endphp
-          @else
-          @php
-          $dis = 0;
-          @endphp
-          @endif
-          
-          @if( $dis == 1)
-
-            <div class="card">
-			
-              
-              <div class="card-body card-body-hover" >
-             
-              <div class="row">
-              <div class="col-10">
-              <span class="cart-title font-size-21 text-dark">
-              {{$ap->activity_title}}
-              </span>
-              </div>
-              <div class="col-2  text-right">
-              @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff') && ($ap->activity_product_type != 'Package'))
-           
-         
-              <form id="delete-form-{{$delKey}}" method="post" action="{{route('voucher.activity.delete',$delKey.'/0')}}" style="display:none;">
-                                {{csrf_field()}}
-                                {{method_field('DELETE')}}
-                            </form>
-                            <small>
-                            <a class="btn btn-xs btn-danger border-round" title="delete" href="javascript:void(0)" onclick="
-                                if(confirm('Are you sure, You want to delete this?'))
-                                {
-                                    event.preventDefault();
-                                    document.getElementById('delete-form-{{$delKey}}').submit();
-                                }
-                                else
-                                {
-                                    event.preventDefault();
-                                }
-                            
-                            ">
-                            
-                            <small><i class="fas fa-trash-alt "></i></small></a></small>
-                 @elseif($caid != $ap->activity_id)
-                
-                 <form id="delete-form-{{$delKey}}-{{$ap->activity_id}}" method="post" action="{{route('voucher.activity.delete',$delKey.'/'.$ap->activity_id)}}" style="display:none;">
-                                {{csrf_field()}}
-                                {{method_field('DELETE')}}
-                            </form>
-                            <small>
-                            <a class="btn btn-xs btn-danger border-round" title="delete" href="javascript:void(0)" onclick="
-                                if(confirm('Are you sure, You want to delete this?'))
-                                {
-                                    event.preventDefault();
-                                    document.getElementById('delete-form-{{$delKey}}-{{$ap->activity_id}}').submit();
-                                }
-                                else
-                                {
-                                    event.preventDefault();
-                                }
-                            
-                            ">
-                            
-                            <small><i class="fas fa-trash-alt "></i></small></a></small>
-                  @endif
-             
-              </div>
-              </div>
-             
-                                  <div class="row" >
-				  <div class="col-md-3" style="padding: 5px 0px 5px 5px; ">
-              <img src="{{asset('uploads/activities/'.$activityImg)}}" class="img-fluid" style="border-radius: 5px;" />
-            </div>
-			<div class="col-md-9">
-              <ul class="list-unstyled" style="">
-              @if(($ap->activity_product_type != 'Bundle_Same'))
-                <li>
-             
-                 {{$ap->variant_name}}
-
-                </li>
-                @endif
-				<li>
-                  {{$ap->transfer_option}}
-                </li>
-                <li>
-                   {{ $ap->tour_date ? date(config('app.date_format'),strtotime($ap->tour_date)) : null }}   {{ $ap->time_slot ? ' : '.$ap->time_slot: null }}
-               
-                </li>
-                <li>
-
-                 <i class="fas fa-male color-grey" style="font-size:16px;" title="Adult"></i> <span class="color-black">{{$ap->adult}}</span> <i class="fas fa-child color-grey" title="Child"></i>  <span class="color-black">{{$ap->child}}</span>
-                 @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff') && ($ap->activity_product_type != 'Package'))
-                  <span class="float-right " ><h2 class="card-title text-right color-black"><strong>AED {{$ap->totalprice}}</strong></h2></span>
-                 @elseif($caid != $ap->activity_id)
-                 <span class="float-right " ><h2 class="card-title text-right color-black"><strong>AED {{$total_sp}}</strong></h2></span>
-                  @endif
-                </li>
-                
-              </ul>
-			   
-            </div>
-			
-                </div>
-              
-              </div>
-              <!-- /.card-body -->
-            </div>
-            @endif
-			@php
-      $caid = $ap->activity_id;
-      @endphp
-				 @endforeach
-                 @endif
-                 <div class="input-group  text-right float-right mb-3">
-                            @if($voucherActivityCount > 0)
-                               <h2 class="card-title color-black " style="width:100%"><strong>Total Amount : AED {{$total}}</strong></h2>
-                            @endif
-                        </div>
-						
-                 <div class="input-group  text-right float-right">
-                            @if($voucherActivityCount > 0)
-                                  <a href="{{ route('voucher.add.discount',$voucher->id) }}" class="btn btn-lg btn-primary pull-right" style="width:100%">
-                                <i class="fas fa-shopping-cart"></i>
-                                Checkout({{$voucherActivityCount}})
-                            </a>
-                            @endif
-                        </div>
-				
-</div>
-  @endif
+        
+      </div>
+      <div class="col-md-3" id="sidebar-cart-container" >
+        @include('vouchers.cart-list')
+        </div>
 </div>
 </div>
            
@@ -337,27 +235,71 @@ $delKey = $ap->id;
     </section>
     <!-- /.content -->
 	
-	<div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Select Time Slot</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+    <div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 100%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabelHeading"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                
+        <div class="row">
+      <div class="col-sm-3">
+              Tour Date
+              <input type="text" id="dateTS" value=""  placeholder="Tour Date" class="form-control  timeS"      />
+          <input type="hidden" id="s_variant_id" value=""  />
+          <input type="hidden" id="s_transferOptionName" value=""  />
+          <input type="hidden" id="s_inputnumber" value=""  />
             </div>
-            <div class="modal-body">
-                <div class="form-group" id="radioSlotGroup">
-                    <!-- Radio buttons will be dynamically added here -->
+            <div class="col-sm-3">
+              Adult
+               <input type="number" id="adultsTS" min="1"  class="form-control timeS onlynumbr" value="" placeholder="Adults" >
+            </div>
+            <div class="col-sm-3">
+              Child
+            <input type="number" id="childrenTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Children" >
+            </div>
+            <div class="col-sm-3">
+              Infant
+            <input type="number" id="infantTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Infant" >
+            </div>
+          
+      </div>
+      <div class="row">
+      <div class="col-md-12">
+          <h6 class="pt-3">Select Time Slot</h6>
+    
+          <div class="form-group m-1">
+          <div id="slotLoader" style="display:none; text-align:left; padding: 2px;">
+          <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+          </div>
+          <div>Loading available time slots...</div>
+          </div>
+    
+        <!-- Radio Slot Buttons -->
+        <div id="radioSlotGroup">
+            <!-- Radio buttons will be dynamically added here -->
+        </div>
+                    </div>
+      </div>
+      </div>
+                  
+                    <div class="col-md-4">
+                    <div id="total-price">Total Price: ₹0</div>
+      </div>
+               
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="selectTimeSlotBtn">Add to Cart</button>
+                   
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-primary-flip btn-sm" id="selectTimeSlotBtn"><i class="fa fa-cart-plus"></i></button>
-                <!-- You can add a button here for further actions if needed -->
-            </div>
         </div>
-    </div>
-</div>
+    </div></div>
 
 <div class="modal fade" id="PriceModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -381,7 +323,7 @@ $delKey = $ap->id;
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Slot Unavailable</h5>
+                <h5 class="modal-title" id="NoslotLabel">Slot Unavailable</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -544,11 +486,13 @@ $('.actcsk:first').prop('checked', true).trigger("change");
   {
     $("body #price0").html(price.variantData.totalprice);
 	  $("body #totalprice0").val(price.variantData.totalprice);
+    $("body #total-price").html("Total Price: ₹" + parseFloat(price.variantData.totalprice).toFixed(2));
   }
   else
   {
     $("body #price" + inputnumber).html(price.variantData.totalprice);
 	  $("body #totalprice" + inputnumber).val(price.variantData.totalprice);
+    $("body #total-price").html("Total Price: ₹" + parseFloat(price.variantData.totalprice).toFixed(2));
   }
     })
     .catch(function(error) {
@@ -674,11 +618,26 @@ elementsTT.forEach((element) => {
      const adult = $("body #adult" + inputnumber).val();
      const child = $("body #child" + inputnumber).val();
      const infant = $("body #infant" + inputnumber).val();
+     const title = $("body #activity_variant_title" + inputnumber).val();
+	  const disabledDates = $("body #disabledDates" + inputnumber).val();
+	   const disabledDay = $("body #disabledDay" + inputnumber).val();
+		const vdata = {
+			variant_id:variant_id,
+			title : title,
+			key : inputnumber,
+			transferOptionName:transferOptionName,
+			tour_date:tour_date,
+			adult:adult,
+			child:child,
+			infant:infant,
+			disabledDates:disabledDates,
+			disabledDay:disabledDay
+		};
 		 $.ajax({
 			  url: "{{ route('get.variant.slots') }}",
 			  type: 'POST',
 			  dataType: "json",
-			  data: {
+        data: {
 				  variant_id:variant_id,
 				  transferOptionName:transferOptionName,
           tour_date:tour_date,
@@ -689,17 +648,21 @@ elementsTT.forEach((element) => {
 			  success: function(data) {
 				  if(data.status == 1) {
 						
-						var timeslot = $('#timeslot').val();
+            var timeslot = $('#timeslot').val();
 						$('#isRayna').val(data.is_rayna);
 						if(timeslot==''){
-							openTimeSlotModal(data.slots,data.is_rayna);
+             
+							openTimeSlotModal(data.slots,data.is_rayna,vdata);
               loaderOverlay.hide();
 						} 
 					} else if(data.status == 4) {
-						 $('#Noslot .modal-body #messageSlot').text(data.message).css("color", "red");
-						 $('#Noslot').modal('show');
+            
+$('#Noslot .modal-body #messageSlot').text(data.message).css("color", "red");
+$('#Noslot').modal('show');
+
 					} else if (data.status == 2) {
-						$("body #cartForm").submit();
+            addToCart();
+						///$("body #cartForm").submit();
 					}
 
           loaderOverlay.hide();
@@ -840,48 +803,161 @@ function adultChildReq(a,c,inputnumber) {
 	  $("body #adult"+inputnumber).prop('required',false); 
   }
 }
-
-  function openTimeSlotModal(slots, isRayna) {
-	  
+function openTimeSlotModal(slots, isRayna, vdata) {
     var isValid = $('body #cartForm').valid();
-    if (isValid) {
-		$("body #cartForm").removeClass('error-rq');
-        $('#timeSlotModal').modal('show');
+    if (!isValid) return;
 
-        var radioGroup = $('#radioSlotGroup');
-        radioGroup.empty();
-        var tk = 0;
-       
-		$.each(slots, function(index, slot) {
-    var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" style="display:none;">';
-    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
-    radioGroup.append(radio);
-    tk++;
+    // Fill modal fields
+    $('#dateTS').val(vdata.tour_date);
+    $('#adultsTS').val(vdata.adult);
+    $('#childrenTS').val(vdata.child);
+    $('#infantTS').val(vdata.infant);
+    $('#s_variant_id').val(vdata.variant_id);
+    $('#s_transferOptionName').val(vdata.transferOptionName);
+	  $('#s_inputnumber').val(vdata.key);
+
+    var disabledDates = vdata.disabledDates || [];
+    var disabledWeekdays = vdata.disabledDay || [];
+
+    $('#timeSlotModal').modal({
+        backdrop: 'static',
+        keyboard: false
+    }).modal('show');
+
+    $("#exampleModalLabelHeading").html(vdata.title);
+    var radioGroup = $('#radioSlotGroup');
+    radioGroup.empty();
+    var tk = 0;
+    
+		
+      $.each(slots, function(index, slot) {
+      var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" data-available="' + slot.available + '">';
+      radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
+      radioGroup.append(radio);
+      tk++;
+      });
+
+
+    var inputnumber = vdata.key;
+    var priceText = $("#price" + inputnumber).text();
+    $("#total-price").html("Total Price: ₹" + priceText);
+	  const valMapPre = {
+        adult: $('#adultsTS').val(),
+        child: $('#childrenTS').val(),
+        infant: $('#infantTS').val()
+    };
+	
+    $('.timeS').off('change').on('change', function () {
+      const valMap = {
+          adult: $('#adultsTS').val(),
+          child: $('#childrenTS').val(),
+          infant: $('#infantTS').val()
+      };
+
+      for (let key in valMap) {
+          const val = valMap[key];
+          const $target = $('#' + key + inputnumber);
+
+          if ($target.is('select')) {
+              if ($target.find('option[value="' + val + '"]').length === 0) {
+                alert(`Max limit reached for ${key.charAt(0).toUpperCase() + key.slice(1)}!`);
+          
+          if(key=='adult'){
+          $('#adultsTS').val(valMapPre[key]);
+            $target.val(valMapPre[key]);
+          }
+          if(key=='child'){
+          $('#childrenTS').val(valMapPre[key]);
+            $target.val(valMapPre[key]);
+          }
+          if(key=='infant'){
+          $('#infantTS').val(valMapPre[key]);
+            $target.val(valMapPre[key]);
+          }
+                  continue; 
+              }
+              $target.val(val);
+          } else {
+              $target.val(val); 
+          }
+      }
+	
+      $('.priceChange').first().trigger('change');
 });
 
 
+	$('#dateTS').off('change').on('change', function () {
+		
+		refressTimeSlotModal();
+	});
+    
+    $('body #selectTimeSlotBtn').off('click').on('click', function (e) {
+    const $btn = $(this).prop('disabled', true)
+        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...')
+        .css({ color: '', backgroundColor: '', border: '' });
 
-        $('#selectTimeSlotBtn').on('click', function() {
-            var selectedRadio = $('input[name="timeSlotRadio"]:checked');
-			var selectedValue = selectedRadio.val();
-			var timeSlotId = selectedRadio.data('id');
-            if (selectedValue) {
-                $('#timeslot').val(selectedValue);
-				$('#isRayna').val(isRayna);
-				$('#timeSlotId').val(timeSlotId);
-                $("body #cartForm").submit();
-            } else {
-                $("body #cartForm").addClass('error-rq');
-            }
+    var selectedRadio = $('input[name="timeSlotRadio"]:checked');
+    var selectedValue = selectedRadio.val();
+    var timeSlotId = selectedRadio.data('id');
+    var availableSlot = parseInt(selectedRadio.data('available'), 10);
 
-        });
+    var adults = parseInt($('#adultsTS').val());
+    var children = parseInt($('#childrenTS').val());
+    var infants = parseInt($('#infantTS').val());
+    var totalpats = adults + children + infants;
 
-        $('#timeSlotModal .close').on('click', function() {
-            $('#timeSlotModal').modal('hide');
+    if (totalpats > availableSlot) {
+        alert("Please enter pax count based on availability.");
+		$('#selectTimeSlotBtn')
+        .prop('disabled', false)
+        .html('Add to Cart')
+        .attr('id', 'selectTimeSlotBtn')
+        .attr('class', 'btn btn-success').removeAttr('style');
+        return false;
+    }
+
+    if (selectedValue) {
+        $('#timeslot').val(selectedValue);
+        $('#isRayna').val("true"); 
+        $('#timeSlotId').val($.isNumeric(timeSlotId) ? timeSlotId : 0);
+        //$('#cartForm').submit();
+        e.preventDefault(); 
+        addToCart();
+
+    } else {
+        $('#cartForm').addClass('error-rq');
+        $btn.prop('disabled', false).html('Please Select Time Slot').css({
+            color: '#000',
+            border: '2px solid red'
         });
     }
-}
+});
+ // Setup Datepicker
+ var formattedDisabledDates = disabledDates.map(function(date) {
+        return $.datepicker.parseDate('yy-mm-dd', date);
+    });
 
+    $('#dateTS').datepicker('destroy').datepicker({
+        beforeShowDay: function(date) {
+            var day = date.getDay();
+            var isDisabledDate = formattedDisabledDates.some(function(d) {
+                return d.getTime() === date.getTime();
+            });
+            return [!(isDisabledDate || disabledWeekdays.includes(day))];
+        },
+        minDate: new Date(),
+        dateFormat: 'dd-mm-yy'
+    });
+
+    if (vdata.tour_date) {
+        $('#dateTS').datepicker('setDate', vdata.tour_date);
+    }
+
+    // Close button handler
+    $('#timeSlotModal .close').off('click').on('click', function() {
+        $('#timeSlotModal').modal('hide');
+    });
+}
 
 $(document).on('keypress', '.onlynumbrf', function(evt) {
    var charCode = (evt.which) ? evt.which : evt.keyCode
@@ -890,7 +966,144 @@ $(document).on('keypress', '.onlynumbrf', function(evt) {
    return true;
  
  });
+ $('#PriceModal .close').on('click', function() {
+            $('#PriceModal').modal('hide');
+        });
 
+        function refressTimeSlotModal() {
+	  
+		var tour_date = $('body #dateTS').val();
+		var adult = $('body #adultsTS').val();
+		var child = $('body #childrenTS').val();
+		var infant = $('body #infantTS').val();
+		var variant_id = $('body #s_variant_id').val();
+		var transferOptionName =  $('body #s_transferOptionName').val();
+		
+		
+        var radioGroup = $('#radioSlotGroup');
+        radioGroup.empty();
+        var tk = 0;
+	 $.ajax({
+			  url: "{{ route('get.variant.slots') }}",
+			  type: 'POST',
+			  dataType: "json",
+			data: {
+				variant_id:variant_id,
+				transferOptionName:transferOptionName,
+				tour_date:tour_date,
+				adult:adult,
+				child:child,
+				infant:infant
+				  },
+        beforeSend: function () {
+            $('#slotLoader').show(); 
+        },
+			  success: function(data) {
+				  
+				   if(data.status == 1) {
+					
+					$.each(data.slots, function(index, slot) {
+				var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" data-available="' + slot.available + '">';
+				radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
+				radioGroup.append(radio);
+				tk++;
+   
+   
+});
+
+					} else if(data.status == 4) {
+						radioGroup.text(data.message).css("color", "red");
+					} 
+
+			  },
+        complete: function () {
+            $('#slotLoader').hide(); // Hide loader
+        },
+			  error: function(error) {
+				console.log(error);
+			  }
+		});
+        
+       
+}
+$(document).on('click', 'input[name="timeSlotRadio"]', function () {
+    $('#selectTimeSlotBtn')
+        .prop('disabled', false)
+        .html('Add to Cart')
+        .attr('id', 'selectTimeSlotBtn')
+        .attr('class', 'btn btn-success').removeAttr('style');
+});
+
+$(document).on('keypress', '.onlynumbr', function(evt) {
+   var charCode = (evt.which) ? evt.which : evt.keyCode
+   if ((charCode < 48 || charCode > 57))
+     return false;
+   return true;
+ 
+ });
+ 
+ $(document).on('click', '#timeSlotModal .close', function () {
+    $('#timeSlotModal').modal('hide');
+});
+$(document).on('click', '#Noslot .close', function () {
+    $('#Noslot').modal('hide');
+});
+function addToCart() {
+    let form = $('#cartForm');
+
+    if (!form.valid()) return;
+
+    $.ajax({
+        type: form.attr('method'),
+        url: form.attr('action'),
+        data: form.serialize(),
+        success: function (response) {
+          if (response.error) {
+            $('#Noslot #NoslotLabel').text("Error").css("color", "red");
+            $('#Noslot .modal-body #messageSlot').text(response.error).css("color", "red");
+            $('#Noslot').modal('show');
+            return;
+          }
+            $.ajax({
+                url: "{{ route('admin.sidebar.cart.partial', ['vid' => $vid]) }}",
+                type: 'GET',
+                dataType: 'json',
+                success: function (sidebarResponse) {
+                    $('#sidebar-cart-container').html(sidebarResponse.html);
+
+                    let voucherActivityCount = sidebarResponse.voucherActivityCount;
+
+                    if (voucherActivityCount > 0) {
+                        $('#list-data').removeClass('offset-1 col-md-10').addClass('col-md-9');
+                    } else {
+                        $('#list-data').removeClass('col-md-9').addClass('offset-1 col-md-10');
+                    }
+                },
+                error: function (xhr) {
+                    console.error('Sidebar load error:', xhr.responseText);
+                }
+            });
+
+            $('#timeSlotModal').modal('hide');
+
+            $('#selectTimeSlotBtn')
+                .prop('disabled', false)
+                .html('Add to Cart')
+                .attr('id', 'selectTimeSlotBtn')
+                .attr('class', 'btn btn-success')
+                .removeAttr('style');
+        },
+        error: function (xhr) {
+            $('#selectTimeSlotBtn')
+                .prop('disabled', false)
+                .html('Add to Cart')
+                .attr('id', 'selectTimeSlotBtn')
+                .attr('class', 'btn btn-success')
+                .removeAttr('style');
+            console.log(xhr.responseText);
+        }
+    });
+}
 
  </script> 
 @endsection

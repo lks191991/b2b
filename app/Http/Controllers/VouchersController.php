@@ -573,6 +573,7 @@ class VouchersController extends Controller
 					$record->zone = $agent->zone;
 					$record->save();
 					$agent->agent_amount_balance -= $grandTotal;
+					
 					$agent->save();
 					
 					$agentAmount = new AgentAmount();
@@ -613,6 +614,7 @@ class VouchersController extends Controller
 							$agent->save();
 					
 							return redirect()->route('vouchers.show', $record->id)->with('error', $errorDescription);
+							exit;
 						}
 					} catch (\Exception $e) {
 						$record->status_main = 4;
@@ -620,7 +622,6 @@ class VouchersController extends Controller
 						
 						$agent->agent_amount_balance += $grandTotal;
 						$agent->save();
-					
 						return redirect()->route('vouchers.show', $record->id)->with('error', $e->getMessage());
 					}
 					
@@ -1078,6 +1079,7 @@ class VouchersController extends Controller
 	public function activitySaveInVoucher(Request $request)
     {
 		$activity_select = $request->input('activity_select');
+
 		
 	if(isset($activity_select))
 	{
@@ -1143,6 +1145,10 @@ class VouchersController extends Controller
 			{
 				if(!in_array($tour_dt,$getAvailableDateList))
 				{
+					if ($request->ajax()) {
+						return response()->json(['error' => $variant->title.' Tour is not available for Selected Date.']);
+					}
+
 					return redirect()->back()->with('error', $variant->title.' Tour is not available for Selected Date.');
 				}
 			
@@ -1228,6 +1234,9 @@ class VouchersController extends Controller
 								$data[0]['rayna_infantPrice'] = $tourOptionDetails['rayna_infantPrice'] * $payload['infant'];
 							} else {
 								$errorMessage = $tourOptionDetails['message'] ?? 'Unknown error occurred';
+								if ($request->ajax()) {
+									return response()->json(['error' => $errorMessage]);
+								}
 								return redirect()->back()->with('error', $errorMessage);
 							}
 
@@ -1238,9 +1247,16 @@ class VouchersController extends Controller
 							$voucher->save();
 						} else {
 							$errorMessage = $availability['message'] ?? 'Unknown error occurred';
+							if ($request->ajax()) {
+								return response()->json(['error' => $errorMessage]);
+							}
+
 							return redirect()->back()->with('error', $errorMessage);
 						}
 					} else {
+						if ($request->ajax()) {
+							return response()->json(['error' => 'Invalid tour data.']);
+						}
 						return redirect()->back()->with('error', 'Invalid tour data.');
 					}
 				}
@@ -1253,19 +1269,28 @@ class VouchersController extends Controller
 			}
 
 		} else {
+			if ($request->ajax()) {
+				return response()->json(['error' => 'Please Select Tour Option.']);
+			}
 			return redirect()->back()->with('error',' Please Select Tour Option.');
 		}
 		
 		
 		if ($request->has('save_and_continue')) {
-			//return redirect()->back()->with('success', 'Activity added Successfully.');
+			if ($request->ajax()) {
+				return response()->json(['success' => 'Activity added Successfully.']);
+			}
          return redirect()->route('voucher.add.activity',$voucher_id)->with('success', 'Activity added Successfully.');
 		} else {
+			if ($request->ajax()) {
+				return response()->json(['success' => 'Activity added Successfully.']);
+			}
 			return redirect()->back()->with('success', 'Activity added Successfully.');
-        //return redirect('vouchers')->with('success', 'Activity Added Successfully.');
 		}
 	}
-		
+	if ($request->ajax()) {
+		return response()->json(['error' => 'Please select activity variant.']);
+	}
        return redirect()->back()->with('error', 'Please select activity variant.');
 	   
     }
@@ -2300,6 +2325,20 @@ class VouchersController extends Controller
         return view('vouchers.activities-add-quick', compact('startDate','vid','voucher'));
 		
        
+    }
+
+	public function sidebarCart($vid)
+    {
+		$voucher = Voucher::find($vid);
+		$voucherActivity = VoucherActivity::where('voucher_id', $vid)->orderBy('tour_date','ASC')->get();
+		$voucherActivityCount = $voucherActivity->count();
+	
+		$html = view('vouchers.cart-list', compact('vid', 'voucher', 'voucherActivity', 'voucherActivityCount'))->render();
+	
+		return response()->json([
+			'html' => $html,
+			'voucherActivityCount' => $voucherActivityCount
+		]);
     }
 }
 

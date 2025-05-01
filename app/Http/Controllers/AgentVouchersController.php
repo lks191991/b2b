@@ -748,11 +748,16 @@ class AgentVouchersController extends Controller
 			$priceCal = PriceHelper::getActivityPriceSaveInVoucher($transfer_option[$k],$activity_variant_id[$k],$voucher->agent_id,$adult[$k],$child[$k],$infant[$k],$discount[$k],$tour_dt);
 				
 			if($priceCal['totalprice'] <= 0){
-				
+				if ($request->ajax()) {
+					return response()->json(['error' => $variant->title.' Tour is not available for Selected Date.']);
+				}
 				return redirect()->back()->with('error', $variant->title.' Tour is not available for Selected Date.');
 				}
 			elseif($priceCal['totalprice'] > 0){
 				if(!in_array($tour_dt,$getAvailableDateList)){
+					if ($request->ajax()) {
+						return response()->json(['error' => $variant->title.' Tour is not available for Selected Date.']);
+					}
 				return redirect()->back()->with('error', $variant->title.' Tour is not available for Selected Date.');
 				}
 			if(empty($transfer_zone)){
@@ -836,6 +841,9 @@ class AgentVouchersController extends Controller
 								$data[0]['rayna_infantPrice'] = $tourOptionDetails['rayna_infantPrice'] * $payload['infant'];
 							} else {
 								$errorMessage = (!empty($tourOptionDetails['message'])) ? $tourOptionDetails['message'] : 'Unknown error occurred';
+								if ($request->ajax()) {
+									return response()->json(['error' => $errorMessage]);
+								}
 								return redirect()->back()->with('error', $errorMessage);
 
 							}
@@ -847,9 +855,15 @@ class AgentVouchersController extends Controller
 							$voucher->save();
 						} else {
 							$errorMessage = (!empty($availability['message'])) ? $availability['message'] : 'Unknown error occurred';
+							if ($request->ajax()) {
+								return response()->json(['error' => $errorMessage]);
+							}
 							return redirect()->back()->with('error', $errorMessage);
 						}
 					} else {
+						if ($request->ajax()) {
+							return response()->json(['error' => 'Invalid tour data.']);
+						}
 						return redirect()->back()->with('error', 'Invalid tour data.');
 					}
 				}
@@ -862,19 +876,29 @@ class AgentVouchersController extends Controller
 			}
 
 		} else {
+			if ($request->ajax()) {
+				return response()->json(['error' => 'Please Select Tour Option.']);
+			}
 			return redirect()->back()->with('error',' Please Select Tour Option.');
 		}
 		
 		
 		if ($request->has('save_and_continue')) {
-			//return redirect()->back()->with('success', 'Activity added Successfully.');
+			if ($request->ajax()) {
+				return response()->json(['success' => 'Activity added Successfully.']);
+			}
         return redirect()->route('agent-vouchers.add.activity',$voucher_id)->with('success', 'Activity added Successfully.');
 		} else {
+			if ($request->ajax()) {
+				return response()->json(['success' => 'Activity added Successfully.']);
+			}
 			return redirect()->back()->with('success', 'Activity added Successfully.');
         //return redirect('vouchers')->with('success', 'Activity Added Successfully.');
 		}
 	}
-		
+	if ($request->ajax()) {
+		return response()->json(['error' => 'Please select activity variant.']);
+	}
        return redirect()->back()->with('error', 'Please select activity variant.');
 	   
     }

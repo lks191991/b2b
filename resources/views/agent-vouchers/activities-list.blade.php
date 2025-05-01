@@ -284,7 +284,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Slot Unavailable</h5>
+                <h5 class="modal-title" id="NoslotLabel">Slot Unavailable</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -738,7 +738,6 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
 			variant_id:variant_id,
 			title : title,
 			key : inputnumber,
-			variant_id:variant_id,
 			transferOptionName:transferOptionName,
 			tour_date:tour_date,
 			adult:adult,
@@ -834,7 +833,7 @@ function adultChildReq(a,c,inputnumber) {
     $('#infantTS').val(vdata.infant);
     $('#s_variant_id').val(vdata.variant_id);
     $('#s_transferOptionName').val(vdata.transferOptionName);
-	$('#s_inputnumber').val(vdata.key);
+	  $('#s_inputnumber').val(vdata.key);
 
     var disabledDates = vdata.disabledDates || [];
     var disabledWeekdays = vdata.disabledDay || [];
@@ -847,62 +846,62 @@ function adultChildReq(a,c,inputnumber) {
     $("#exampleModalLabelHeading").html(vdata.title);
     var radioGroup = $('#radioSlotGroup');
     radioGroup.empty();
- var tk = 0;
+    var tk = 0;
     
 		
-		$.each(slots, function(index, slot) {
-    var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" data-available="' + slot.available + '">';
-    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
-    radioGroup.append(radio);
-    tk++;
-});
+      $.each(slots, function(index, slot) {
+      var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" data-available="' + slot.available + '">';
+      radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
+      radioGroup.append(radio);
+      tk++;
+      });
 
 
     var inputnumber = vdata.key;
     var priceText = $("#price" + inputnumber).text();
     $("#total-price").html("Total Price: ₹" + priceText);
-	const valMapPre = {
+	  const valMapPre = {
         adult: $('#adultsTS').val(),
         child: $('#childrenTS').val(),
         infant: $('#infantTS').val()
     };
 	
-  $('.timeS').off('change').on('change', function () {
-    const valMap = {
-        adult: $('#adultsTS').val(),
-        child: $('#childrenTS').val(),
-        infant: $('#infantTS').val()
-    };
+    $('.timeS').off('change').on('change', function () {
+      const valMap = {
+          adult: $('#adultsTS').val(),
+          child: $('#childrenTS').val(),
+          infant: $('#infantTS').val()
+      };
 
-    for (let key in valMap) {
-        const val = valMap[key];
-        const $target = $('#' + key + inputnumber);
+      for (let key in valMap) {
+          const val = valMap[key];
+          const $target = $('#' + key + inputnumber);
 
-        if ($target.is('select')) {
-            if ($target.find('option[value="' + val + '"]').length === 0) {
-               alert(`Max limit reached for ${key.charAt(0).toUpperCase() + key.slice(1)}!`);
-			   
-			   if(key=='adult'){
-				 $('#adultsTS').val(valMapPre[key]);
-				  $target.val(valMapPre[key]);
-			   }
-			   if(key=='child'){
-				 $('#childrenTS').val(valMapPre[key]);
-				  $target.val(valMapPre[key]);
-			   }
-			   if(key=='infant'){
-				 $('#infantTS').val(valMapPre[key]);
-				  $target.val(valMapPre[key]);
-			   }
-                continue; 
-            }
-            $target.val(val);
-        } else {
-            $target.val(val); 
-        }
-    }
+          if ($target.is('select')) {
+              if ($target.find('option[value="' + val + '"]').length === 0) {
+                alert(`Max limit reached for ${key.charAt(0).toUpperCase() + key.slice(1)}!`);
+          
+          if(key=='adult'){
+          $('#adultsTS').val(valMapPre[key]);
+            $target.val(valMapPre[key]);
+          }
+          if(key=='child'){
+          $('#childrenTS').val(valMapPre[key]);
+            $target.val(valMapPre[key]);
+          }
+          if(key=='infant'){
+          $('#infantTS').val(valMapPre[key]);
+            $target.val(valMapPre[key]);
+          }
+                  continue; 
+              }
+              $target.val(val);
+          } else {
+              $target.val(val); 
+          }
+      }
 	
-    $('.priceChange').first().trigger('change');
+      $('.priceChange').first().trigger('change');
 });
 
 
@@ -938,7 +937,7 @@ function adultChildReq(a,c,inputnumber) {
 
     if (selectedValue) {
         $('#timeslot').val(selectedValue);
-        $('#isRayna').val("ture"); 
+          $('#isRayna').val("true"); 
         $('#timeSlotId').val($.isNumeric(timeSlotId) ? timeSlotId : 0);
         //$('#cartForm').submit();
         e.preventDefault(); 
@@ -1204,6 +1203,19 @@ $.ajax({
     url: form.attr('action'),
     data: form.serialize(),
     success: function (response) {
+      if (response.error) {
+            $('#Noslot #NoslotLabel').text("Error").css("color", "red");
+            $('#Noslot .modal-body #messageSlot').text(response.error).css("color", "red");
+            $('#Noslot').modal('show');
+            $('#selectTimeSlotBtn')
+        .prop('disabled', false)
+        .html('Add to Cart')
+        .attr('id', 'selectTimeSlotBtn')
+        .attr('class', 'primary-btn2').removeAttr('style');
+            $('#timeSlotModal').modal('hide');
+            
+            return;
+          }
       $('#sidebar-cart-container').load("{{ route('sidebar.cart.partial',['vid' => $vid]) }}");
         $('#timeSlotModal').modal('hide');
         $('.cartBTNIcon').html('');

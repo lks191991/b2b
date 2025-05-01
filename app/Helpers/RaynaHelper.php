@@ -131,7 +131,9 @@ class RaynaHelper
     public static function tourBooking($voucher)
 {
     $tourDataAll = self::makeTourServicePayload($voucher);
+   
     $tourData = $tourDataAll['tour'];
+    
     $returnData = [];
     $bookedId = []; // Corrected spelling
     $nonbooked = [];
@@ -273,7 +275,7 @@ class RaynaHelper
 		
 		
 		
-		$passengers[] = [
+		$passengers = [
 					"serviceType" => "Tour",
 					"prefix" => $voucher->guest_salutation ?? "Mr",
 					"firstName" => $nameParts[0] ?? "",
@@ -287,10 +289,11 @@ class RaynaHelper
 					"clientReferenceNo" => $voucher->agent_ref_no ?? "",
 				];
 		}
+
     }
 		
 		$data['tour'] = $tour;
-		$data['passengers'] = $passengers[0];
+		$data['passengers'] = $passengers;
 		
 		return $data;
 	}
