@@ -1157,7 +1157,8 @@ class VouchersController extends Controller
 				{
 					$transfer_zone = [];
 				}
-			
+				
+				($variant->touroption_id > 0)?$isRayna = "true":$isRayna = "false";
 				$query = VariantCanellation::where('varidCode', $variant->ucode);
 				$cancellation = $query->get();
 				$data[] = [

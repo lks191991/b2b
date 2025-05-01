@@ -445,7 +445,7 @@ public static function getBookedTicket($acvt)
     return ['status' => true, 'ticket' => $ticket];
 }
 
-public static function ticketSaveInDB($raynaData, $voucherActivity)
+/* public static function ticketSaveInDB($raynaData, $voucherActivity)
 {
    
     $validityDate = self::extractDate($raynaData['validity']);
@@ -483,7 +483,56 @@ public static function ticketSaveInDB($raynaData, $voucherActivity)
     ];
     
     $ticket = Ticket::create($ticketData);
+} */
+
+public static function ticketSaveInDB($raynaData, $voucherActivity)
+{
+    $validityDate = self::extractDate($raynaData['validity']);
+    $savedTickets = [];
+
+    foreach($raynaData['ticketDetails'] as $k => $v)
+    {
+        $ticketNo = $v['barCode'] ?? '';
+        if (!empty($ticketNo)) {
+            $existingTicket = Ticket::where('ticket_no', $ticketNo)->first();
+            
+            if ($existingTicket && !empty($existingTicket->id)) {
+                $savedTickets[] = $existingTicket;
+                continue; // Skip creation if exists
+            }
+        }
+
+        $ticketData = [
+            'ticket_for' => isset($v['type']) ? ucfirst($v['type']) : '',
+            'type_of_ticket' => ($raynaData['printType'] ?? '') === 'QR Code' ? 'QR-Code' : 'Media-Code',
+            'activity_id' => 0,
+            'activity_variant' => $voucherActivity->variant->ucode ?? '',
+            'ticket_no' => $ticketNo,
+            'serial_number' => $raynaData['pnrNumber'] ?? '',
+            'valid_from' => $validityDate ?? null,
+            'valid_till' => $validityDate ?? null,
+            'created_at' => now(),
+            'updated_at' => now(),
+            'voucher_id' => $voucherActivity->voucher_id ?? 0,
+            'voucher_activity_id' => $voucherActivity->id ?? 0,
+            'ticket_generated' => 1,
+            'ticket_downloaded' => 1,
+            'supplier_ticket' => '947d43d9-c999-446c-a841-a1aee22c7257',
+            'ticket_downloaded_by' => Auth::user()->id,
+            'generated_time' => now(),
+            'downloaded_time' => now(),
+            'rayna_ticket_details' => json_encode($v ?? []),
+            'rayna_ticketURL' => $raynaData['ticketURL'] ?? '',
+            'isRayna' => 1,
+        ];
+        
+        $ticket = Ticket::create($ticketData);
+        $savedTickets[] = $ticket;
+    }
+
+    return $savedTickets;
 }
+
 
 private static function extractDate($dateStr)
 {
