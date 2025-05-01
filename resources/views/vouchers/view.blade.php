@@ -526,7 +526,8 @@
                 <div class="row">
 				<div class="col-md-8 text-left">
                     <h3 class="card-title">
-                      <strong> {{$ap->activity_title}}</strong></h3>
+                      {!! $ap->isRayna == 1 ? '<span class="rayna-f">R</span>' : '' !!}
+ <strong> {{$ap->activity_title}}</strong></h3>
                   </div>
 				<div class="col-md-4 text-right">
         @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff'))

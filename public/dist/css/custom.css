@@ -710,3 +710,16 @@ box-shadow: 1px 0px 22px -8px rgba(0,0,0,0.75);
     color: #e62020 !important;
     font-weight: bold;
 }
+
+.rayna-f {
+  display: inline-block;
+  background-color: green;
+  color: white;
+  font-size: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  margin-right: 5px;
+}
