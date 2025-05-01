@@ -806,7 +806,7 @@ function openTimeSlotModal(slots, isRayna, vdata) {
 
     if (selectedValue) {
         $('#timeslot').val(selectedValue);
-         $('#isRayna').val("true"); 
+         $('#isRayna').val(isRayna); 
         $('#timeSlotId').val($.isNumeric(timeSlotId) ? timeSlotId : 0);
         $('#cartForm').submit();
     } else {

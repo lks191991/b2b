@@ -1125,6 +1125,7 @@ class VouchersController extends Controller
 				$tour_dt = date("Y-m-d",strtotime($tour_date[$k]));
 
 			$getAvailableDateList = SiteHelpers::getDateList($tour_dt,$variant->black_out,$variant->sold_out,$variant->availability);
+			
 			if(isset($adult[$k]))
 			{
 				$adults = $adult[$k];
@@ -1210,9 +1211,9 @@ class VouchersController extends Controller
 		}
 		
 		
-		
+	
 			if(count($data) > 0)
-			{
+			{	
 				if ($isRayna === "true") {
 					if (!empty($data) && isset($data[0])) {
 						$payload = $data[0];
@@ -1261,10 +1262,14 @@ class VouchersController extends Controller
 					}
 				}
 				else{
+					
 					VoucherActivity::insert($data);
 							$voucher = Voucher::find($voucher_id);
 							$voucher->total_activity_amount += $total_activity_amount;
 							$voucher->save();
+							if ($request->ajax()) {
+								return response()->json(['success' => 'Activity added Successfully.']);
+							}
 				}
 			}
 

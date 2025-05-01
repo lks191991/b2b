@@ -937,7 +937,7 @@ function adultChildReq(a,c,inputnumber) {
 
     if (selectedValue) {
         $('#timeslot').val(selectedValue);
-          $('#isRayna').val("true"); 
+          $('#isRayna').val(isRayna); 
         $('#timeSlotId').val($.isNumeric(timeSlotId) ? timeSlotId : 0);
         //$('#cartForm').submit();
         e.preventDefault(); 
