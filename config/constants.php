@@ -48,7 +48,7 @@ return [
 	10 => 'Rejected',
 	11 => 'Cancellation Initiated',
 	12 => 'Cancelled',
-	13 => 'Failed',
+	13 => 'Rapi',
 	],
 	'agentZone' => [
 			'DXB - Rizwan'=>'DXB - Rizwan',
