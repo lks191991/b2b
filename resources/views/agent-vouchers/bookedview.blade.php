@@ -184,19 +184,27 @@ $aid = 0;
                                             </div>
 
                                             <div class="col-md-2 text-right no-padding">
-                                            <span class="btn btn-sm  btn-success booking-status"  href="javascript:void(0);">
+                                        @if($ap->status != '13')
+                                        <span class="btn btn-sm  btn-success booking-status"  href="javascript:void(0);">
                                             @if($ap->status == '1')
-				Cancellation Requested
-				@elseif($ap->status == '2')
-				Cancelled
-				@elseif($ap->status == '3')
-				In Process
-				@elseif($ap->status == '4')
-				Confirm
-				@elseif($ap->status == '5')
-				Vouchered
-				@endif 
-                    </span>
+                                            Cancellation Requested
+                                            @elseif($ap->status == '2')
+                                            Cancelled
+                                            @elseif($ap->status == '3')
+                                            In Process
+                                            @elseif($ap->status == '4')
+                                            Confirm
+                                            @elseif($ap->status == '5')
+                                            Vouchered
+                                            @endif 
+                                        </span> 
+                                        @endif 
+
+                    @if($ap->status == '13')
+                    <span class="btn btn-sm  btn-danger booking-status"  href="javascript:void(0);">
+                    {{config('constants.voucherActivityStatus')[$ap->status]}}
+                </span>
+                    @endif 
                                             </div>
                                         </div>
                                         <div class="row">

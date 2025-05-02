@@ -272,6 +272,9 @@
    <span class='badge bg-success' style='margin-left: 5px;'>Confirm</span> 
    @elseif($ap->status == '5')
    <span class='badge bg-success' style='margin-left: 5px;'>Vouchered</span>
+     
+     @elseif($ap->status == '13')
+   <span class='badge bg-danger' style='margin-left: 5px;'>{{config('constants.voucherActivityStatus')[$ap->status]}}</span>
      @endif 
      </span> 
                   </div>
