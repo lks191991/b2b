@@ -46,9 +46,22 @@ class APITourDataController extends Controller
 			return view('tourApiData.tourstaticdata', compact('records'));
 	}
 
-    public function tourOptionStaticData(int $id = 0)
+    public function tourOptionStaticData(Request $request,int $id = 0)
 	{
+		$data = $request->all();
 		$query = DB::table('tour_option_static_data'); // No need to use select('*')
+		
+		if (isset($data['name']) && !empty($data['name'])) {
+            $query->where('optionName', 'like', '%' . $data['name'] . '%');
+        }
+       
+	   if (isset($data['tourId']) && !empty($data['tourId'])) {
+            $query->where('tourId',  $data['tourId']);
+        }
+
+		if (isset($data['tourOptionId']) && !empty($data['tourOptionId'])) {
+            $query->where('tourOptionId',  $data['tourOptionId']);
+        }
 
 		$tourName = null;
 		if ($id > 0) {

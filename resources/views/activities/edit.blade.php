@@ -358,7 +358,7 @@ $(document).ready(function () {
                     dropdownList.show();
                     data.forEach(item => {
                         dropdownList.append(
-                            `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName}</li>`
+                            `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName} - ${item.tourId}</li>`
                         );
                     });
                 } else {
@@ -390,9 +390,12 @@ $(document).ready(function () {
                         if (data.length > 0) {
                             dropdownList.show();
                             data.forEach(item => {
-                                dropdownList.append(
-                                    `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName}</li>`
-                                );
+                               dropdownList.append(
+										`<li class="list-group-item dropdown-item" data-id="${item.tourId}">
+											${item.tourName} - ${item.tourId}
+										</li>`
+									);
+
                             });
                         } else {
                             dropdownList.hide();

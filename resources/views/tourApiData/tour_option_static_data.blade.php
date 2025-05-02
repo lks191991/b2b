@@ -55,9 +55,35 @@
                                         <th>Compulsory Options</th>
                                         <th>Is Hide Rate Breakup</th>
                                         <th>Is Hourly</th>
+										<th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
+								
+								 <tr>
+								 <form id="filterForm" method="get" action="{{route('tourOptionStaticData')}}" >
+                                        <th></th>
+                                        <th width="8%"><input type="text" name="tourId" value="{{request('tourId')}}" class="form-control"  placeholder="Tour Id" /></th>
+                                        <th width="10%"><input type="text" name="tourOptionId" value="{{request('tourOptionId')}}" class="form-control"  placeholder="Tour Option ID" /></th>
+                                        <th width="10%"><input type="text" name="name" value="{{request('name')}}" class="form-control"  placeholder="Name" /></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+										<th></th>
+                                        <th width="15%"><button class="btn btn-info btn-sm" type="submit">Filter</button>
+                                        <a class="btn btn-default btn-sm" href="{{route('tourOptionStaticData')}}">Clear</a></th>
+										 </form>
+                                    </tr>
                                     @foreach ($records as $k => $record)
                                         <tr>
                                             <td>{{ $k+1 }}</td>
@@ -78,6 +104,7 @@
                                             <td>{{ $record->compulsoryOptions ? 'Yes' : 'No' }}</td>
                                             <td>{{ $record->isHideRateBreakup ? 'Yes' : 'No' }}</td>
                                             <td>{{ $record->isHourly ? 'Yes' : 'No' }}</td>
+											<td></td>
                                         </tr>
                                     @endforeach
                                 </tbody>

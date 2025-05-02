@@ -313,7 +313,7 @@ $(document).ready(function () {
                     dropdownList.show(); // Show dropdown
                     data.forEach(item => {
                         dropdownList.append(
-                            `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName}</li>`
+                            `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName} - ${item.tourId}</li>`
                         );
                     });
                 } else {
@@ -345,8 +345,10 @@ $(document).ready(function () {
                             dropdownList.show(); 
                             data.forEach(item => {
                                 dropdownList.append(
-                                    `<li class="list-group-item dropdown-item" data-id="${item.tourId}">${item.tourName}</li>`
-                                );
+										`<li class="list-group-item dropdown-item" data-id="${item.tourId}">
+											${item.tourName} - ${item.tourId}
+										</li>`
+									);
                             });
                         } else {
                             dropdownList.hide(); 

@@ -1055,7 +1055,7 @@ class AgentVouchersController extends Controller
 				$bk = RaynaHelper::tourBooking($record);
 				if (isset($bk['status']) && $bk['status'] == false) {
 					$errorDescription = $bk['error']; 
-					$record->status_main = 4;
+					$record->status_main = 13;
 					$saveResult = $record->save();
 					$agent->agent_amount_balance += $grandTotal;
 					$agent->save();
@@ -1063,7 +1063,7 @@ class AgentVouchersController extends Controller
 					return redirect()->route('agent-vouchers.show',$record->id)->with('error', $errorDescription);
 				}
 			} catch (\Exception $e) {
-						$record->status_main = 4;
+						$record->status_main = 13;
 						$saveResult = $record->save();
 						
 						$agent->agent_amount_balance += $grandTotal;

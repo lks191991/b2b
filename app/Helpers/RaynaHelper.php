@@ -523,6 +523,8 @@ public static function ticketSaveInDB($raynaData, $voucherActivity)
             'downloaded_time' => now(),
             'rayna_ticket_details' => json_encode($v ?? []),
             'rayna_ticketURL' => $raynaData['ticketURL'] ?? '',
+            'noOfAdult' => $v['noOfAdult'] ?? 0,
+            'noOfchild' => $v['noOfchild'] ?? 0,
             'isRayna' => 1,
         ];
         
