@@ -122,7 +122,7 @@
                         <h3> @php
             $minPrice = $activity->min_price;
           @endphp
-              Starting From : AED {{$minPrice}} </h3><span>per person</span>
+              Starting From : {{$currency['code']}} {{$minPrice*$currency['value']}} </h3><span>per person</span>
                     </div>
                     <ul class="tour-info-metalist">
                         <li>
@@ -216,7 +216,7 @@
   </div>
               
                 <div class="col-md-4">
-                <div id="total-price">Total Price: ₹0</div>
+                <div id="total-price">Total Price: {{$currency['code']}}0</div>
   </div>
             </div>
             
@@ -294,7 +294,8 @@
 <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js
 "></script>
  <script type="text/javascript">
- 
+  var code = "{{$currency['code']}}";
+  var c_val = "{{$currency['value']}}";
   $(document).ready(function() {
 	  
 			$.ajaxSetup({
@@ -411,9 +412,9 @@
 
   getPrice(argsArray)
     .then(function(price) {
-      $("body #price" + inputnumber).html(price.variantData.totalprice);
-	  $("body #totalprice" + inputnumber).val(price.variantData.totalprice);
-	  $("body #total-price").html("Total Price: ₹" + price.variantData.totalprice);
+	  $("body #price" + inputnumber).html(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
+	  $("body #totalprice" + inputnumber).val(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
+	  $("body #total-price").html("Total Price: "+code+' '+ parseFloat(price.variantData.totalprice*c_val).toFixed(2));
     })
     .catch(function(error) {
       console.error('Error:', error);
@@ -476,8 +477,8 @@ $(document).on('click', '.priceModalBtn', function(evt) {
 
   getPrice(argsArray)
     .then(function(price) {
-		$("body #pad").html("AED "+price.variantData.adultTotalPrice+" /Adult");
-		$("body #pchd").html("AED "+price.variantData.childTotalPrice+" /Child");
+		$("body #pad").html(code+' '+price.variantData.adultTotalPrice*c_val+" /Adult");
+		$("body #pchd").html(code+' '+price.variantData.childTotalPrice*c_val+" /Child");
      $('#PriceModal').modal('show');
     })
     .catch(function(error) {
@@ -650,10 +651,10 @@ function openTimeSlotModal(slots, isRayna, vdata) {
     tk++;
 });
 
-
+	var code = "{{$currency['code']}}";
     var inputnumber = vdata.key;
     var priceText = $("#price" + inputnumber).text();
-    $("#total-price").html("Total Price: ₹" + priceText);
+    $("#total-price").html("Total Price: "+code+' '+  priceText);
 	const valMapPre = {
         adult: $('#adultsTS').val(),
         child: $('#childrenTS').val(),

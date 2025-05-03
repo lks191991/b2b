@@ -233,7 +233,7 @@
   </div>
               
                 <div class="col-md-4">
-                <div id="total-price">Total Price: ₹0</div>
+                <div id="total-price">Total Price: {{$currency['code']}} 0</div>
   </div>
             </div>
             
@@ -466,15 +466,15 @@ $('.actcsk:first').prop('checked', true).trigger("change");
       var c_val = "{{$currency['value']}}";
       if(actType == 'Bundle_Diff')
   {
-    $("body #price0").html(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
-	  $("body #totalprice0").val(parseFloat(price.variantData.totalprice).toFixed(2));
-	  $("body #total-price").html("Total Price: ₹" + parseFloat(price.variantData.totalprice).toFixed(2));
+		$("body #price0").html(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
+	  $("body #totalprice0").val(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
+	  $("body #total-price").html("Total Price: "+code+' '+ parseFloat(price.variantData.totalprice*c_val).toFixed(2));
   }
   else
   {
     $("body #price" + inputnumber).html(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
 	  $("body #totalprice" + inputnumber).val(parseFloat(price.variantData.totalprice*c_val).toFixed(2));
-	  $("body #total-price").html("Total Price: ₹" + parseFloat(price.variantData.totalprice*c_val).toFixed(2));
+	  $("body #total-price").html("Total Price: "+code+' '+ parseFloat(price.variantData.totalprice*c_val).toFixed(2));
   }
     })
     .catch(function(error) {
@@ -856,10 +856,10 @@ function adultChildReq(a,c,inputnumber) {
       tk++;
       });
 
-
+	 var code = "{{$currency['code']}}";
     var inputnumber = vdata.key;
     var priceText = $("#price" + inputnumber).text();
-    $("#total-price").html("Total Price: ₹" + priceText);
+    $("#total-price").html("Total Price: "+code+' '+  priceText);
 	  const valMapPre = {
         adult: $('#adultsTS').val(),
         child: $('#childrenTS').val(),

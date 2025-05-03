@@ -289,7 +289,7 @@
       </div>
                   
                     <div class="col-md-4">
-                    <div id="total-price">Total Price: ₹0</div>
+                    <div id="total-price">Total Price: 0</div>
       </div>
                
                 
@@ -486,13 +486,13 @@ $('.actcsk:first').prop('checked', true).trigger("change");
   {
     $("body #price0").html(price.variantData.totalprice);
 	  $("body #totalprice0").val(price.variantData.totalprice);
-    $("body #total-price").html("Total Price: ₹" + parseFloat(price.variantData.totalprice).toFixed(2));
+    $("body #total-price").html("Total Price: " + parseFloat(price.variantData.totalprice).toFixed(2));
   }
   else
   {
     $("body #price" + inputnumber).html(price.variantData.totalprice);
 	  $("body #totalprice" + inputnumber).val(price.variantData.totalprice);
-    $("body #total-price").html("Total Price: ₹" + parseFloat(price.variantData.totalprice).toFixed(2));
+    $("body #total-price").html("Total Price: " + parseFloat(price.variantData.totalprice).toFixed(2));
   }
     })
     .catch(function(error) {
@@ -840,7 +840,7 @@ function openTimeSlotModal(slots, isRayna, vdata) {
 
     var inputnumber = vdata.key;
     var priceText = $("#price" + inputnumber).text();
-    $("#total-price").html("Total Price: ₹" + priceText);
+    $("#total-price").html("Total Price: " + priceText);
 	  const valMapPre = {
         adult: $('#adultsTS').val(),
         child: $('#childrenTS').val(),

@@ -289,7 +289,7 @@
       </div>
                   
                     <div class="col-md-4">
-                    <div id="total-price">Total Price: ₹0</div>
+                    <div id="total-price">Total Price: 0</div>
       </div>
                
                 
@@ -482,9 +482,9 @@
 
   getPrice(argsArray)
     .then(function(price) {
-      $("body #price" + inputnumber).html(price.variantData.totalprice);
-	  $("body #totalprice" + inputnumber).val(price.variantData.totalprice);
-    $("body #total-price").html("Total Price: " + price.variantData.totalprice);
+      $("body #price" + inputnumber).html(price.variantData.totalprice.toFixed(2));
+	  $("body #totalprice" + inputnumber).val(price.variantData.totalprice.toFixed(2));
+    $("body #total-price").html("Total Price: " + price.variantData.totalprice.toFixed(2));
     })
     .catch(function(error) {
       console.error('Error:', error);
@@ -729,7 +729,7 @@ function openTimeSlotModal(slots, isRayna, vdata) {
 
     var inputnumber = vdata.key;
     var priceText = $("#price" + inputnumber).text();
-    $("#total-price").html("Total Price: ₹" + priceText);
+    $("#total-price").html("Total Price: " + priceText);
 	const valMapPre = {
         adult: $('#adultsTS').val(),
         child: $('#childrenTS').val(),
