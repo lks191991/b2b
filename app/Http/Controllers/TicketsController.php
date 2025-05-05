@@ -9,6 +9,7 @@ use App\Models\ActivityPrices;
 use App\Models\AgentPriceMarkup;
 use Illuminate\Http\Request;
 use App\Models\VoucherActivity;
+use App\Models\TicketLog;
 use App\Models\Variant;
 use Illuminate\Support\Facades\Response;
 use App\Models\Ticket;
@@ -278,6 +279,12 @@ class TicketsController extends Controller
 				$recordUser->is_vat_invoice = "1";
 				$recordUser->save(); 
 
+				$log = new TicketLog();
+				$log->total_record = $countTotalTicketNeed;
+				$log->supplier_id = $agentsupplierId;
+				$log->supplier_cost = $totalprice;
+				$log->voucher_activity_id = $voucherActivity->id;
+				$log->save();
 				
 				return redirect()->route('ticket.dwnload',$voucherActivity->id);	
 				}
@@ -323,6 +330,9 @@ class TicketsController extends Controller
 		$ticket->ticket_downloaded = 1;
 		$ticket->save();
 		}
+
+			
+
 		//return view('tickets.ticketPdf', compact('voucherActivity','tickets','voucher'));
         $pdf = SPDF::loadView('tickets.ticketPdf', compact('voucherActivity','tickets','voucher'));
        $pdf->setPaper('A4')->setOrientation('portrait');
