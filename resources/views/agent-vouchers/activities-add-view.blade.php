@@ -270,6 +270,7 @@ $(function() {
 					
 					<tr style="background:green;color:#fff!important;">
 						<td colspan="9" style="background:green; color:#fff!important;">
+						<img src="{{asset('front/assets/img/alert_icon.png')}}" style="width: 25px;" />
 						  {!! $ap->variant->rayna_cancellation_policy !!}
 					  </td>
 				  </tr>
@@ -278,6 +279,7 @@ $(function() {
 				  
 					<tr style="background:green;color:#fff!important;">
 						<td colspan="9" style="background:green; color:#fff!important;">
+						<img src="{{asset('front/assets/img/alert_icon.png')}}" style="width: 25px;" />
 						  {!! $ap->variant->cancellation_policy !!}
 					  </td>
 				  </tr>
@@ -513,6 +515,7 @@ $(function() {
 					
 					<tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
 						<td colspan="9" style="background:green; color:#fff!important;">
+						<img src="{{asset('front/assets/img/alert_icon.png')}}" style="width: 25px;" />
 							{!! $ap->variant->rayna_cancellation_policy !!}
 						</td>
 					</tr>
@@ -521,6 +524,7 @@ $(function() {
 					
 				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
 					<td colspan="9" style="background:green; color:#fff!important;">
+					<img src="{{asset('front/assets/img/alert_icon.png')}}" style="width: 25px;" />
 							{!! $ap->variant->cancellation_policy !!}
 						</td>
 					</tr>
@@ -735,19 +739,21 @@ $(function() {
                   </tr>
 				  @if($ap->variant->touroption_id != '') 
 					
-					<tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
-						<td colspan="9" style="background:green;color:#fff!important;">
-							{!! $ap->variant->rayna_cancellation_policy !!}
-						</td>
-					</tr>
-
-					@elseif($ap->variant->cancellation_policy != '') 
-					
-				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
+				  <tr style="background:green;color:#fff!important;">
 						<td colspan="9" style="background:green; color:#fff!important;">
-							{!! $ap->variant->cancellation_policy !!}
-						</td>
-					</tr>
+						<img src="{{asset('front/assets/img/alert_icon.png')}}" style="width: 25px;" />
+						  {!! $ap->variant->rayna_cancellation_policy !!}
+					  </td>
+				  </tr>
+
+				  @elseif($ap->variant->cancellation_policy != '') 
+				  
+					<tr style="background:green;color:#fff!important;">
+						<td colspan="9" style="background:green; color:#fff!important;">
+						<img src="{{asset('front/assets/img/alert_icon.png')}}" style="width: 25px;" />
+						  {!! $ap->variant->cancellation_policy !!}
+					  </td>
+				  </tr>
 
 					@endif
 				  @endforeach

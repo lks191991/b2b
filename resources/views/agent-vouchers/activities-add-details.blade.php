@@ -26,7 +26,6 @@
      background-color: #fff;
      width: 100%;
      max-width: 100%;
-     padding: 20px;
      border-radius: 16px 16px 0 0;
      animation: slideUp 0.3s ease-out;
      overflow-y: auto;
@@ -34,17 +33,24 @@
 
     .modal-header .close {
       float: right !important;
-      font-size: 24px !important;
-      font-weight: bold !important;
-      color: #888 !important;
-      cursor: pointer !important;
-	  padding:15px 25px !important;
+font-size: 14px !important;
+font-weight: bold !important;
+color: #888 !important;
+cursor: pointer !important;
+padding: -1px 6px !important;
+right: 0px;
+top: 0px;
+    
     }
 
    .modal-header .close:hover {
      color: #000;
    }
+   .modal-footer {
 
+border-bottom: var(--bs-modal-footer-border-width) solid var(--bs-modal-footer-border-color);
+
+}
    @keyframes slideUp {
      from {
        bottom: -100%;
@@ -61,6 +67,38 @@
        max-height: 80%;
      }
    }
+
+   .modal-header {
+   
+    border-bottom: dotted;
+}
+
+.quantity-group {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  width: 45%;
+  height: 38px;
+}
+
+.qty-btn {
+  background-color: #808080;
+  border: none;
+  padding: 8px 12px;
+  font-size: 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.qty-input {
+  width: 50px;
+  text-align: center;
+  border: none;
+  font-size: 16px;
+  outline: none;
+}
  </style>
 
 <div class="breadcrumb-section"
@@ -174,24 +212,39 @@
             <div class="modal-body">
             <div class="row">
     <div class="row">
-	<div class="col-sm-3">
+	<div class="col-sm-2">
           Tour Date
           <input type="text" id="dateTS" value=""  placeholder="Tour Date" class="form-control  timeS"    />
 		  <input type="hidden" id="s_variant_id" value=""  />
 			<input type="hidden" id="s_transferOptionName" value=""  />
 			<input type="hidden" id="s_inputnumber" value=""  />
         </div>
-        <div class="col-sm-3">
-          Adult
-           <input type="number" id="adultsTS" min="1"  class="form-control timeS onlynumbr" value="" placeholder="Adults" >
+        <div class="col-sm-3 text-center">
+        <label class="col-md-12">Adult</label>
+          <div class="quantity-group">
+  <button class="qty-btn minus"  onclick="decrease(1)">−</button>
+  <input type="number" id="adultsTS" min="1"  class=" timeS onlynumbr text-center" style="width:50%" value="" placeholder="Adults" >
+  <button class="qty-btn plus" onclick="increase(1)">+</button>
+</div>
+          
         </div>
-        <div class="col-sm-3">
-          Child
-        <input type="number" id="childrenTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Children" >
+        <div class="col-sm-3 text-center">
+        <label class="col-md-12">Child <small><span id="child-age">0-0 Yrs</span></small></label>
+          <div class="quantity-group">
+  <button class="qty-btn minus"  onclick="decrease(2)">−</button>
+  <input type="number" id="childrenTS" min="0"  class=" timeS onlynumbr text-center" style="width:50%" value="" placeholder="Children" >
+  <button class="qty-btn plus" onclick="increase(2)">+</button>
+</div>
+        
         </div>
-        <div class="col-sm-3">
-          Infant
-        <input type="number" id="infantTS" min="0" class="form-control timeS onlynumbr" value="0" placeholder="Infant" >
+        <div class="col-sm-3 text-center">
+        <label class="col-md-12">Infant <small><span id="infant-age">0-0 Yrs</span></small></label>
+          <div class="quantity-group">
+  <button class="qty-btn minus"  onclick="decrease(3)">−</button>
+  <input type="number" id="infantTS" min="0"  class=" timeS onlynumbr text-center" style="width:50%" value="" placeholder="Infant" >
+  <button class="qty-btn plus" onclick="increase(3)">+</button>
+</div>
+      
         </div>
       
   </div>
@@ -215,14 +268,16 @@
   </div>
   </div>
               
-                <div class="col-md-4">
-                <div id="total-price">Total Price: {{$currency['code']}}0</div>
-  </div>
+               
             </div>
             
             <div class="modal-footer">
+            <div class="col-md-9 text-right">
+                <div id="total-price">Total Price: {{$currency['code']}}0</div>
+  </div>
+  <div class="col-md-2 text-right">
                 <button type="button" class="primary-btn2 " id="selectTimeSlotBtn">Add to Cart</button>
-               
+                </div>
             </div>
         </div>
     </div>
@@ -644,9 +699,14 @@ function openTimeSlotModal(slots, isRayna, vdata) {
  var tk = 0;
     
 		
-		$.each(slots, function(index, slot) {
+ $.each(slots, function(index, slot) {
     var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" data-available="' + slot.available + '">';
-    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
+    if(slot.available <= 50)
+    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + '<br/><span class="badge bg-secondary org" style="background-color:orange!important;">Available ' + slot.available +  '</span><span class="badge bg-secondary selected  d-none" >Selected</span></label>';
+           else if(slot.available > 199)
+    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + '<br/><span class="badge bg-secondary org">Available ' + '</span><span class="badge bg-secondary selected  d-none" >Selected</span></label>';
+    else
+    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + '<br/><span class="badge bg-secondary org">Available: ' + slot.available + '</span><span class="badge bg-secondary selected  d-none" >Selected</span></label>';
     radioGroup.append(radio);
     tk++;
 });
@@ -824,12 +884,16 @@ function refressTimeSlotModal() {
 				  
 				   if(data.status == 1) {
 					
-					$.each(data.slots, function(index, slot) {
-   				var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" data-available="' + slot.available + '">';
-				radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + ' <span class="badge bg-secondary">Avail: ' + slot.available + '</span></label>';
-				radioGroup.append(radio);
-				tk++;
-
+            $.each(data.slots, function(index, slot) {
+    var radio = '<input type="radio" class="btn-check" autocomplete="off" id="input_' + tk + '" data-id="' + slot.id + '" name="timeSlotRadio" value="' + slot.time + '" data-available="' + slot.available + '">';
+    if(slot.available <= 50)
+    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + '<br/><span class="badge bg-secondary org" style="background-color:orange!important;">Available ' + slot.available +  '</span><span class="badge bg-secondary selected  d-none" >Selected</span></label>';
+           else if(slot.available > 199)
+    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + '<br/><span class="badge bg-secondary org">Available ' + '</span> <span class="badge bg-secondary selected d-none" >Selected</span></label>';
+    else
+    radio += '<label class="btn btn-outline-success" style="margin:10px;" for="input_' + tk + '">' + slot.time + '<br/><span class="badge bg-secondary org">Available: ' + slot.available + '</span> <span class="badge bg-secondary selected  d-none" >Selected</span></label>';
+    radioGroup.append(radio);
+    tk++;
 });
 
 					} else if(data.status == 4) {
@@ -848,6 +912,7 @@ function refressTimeSlotModal() {
        
 }
 
+
 $(document).on('click', 'input[name="timeSlotRadio"]', function () {
     $('#selectTimeSlotBtn')
         .prop('disabled', false)
@@ -863,6 +928,143 @@ $(document).on('click', '#Noslot .close', function () {
     $('#Noslot').modal('hide');
 });
 
+
+
+
+$(document).on('click', '.btn-outline-success', function () {
+
+$('.btn-outline-success .org').removeClass('d-none');
+$('.btn-outline-success .selected').addClass('d-none');
+
+
+  var $org = $(this).find('.org');
+  var $selected = $(this).find('.selected');
+
+  if ($selected.hasClass('d-none')) {
+      $org.addClass('d-none');
+      $selected.removeClass('d-none');
+  } else {
+      $selected.addClass('d-none');
+      $org.removeClass('d-none');
+  }
+});
+
+function decrease(ty) {
+
+if(ty == '3')
+{
+const input = document.getElementById('infantTS');
+if (parseInt(input.value) > 0) {
+  input.value = parseInt(input.value) - 1;
+}
+}
+else if(ty == '2')
+{
+const input = document.getElementById('childrenTS');
+if (parseInt(input.value) > 0) {
+  input.value = parseInt(input.value) - 1;
+}
+}
+else
+{
+const input = document.getElementById('adultsTS');
+if (parseInt(input.value) > 1) {
+  input.value = parseInt(input.value) - 1;
+}
+}
+
+const valMap = {
+  adult: $('#adultsTS').val(),
+  child: $('#childrenTS').val(),
+  infant: $('#infantTS').val()
+};
+
+for (let key in valMap) {
+  const val = valMap[key];
+  const $target = $('#' + key + inputnumber);
+
+  if ($target.is('select')) {
+      if ($target.find('option[value="' + val + '"]').length === 0) {
+         alert(`Max limit reached for ${key.charAt(0).toUpperCase() + key.slice(1)}!`);
+   
+   if(key=='adult'){
+   $('#adultsTS').val(valMapPre[key]);
+    $target.val(valMapPre[key]);
+   }
+   if(key=='child'){
+   $('#childrenTS').val(valMapPre[key]);
+    $target.val(valMapPre[key]);
+   }
+   if(key=='infant'){
+   $('#infantTS').val(valMapPre[key]);
+    $target.val(valMapPre[key]);
+   }
+          continue; 
+      }
+      $target.val(val);
+  } else {
+      $target.val(val); 
+  }
+}
+$('.priceChange').first().trigger('change');
+
+}
+
+
+function increase(ty) {
+  if(ty == '3')
+{
+  const input = document.getElementById('infantTS');
+      input.value = parseInt(input.value) + 1;
+}
+else if(ty == '2')
+{
+  const input = document.getElementById('childrenTS');
+      input.value = parseInt(input.value) + 1;
+}
+else
+{
+  const input = document.getElementById('adultsTS');
+      input.value = parseInt(input.value) + 1;
+}
+
+
+const valMap = {
+        adult: $('#adultsTS').val(),
+        child: $('#childrenTS').val(),
+        infant: $('#infantTS').val()
+    };
+
+    for (let key in valMap) {
+        const val = valMap[key];
+        const $target = $('#' + key + inputnumber);
+
+        if ($target.is('select')) {
+            if ($target.find('option[value="' + val + '"]').length === 0) {
+               alert(`Max limit reached for ${key.charAt(0).toUpperCase() + key.slice(1)}!`);
+			   
+			   if(key=='adult'){
+				 $('#adultsTS').val(valMapPre[key]);
+				  $target.val(valMapPre[key]);
+			   }
+			   if(key=='child'){
+				 $('#childrenTS').val(valMapPre[key]);
+				  $target.val(valMapPre[key]);
+			   }
+			   if(key=='infant'){
+				 $('#infantTS').val(valMapPre[key]);
+				  $target.val(valMapPre[key]);
+			   }
+                continue; 
+            }
+            $target.val(val);
+        } else {
+            $target.val(val); 
+        }
+    }
+    $('.priceChange').first().trigger('change');
+
+    }
 		
  </script> 
 @endsection

@@ -429,7 +429,6 @@ $aid = 0;
           
           @if( $dis == 1)
                     <div class="cart-outer-block box-shadow">
-                    
                         @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff'))
            
                     <form id="delete-form-{{$ap->id}}" method="post" action="{{route('agent.voucher.activity.delete',$delKey.'/0')}}" style="display:none;">
@@ -472,21 +471,18 @@ $aid = 0;
                             "><i class="fa fa-trash-alt"></i></a></span>
 
                             @endif
-                            <div class="row">
                                           
+                                            <div class="row">
                                                 <div class="col-3" style="margin-bottom:5px;">
                                                     <img src="{{asset('uploads/activities/thumb/'.$activity->image)}}" style="width:50px" alt="image">
                                                     </div>
                                                    
                                                         <div class="col-9 " style="padding-left:0px;padding-top:0px;margin-bottom:5px;">
-                                                             <p class="cart-title font-size-21 text-dark" style="font-size:11pt;line-height: 14pt;padding-bottom: 3px;margin-bottom: 0px;font-weight:bold;">
-                                                                {{$ap->activity_title}}
-                                                                 </p>
-                                                                <p class="cart-title font-size-21 text-dark" style="font-size:11pt;line-height: 14pt;padding-bottom: 3px;margin-bottom: 0px;">
-                                                               
-                                                                {{$ap->variant_name}} {{ $ap->activity_product_type}}  </p>
+                                                             <p class="cart-title font-size-21 text-dark" style="font-size:11pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;">
+                                                                {{$ap->activity_title}} : {{$ap->variant_name}} {{ $ap->activity_product_type}}  </p>
                                  
-                                                       
+                                                        </div>
+                                                </div>
                                                 
                                                <div class="col-12 "  >
                                                 
@@ -494,22 +490,19 @@ $aid = 0;
                            <ul class="list-unstyled" style="">
              
                           
-                <li  style="font-size:10pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;">Date: {{ $ap->tour_date ? date(config('app.date_format'),strtotime($ap->tour_date)) : null }} </li>
-
-                <li  style="font-size:10pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;">{{ $ap->time_slot ? 'Slot: '.$ap->time_slot: null }}</li>
-                <li style="font-size:10pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;"><strong> </strong>Transfer: {{$ap->transfer_option}}</li>
-              
-                @if(($entry_type == 'Yacht') || ($entry_type == 'Limo'))
-                <li style="font-size:10pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;"> <span class="color-black">{{$ap->adult}} Hour(s)</span> 
-                @else
+                <li><i class="fas fa-calendar-alt color-grey" style="font-size:16px;color:grey" title=""></i> {{ $ap->tour_date ? date(config('app.date_format'),strtotime($ap->tour_date)) : null }} {{ $ap->time_slot ? ' : '.$ap->time_slot: null }}</li>
                 
-                <li style="font-size:10pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;"> ADT: <span class="color-black">{{$ap->adult}}</span> 
+                @if(($entry_type == 'Yacht') || ($entry_type == 'Limo'))
+                <li> <i class="fas fa-clock color-grey" style="font-size:16px;color:grey" title="Adult"></i> <span class="color-black">{{$ap->adult}} Hour(s)</span> 
+                @else
+                <li> <i class="fas fa-male color-grey" style="font-size:16px;color:grey" title="Adult"></i> <span class="color-black">{{$ap->adult}}</span> 
                 
                  @if($ap->child > 0)
-                  <span class="color-black">CHD: {{$ap->child}}</span>
+                 <i class="fas fa-child color-grey" style="font-size:14px;color:grey" title="Child"></i>  <span class="color-black">{{$ap->child}}</span>
                 @endif
                 </li>
-               
+                <li><strong> <i class="fas fa-car color-grey" style="font-size:16px;color:grey" title="Adult"></i> : </strong>{{$ap->transfer_option}}</li>
+              
                 @endif
            
                                                           
@@ -527,62 +520,50 @@ $aid = 0;
                                                               $pickup_time = SiteHelpers::getPickupTimeByZone($ap->variant_zones,$ap->transfer_zone);
                                                               $var_display++;
                                                               @endphp
-                                                              <li style="font-size:10pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;"> Pickup Time: {{$pickup_time}}  Approx</li>
+                                                              <li><i class="fas fa-clock color-grey" style="font-size:16px;color:grey" title="Adult"></i> Pickup Time: {{$pickup_time}}  Approx</li>
                                                             @endif
                                                             @if(($ap->transfer_option == 'Pvt Transfer') && ($ap->variant_pick_up_required == '1')  && ($ap->variant_pvt_TFRS == '1'))
                                                               @php
                                                               $pickup_time = SiteHelpers::getPickupTimeByZone($ap->variant_zones,$ap->transfer_zone);
                                                               $var_display++;
                                                               @endphp
-                                                              <li style="font-size:10pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;"> Pickup Time: {{$ap->variant_pvt_TFRS_text}}  Approx</li>
+                                                              <li><i class="fas fa-clock color-grey" style="font-size:16px;color:grey" title="Adult"></i> Pickup Time: {{$ap->variant_pvt_TFRS_text}}  Approx</li>
                                                             @endif
                                                     </ul>
-                                                    </div>
-                                                    </div>
                                                 </div>
                                              </div>
-</li>
-</ul>
                     </div>
-                  
-                                                   
-                                                </div>
-                                               
+                    <div class="col-6">
                     @if($var_display > 0)
-                    <div class="col-6 ">
                     <div class="accordion-cart" id="cartBlock_{{$ap->id}}" style="background-color:none!important;">
                                         <div class="accordion-item">
                                             <h2 class="accordion-header" id="headingOne">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cartIBlock_{{$ap->id}}" aria-expanded="false" style="font-size: 9pt;" aria-controls="cartIBlock_{{$ap->id}}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cartIBlock_{{$ap->id}}" aria-expanded="false" aria-controls="cartIBlock_{{$ap->id}}">
                                                More Details
                                                 </button>
                                             </h2>
                                              
                                         </div>
                         
-                                        </div>
-                                        </div>
+                                    </div>
                                     @endif    
-                                  
-                                              
                     </div>
-                   
-                    <div class=" row" >
-                   <hr style="border-top: dotted 1px #000;margin:0px 7px 7px 7px;width: 95%;text-align:center;"/>
-                    <div class="col-6" style="><p style="text-align: left;font-weight:bold;margin-top:0px;">Amount</p>  </div>    
-                    <div class="col-6" style="text-align: right;margin-top:0px;"><strong>
-                        <p style="font-size:10pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;text-align: right;">
+                    <div class="col-6">
+                    <p class="float-right" style="text-align: right;"><strong>
                     @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff'))    
                         {{$currency['code']}} {{$ap->totalprice*$currency['value']}}
                     @elseif($caid != $ap->activity_id)
                     {{$currency['code']}} {{$total_sp*$currency['value']}}
                     @endif
-                    </strong> </p>    <p style="font-size:10pt;line-height: 14pt;padding-bottom: 0px;margin-bottom: 0px;"><small style="font-size:11px;color:grey;clear:both;">including VAT</small></p>             
-                    </div>       
+                    </strong> <small style="font-size:11px;color:grey"><br/>including Taxes</small></p>             
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                    
-                                                    </div>  
-                                                    </div>  
-                                                    
+                                                </div>
+                                            
+            
+                                        
                                         @php
 					$totalGrand += $ap->totalprice; 
                     $caid = $ap->activity_id;
@@ -591,7 +572,7 @@ $aid = 0;
 				 @endforeach
                  @endif
 				  @endif
-                
+                                   
                                 </div>
                                 </div>
                                 <div class="card card-default  box-shadow" style="margin-top: 20px;">
@@ -603,7 +584,7 @@ $aid = 0;
                   </div>
                   <div class="col-md-6 text-right">
                   <h5 style="padding-bottom: 0px;">{{$currency['code']}} {{$totalGrand*$currency['value']}}
-                  <small style="font-size:11px;color:grey;font-weight:normal"><br/>including VAT</small>
+                  <small style="font-size:11px;color:grey;font-weight:normal"><br/>including Taxes</small>
 
                   </h5>
                  

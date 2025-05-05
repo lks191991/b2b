@@ -1242,6 +1242,24 @@ class VouchersController extends Controller
 								return redirect()->back()->with('error', $errorMessage);
 							}
 
+							$actData = $data[0];
+							$errors = [];
+
+							if ($actData['rayna_adultPrice'] > $actData['adultPrice']) {
+								$errors[] = "Adult price error.";
+							}
+
+							if ($actData['rayna_childPrice'] > $actData['childPrice']) {
+								$errors[] = "Child price error.";
+							}
+
+							if (!empty($errors)) {
+								$errorMessage = implode(" ", $errors);
+								if ($request->ajax()) {
+									return response()->json(['error' => $errorMessage]);
+								}
+								return redirect()->back()->with('error', $errorMessage);
+							}
 
 							VoucherActivity::insert($data);
 							$voucher = Voucher::find($voucher_id);
