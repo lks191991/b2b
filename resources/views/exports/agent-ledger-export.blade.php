@@ -55,7 +55,7 @@
 						@php
 						$totalCredit += $record->amount;
 						@endphp
-					
+						
 					{{$record->amount}}
 					@endif</td>
 					<td>{{@$record->voucher->guest_name}}</td>
