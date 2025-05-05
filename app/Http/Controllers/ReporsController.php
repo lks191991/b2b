@@ -1403,7 +1403,7 @@ public function voucherActivtyRefundedReport(Request $request)
 			}
 
 			$query->whereHas('voucher', function($q)  use($data,$twoDaysAgo){
-				$q->whereIn('status_main',[4,5]);
+				$q->whereIn('status_main',[4,5,6]);
 				$q->orderBy('booking_date', 'DESC');
 			});
 			if(isset($data['voucher_status']) && !empty($data['voucher_status'])) {
@@ -1476,7 +1476,7 @@ public function voucherActivtyRefundedReport(Request $request)
 			}
 
 			$query->whereHas('voucher', function($q)  use($data,$twoDaysAgo){
-				$q->whereIn('status_main',[4,5]);
+				$q->whereIn('status_main',[4,5,6]);
 				$q->orderBy('booking_date', 'DESC');
 			});
 
