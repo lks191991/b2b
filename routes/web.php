@@ -272,7 +272,7 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
         Route::post('voucher-hotel-refund-save', [ReporsController::class, 'hotelRefundSave'])->name('hotelRefundSave');
         Route::post('voucher-hotel-final-refund-save', [ReporsController::class, 'hotelFinalRefundSave'])->name('hotelFinalRefundSave');
         Route::get('voucher-hotel-refunded-report', [ReporsController::class, 'voucherHotelRefundedReport'])->name('voucherHotelRefundedReport');
-
+        Route::get('voucher-hotel-refunded-report-export', [ReporsController::class, 'voucherHotelRefundedReportExport'])->name('voucherHotelRefundedReportExport');
 
 		Route::post('voucher-activity-final-refund-save', [ReporsController::class, 'activityFinalRefundSave'])->name('activityFinalRefundSave');
 		Route::get('voucher-activity-refunded-report', [ReporsController::class, 'voucherActivtyRefundedReport'])->name('voucherActivtyRefundedReport');

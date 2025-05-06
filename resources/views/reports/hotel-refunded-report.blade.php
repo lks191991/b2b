@@ -30,7 +30,7 @@
               <div class="card-header">
 				<div class="card-tools">
 				 <div class="row">
-				<a href="{{ route('voucherActivtyCanceledReportExportExcel', request()->input()) }}" class="btn btn-info btn-sm mb-2 mr-4">Export to CSV</a>
+				<a href="{{ route('voucherHotelRefundedReportExport', request()->input()) }}" class="btn btn-info btn-sm mb-2 mr-4">Export to CSV</a>
 				   </div></div>
 				   
               </div>
@@ -44,11 +44,11 @@
                   <div class="input-group-prepend">
                     <div class="input-group-text">Search Result</div>
                   </div>
-                 <select name="booking_type" id="booking_type" class="form-control">
-                    <option value = "1">Canceled Date</option>
-					<option value = "2">Tour Date</option>
-					<!--<option value = "3">Deadline Date</option>-->
-                 </select>
+                  <select name="booking_type" id="booking_type" class="form-control">
+                    <option value="1" {{ request('booking_type') == '1' ? 'selected' : '' }}>Canceled Date</option>
+                    <option value="2" {{ request('booking_type') == '2' ? 'selected' : '' }}>Check In Date</option>
+                </select>
+                
                 </div>
               </div>
 			  <div class="col-auto col-md-3">
@@ -66,7 +66,7 @@
                 <div class="col-auto col-md-3">
                   <div class="input-group mb-2">
                     <div class="input-group-prepend"><div class="input-group-text">Voucher Code</div></div>
-                    <input type="text" name="reference" value="{{ request('reference') }}" class="form-control"  placeholder="Reference Number" />
+                    <input type="text" name="reference" value="{{ request('reference') }}" class="form-control"  placeholder="Voucher Code" />
                   </div>
                 </div>
                 

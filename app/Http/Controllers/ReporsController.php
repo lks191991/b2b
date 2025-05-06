@@ -45,6 +45,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Exports\VoucherHotelReportExport;
 use App\Models\Zone;
 //use App\Exports\AllPriceReportExport;
+use App\Exports\VoucherHotelRefundedReportExport;
 
 class ReporsController extends Controller
 {
@@ -2140,6 +2141,42 @@ public function voucherHotelRefundedReport(Request $request)
 	$records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
 	
 	return view('reports.hotel-refunded-report', compact('records'));
+
+}
+
+public function voucherHotelRefundedReportExport(Request $request)
+{
+	$this->checkPermissionMethod('list.HotelRefundReport');
+	$data = $request->all();
+	$perPage = config("constants.ADMIN_PAGE_LIMIT");
+
+	$query = VoucherHotel::where('id','!=', null);
+	
+	if(isset($data['booking_type']) && !empty($data['booking_type'])) {
+		
+		if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
+		$startDate = $data['from_date'];
+		$endDate =  $data['to_date'];
+			if($data['booking_type'] == 2) {
+			 $query->whereDate('check_in_date', '>=', $startDate);
+			 $query->whereDate('check_in_date', '<=', $endDate);
+			}
+			elseif($data['booking_type'] == 1) {
+			 $query->where('cancelled_on', '>=', $startDate);
+			 $query->where('cancelled_on', '<=', $endDate);
+			}
+			}
+		}
+	if(isset($data['reference']) && !empty($data['reference'])) {
+		$query->whereHas('voucher', function($q)  use($data){
+			$q->where('code', 'like', '%' . $data['reference'] . '%');
+		});
+	}
+	
+	$query->where('status', '=', 2);
+		
+	$records = $query->orderBy('created_at', 'DESC')->get();
+	return Excel::download(new VoucherHotelRefundedReportExport($records), 'hotel-refunded-report'.date('d-M-Y s').'.csv');
 
 }
 
