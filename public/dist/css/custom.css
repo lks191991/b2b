@@ -723,3 +723,33 @@ box-shadow: 1px 0px 22px -8px rgba(0,0,0,0.75);
   line-height: 18px;
   margin-right: 5px;
 }
+
+.info-icon {
+  position: relative;
+  display: inline-block;
+  margin-left: 2px;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  background-color: #333;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  right: 120%;  /* Show tooltip on the left */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+
+.info-icon:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

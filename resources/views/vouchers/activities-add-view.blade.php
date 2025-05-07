@@ -1,3 +1,4 @@
+
 @php
 			$activity = $variantData['activity'];
 			$ap = $variantData['activityVariants']['0'];
@@ -33,8 +34,14 @@
                     <th valign="middle">Child<br/><small>({{$ap->prices->child_start_age}}-{{$ap->prices->child_end_age}} Yrs)</small></th>
                     <th valign="middle">Infant<br/><small>(Below {{$ap->prices->child_start_age}} Yrs)</small></th>
 					
-					<th valign="middle" colspan="2">Total Amount</th>
-					
+					<th valign="middle" >Total Amount</th>
+					<th style="position: relative;" valign="left" width="5%" colspan="2">
+						R
+						<span class="info-icon">
+						  <i class="fa fa-info-circle"></i>
+						  <span class="tooltip-text">Refundable / Non Refundable info</span>
+						</span>
+					  </th>
                   </tr>
 				  </thead>
 				@if(($activity->product_type == 'Bundle_Same') )
@@ -93,7 +100,7 @@ $inf = ($abap->prices->infant_min_no_allowed > 0)?$abap->prices->infant_min_no_a
 
 					
 					@if(($activity->product_type == 'Bundle_Same'))
-					<strong>{{$bap->activity->title}} </strong>
+					<strong>{{$bap->activity->title}} </strong> {!! !empty($ap->variant->touroption_id) ? '<span class="rayna-f">R</span>' : '' !!}
 </td>
 					<td>
 						@php
@@ -257,7 +264,9 @@ $(function() {
 						@endif
 						
 						</td>
-						
+						<td class="text-left" >
+							{{$ap->variant->is_refundable==1 ? 'Yes' : 'No'}}
+						</td>
 						<td class="text-center" >
 						
 						<button type="button" class="btn btn-sm  btn-primary-flip float-right addToCart" data-inputnumber="{{$kk}}" data-variantid="{{$ap->variant_id}}" id="addToCart{{$kk}}" name="save"><i class="fa fa-cart-plus"></i> </button>
@@ -341,7 +350,7 @@ $dates = $disabledDay = "";
 <input type="hidden"  name="activity_variant_code[{{$ap->ucode}}]" id="activity_variant_code{{$kk}}" value="{{implode(',',$activites_code)}}" data-inputnumber="{{$kk}}" /> 
 
 					<input type="checkbox"  name="activity_select_display" required id="activity_select_display{{$kk}}" value="" checked  data-inputnumber="{{$kk}}" disabled />
-					<input type="checkbox"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0')  @endif class="actcsk d-none" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong>
+					<input type="checkbox"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0')  @endif class="actcsk d-none" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong> {!! !empty($ap->variant->touroption_id) ? '<span class="rayna-f">R</span>' : '' !!}
 
 				
 					</td>
@@ -498,18 +507,21 @@ $(function() {
 						@endif
 						
 						</td>
-					
+						<td class="text-left" >
+							{{$ap->variant->is_refundable==1 ? 'Yes' : 'No'}}
+						</td>
 						<td class="text-center" rowspan="{{ $varaint_count }}">
 						
 						<button type="button" class="btn btn-sm  btn-primary-flip float-right addToCart" data-inputnumber="{{$kk}}" data-variantid="{{$ap->variant_id}}" id="addToCart{{$kk}}" name="save"><i class="fa fa-cart-plus"></i> </button>
 						</td>
+						
 						@endif
 						
                   </tr>
 				   @if($ap->variant->touroption_id != '') 
 					
 					<tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
-						<td colspan="9" style="color:#fff!important;">
+						<td colspan="10" style="color:#fff!important;">
 							{!! $ap->variant->rayna_cancellation_policy !!}
 						</td>
 					</tr>
@@ -517,7 +529,7 @@ $(function() {
 					@elseif($ap->variant->cancellation_policy != '') 
 					
 				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
-						<td colspan="9" style="color:#fff!important;">
+						<td colspan="10" style="color:#fff!important;">
 							{!! $ap->variant->cancellation_policy !!}
 						</td>
 					</tr>
@@ -566,7 +578,7 @@ $dates = $disabledDay = "";
 					<input type="hidden"  name="activity_variant_code[{{$ap->ucode}}]" id="activity_variant_code{{$kk}}" value="{{$ap->ucode}}" data-inputnumber="{{$kk}}" /> 
 					<input type="hidden"  name="activity_variant_id[{{$ap->ucode}}]" id="activity_variant_id{{$kk}}" value="{{$ap->id}}" data-inputnumber="{{$kk}}" /> 
 					
-					<input type="radio"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0') checked='checked' @endif class="actcsk" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong>
+					<input type="radio"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0') checked='checked' @endif class="actcsk" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong> {!! !empty($ap->variant->touroption_id) ? '<span class="rayna-f">R</span>' : '' !!}
 
 				
 					</td>
@@ -719,7 +731,9 @@ $(function() {
 						@endif
 						
 						</td>
-						
+						<td class="text-left" >
+							{{$ap->variant->is_refundable==1 ? 'Yes' : 'No'}}
+						</td>
 						<td class="text-center" >
 						
 						<button type="button" class="btn btn-sm  btn-primary-flip float-right addToCart" data-inputnumber="{{$kk}}" data-variantid="{{$ap->variant_id}}" id="addToCart{{$kk}}" name="save"><i class="fa fa-cart-plus"></i> </button>
@@ -729,7 +743,7 @@ $(function() {
 				  @if($ap->variant->touroption_id != '') 
 					
 				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
-						<td colspan="9" style="color:#fff!important;">
+						<td colspan="10" style="color:#fff!important;">
 							{!! $ap->variant->rayna_cancellation_policy !!}
 						</td>
 					</tr>
@@ -737,7 +751,7 @@ $(function() {
 				  @elseif($ap->variant->cancellation_policy != '') 
 					
 				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
-						<td colspan="9" style="color:#fff!important;">
+						<td colspan="10" style="color:#fff!important;">
 							{!! $ap->variant->cancellation_policy !!}
 						</td>
 					</tr>

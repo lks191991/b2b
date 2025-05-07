@@ -35,6 +35,13 @@
                     <th valign="middle">Infant<br/><small>(Below {{$ap->prices->child_start_age}} Yrs)</small></th>
 					
 					<th valign="middle">Total Amount</th>
+					<th style="position: relative;" valign="left" width="5%">
+						R
+						<span class="info-icon">
+						  <i class="fa fa-info-circle"></i>
+						  <span class="tooltip-text">Refundable / Non Refundable info</span>
+						</span>
+					  </th>
 					<th valign="middle"></th>
                   </tr>
 				  </thead>
@@ -94,7 +101,7 @@ $inf = ($abap->prices->infant_min_no_allowed > 0)?$abap->prices->infant_min_no_a
 						@endforeach
 		
 					@if(($activity->product_type == 'Bundle_Same'))
-					<strong>{{$bap->activity->title}} </strong>
+					<strong>{{$bap->activity->title}} </strong> {!! !empty($bap->variant->touroption_id) ? '<span class="rayna-f">R</span>' : '' !!}
 </td>
 					<td>
 						@php
@@ -259,7 +266,9 @@ $(function() {
 						@endif
 						
 						</td>
-						
+						<td class="text-left" >
+							{{$ap->variant->is_refundable==1 ? 'Yes' : 'No'}}
+						</td>
 						<td class="text-center" >
 						
 						<button type="button" class="primary-btn1-sm btn-sm addToCart" data-inputnumber="{{$kk}}" data-variantid="{{$ap->variant_id}}" id="addToCart{{$kk}}" name="save"><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/></svg> </button>
@@ -346,7 +355,7 @@ $dates = $disabledDay = "";
 <input type="hidden"  name="activity_variant_code[{{$ap->ucode}}]" id="activity_variant_code{{$kk}}" value="{{implode(',',$activites_code)}}" data-inputnumber="{{$kk}}" /> 
 
 					<input type="checkbox"  name="activity_select_display" required id="activity_select_display{{$kk}}" value="" checked  data-inputnumber="{{$kk}}" disabled />
-					<input type="checkbox"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0')  @endif class="actcsk d-none" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong>
+					<input type="checkbox"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0')  @endif class="actcsk d-none" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong> {!! !empty($ap->variant->touroption_id) ? '<span class="rayna-f">R</span>' : '' !!}
 
 				
 					</td>
@@ -503,7 +512,9 @@ $(function() {
 						@endif
 						
 						</td>
-					
+						<td class="text-left" >
+							{{$ap->variant->is_refundable==1 ? 'Yes' : 'No'}}
+						</td>
 						<td class="text-center" rowspan="{{ $varaint_count }}">
 						
 						<button type="button" class="primary-btn1-sm btn-sm addToCart " data-inputnumber="{{$kk}}" data-variantid="{{$ap->variant_id}}" id="addToCart{{$kk}}" name="save"><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/></svg> </button>
@@ -577,7 +588,7 @@ $dates = $disabledDay = "";
 					
 					<input type="hidden"  name="activity_variant_title[{{$ap->ucode}}]" id="activity_variant_title{{$kk}}" value="{{$ap->variant->title}}" data-inputnumber="{{$kk}}" />
 					
-					<input type="radio"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0') checked='checked' @endif class="actcsk" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong>
+					<input type="radio"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0') checked='checked' @endif class="actcsk" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong> {!! !empty($ap->variant->touroption_id) ? '<span class="rayna-f">R</span>' : '' !!}
 
 				
 					</td>
@@ -730,7 +741,9 @@ $(function() {
 						@endif
 						
 						</td>
-						
+						<td class="text-left" >
+							{{$ap->variant->is_refundable==1 ? 'Yes' : 'No'}}
+						</td>
 						<td class="text-center" >
 						
 						<button type="button" class="primary-btn1-sm btn-sm addToCart timeSlot" data-inputnumber="{{$kk}}" data-variantid="{{$ap->variant_id}}" id="addToCart{{$kk}}" name="save"><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2M1 2v2h2l3.6 7.59l-1.36 2.45c-.15.28-.24.61-.24.96a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25c0-.05.01-.09.03-.12L8.1 13h7.45c.75 0 1.41-.42 1.75-1.03l3.58-6.47c.07-.16.12-.33.12-.5a1 1 0 0 0-1-1H5.21l-.94-2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2"/></svg> </button>
