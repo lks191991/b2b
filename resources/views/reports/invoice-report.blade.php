@@ -196,8 +196,12 @@
 				</td>
 					<td>{{$record->variant_name}}</td>
 					<td>{{ PriceHelper::getTotalTicketCostAllType($record->id) }}</td>
-          <td>
+					<td>
+					@if($record->status == '3' && $record->isRayna == '1')
+					<span class="badge bg-secondary">API Confirm</span>
+					@else
 					{!! SiteHelpers::voucherActivityStatusName($record->status) !!}
+					@endif
 					</td>
 					<td>
 					{!! SiteHelpers::voucherStatus($record->voucher->status_main) !!}

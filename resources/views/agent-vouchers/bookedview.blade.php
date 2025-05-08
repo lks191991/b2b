@@ -191,7 +191,7 @@ $aid = 0;
                                             @elseif($ap->status == '2')
                                             Cancelled
                                             @elseif($ap->status == '3')
-                                            In Process
+                                            {{ ($ap->isRayna == '1') ? "Confirm" : "In Process" }}
                                             @elseif($ap->status == '4')
                                             Confirm
                                             @elseif($ap->status == '5')

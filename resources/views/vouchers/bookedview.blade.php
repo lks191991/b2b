@@ -267,7 +267,7 @@
   @elseif($ap->status == '2')
   <span class='badge bg-danger' style='margin-left: 5px;'>Cancelled</span> 
    @elseif($ap->status == '3')
-   <span class='badge bg-warning' style='margin-left: 5px;'>In Process</span> 
+   <span class='badge bg-warning' style='margin-left: 5px;'>{{ ($ap->isRayna == '1') ? "API Confirm" : "In Process" }}</span> 
    @elseif($ap->status == '4')
    <span class='badge bg-success' style='margin-left: 5px;'>Confirm</span> 
    @elseif($ap->status == '5')

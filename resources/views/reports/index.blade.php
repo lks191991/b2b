@@ -296,7 +296,12 @@
 					<select name="status{{$record->id}}" id="status{{$record->id}}" class="form-control inputsaveSp">
 						@foreach($actStatus as $k => $status)
 						@if($k > 2)
-						<option data-name="status"  data-id="{{$record->id}}" value = "{{$k}}" @if($record->status==$k) selected="selected" @endif >{{$status}}</option>
+							@if($k == '3' && $record->status == '3' && $record->isRayna == '1')
+						<option data-name="status"  data-id="{{$record->id}}" value = "{{$k}}" @if($record->status==$k) selected="selected" @endif > API Confirm</option>
+						@else
+							<option data-name="status"  data-id="{{$record->id}}" value = "{{$k}}" @if($record->status==$k) selected="selected" @endif >{{$status}}</option>
+						@endif
+						
 						@endif
 						@endforeach
             @endif

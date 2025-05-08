@@ -89,6 +89,13 @@
 					          <option value="1" @if($record->is_refundable ==1) {{'selected="selected"'}} @endif >No</option>
                  </select>
               </div>
+             <div class="form-group col-md-2">
+                <label for="inputName">Cancel After TKT Download:</label>
+                <select name="cancel_after_ticket_down" id="cancel_after_ticket_down" class="form-control">
+                    <option value="1" @if($record->cancel_after_ticket_down ==1) {{'selected="selected"'}} @endif>Yes</option>
+					<option value="0" @if($record->cancel_after_ticket_down ==0) {{'selected="selected"'}} @endif >No</option>
+                 </select>
+              </div>
             
 			  
 			  
