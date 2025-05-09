@@ -281,6 +281,7 @@ class TicketsController extends Controller
 				$recordUser->save(); 
 
 				$log = new TicketLog();
+				$log->voucher_id = $voucher->id;
 				$log->total_record = $countTotalTicketNeed;
 				$log->supplier_id = $agentsupplierId;
 				$log->supplier_cost = $totalprice;

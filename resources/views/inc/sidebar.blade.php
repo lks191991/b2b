@@ -1100,7 +1100,22 @@ $controller = preg_replace('/.*\\\/', '', $controller);
                 </a>
 				
               </li>
-			  
+			   @php
+        $class=''; $active='';
+        if($controller == 'LogsController' and in_array($action,array('ticketGenerateLogs'))){
+          $class = 'menu-open';
+          $active = 'active';
+        }
+   
+    
+        @endphp 
+			  <li class="nav-item ">
+              <a href="{{ route('logs.ticket.generate') }}" class="nav-link {{$active}}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Ticket Generate Logs</p>
+                </a>
+				
+              </li>
             </ul>
           </li>
 		  @endrole 
