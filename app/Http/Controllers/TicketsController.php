@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use SPDF;
 use Illuminate\Support\Facades\Auth;
 use App\Models\AgentAmount;
+use App\Models\TicketDownloadLog;
 use Validator;
 use RaynaHelper;
 
@@ -304,6 +305,7 @@ class TicketsController extends Controller
     {
 		$voucherActivity = VoucherActivity::find($id);
 		if(!empty($voucherActivity->ticket_pdf)){
+			TicketDownloadLog::create(['voucher_activity_id'=>$voucherActivity->id,'voucher_id'=>$voucherActivity->voucher_id,'user_id'=>Auth::user()->id,'user_ip'=>$request->ip(),'ticket_type'=>'auto']);
 			return redirect($voucherActivity->ticket_pdf);
 		} else {
 		$voucher = Voucher::where('id',$voucherActivity->voucher_id)->first();;
@@ -331,7 +333,7 @@ class TicketsController extends Controller
 		$ticket->save();
 		}
 
-			
+		TicketDownloadLog::create(['voucher_activity_id'=>$voucherActivity->id,'voucher_id'=>$voucherActivity->voucher_id,'user_id'=>Auth::user()->id,'user_ip'=>$request->ip(),'ticket_type'=>'manual']);
 
 		//return view('tickets.ticketPdf', compact('voucherActivity','tickets','voucher'));
         $pdf = SPDF::loadView('tickets.ticketPdf', compact('voucherActivity','tickets','voucher'));

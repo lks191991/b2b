@@ -353,7 +353,7 @@ Route::group(['middleware' => 'disable_back_btn'], function () {
 		 Route::get('/search-dropdown-tour-option', [VariantsController::class, 'searchDropdown'])->name('search.dropdown.tour.option');
         Route::get('/search/prefill-tour-option', [VariantsController::class, 'prefill'])->name('search.prefill.tour.option');
         Route::get('/rayna-logs', [LogsController::class, 'raynaBookingLogs'])->name('logs.rayna.booking');
-
+        Route::get('/ticket-download-logs', [LogsController::class, 'ticketDownloadLogs'])->name('logs.ticket.download');
 		Route::get('/tour-jobs', [JobsController::class, 'tourJobsView'])->name('tour.jobs.view');
 		Route::post('/process-tour-jobs', [JobsController::class, 'processTourJobs'])->name('processTourJobs');
         Route::get('/sidebar-cart/{vid}', [AgentVouchersController::class, 'sidebarCart'])->name('sidebar.cart.partial');
