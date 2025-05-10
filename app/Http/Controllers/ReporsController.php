@@ -2193,8 +2193,8 @@ public function productMaster(Request $request)
 			$endDate = date("Y-m-d", strtotime($data['to_date']));
 		} else {
 			$filter = 1; 
-			$endDate = date("Y-m-d"); 
-			$startDate = date("Y-m-d", strtotime("+1 month"));
+			$startDate = date("Y-m-d"); 
+			$endDate = date("Y-m-d", strtotime("+1 month"));
 		}
 		
 		$query->whereDate('rate_valid_from', '>=', $startDate);

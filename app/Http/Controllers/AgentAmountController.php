@@ -40,9 +40,13 @@ class AgentAmountController extends Controller
         if (isset($data['status']) && !empty($data['status'])) {
             $query->where('status', $data['status']);
         }
-		if (isset($data['date_of_receipt']) && !empty($data['date_of_receipt'])) {
-            $query->whereDate('date_of_receipt', $data['date_of_receipt']);
-        }
+        if (isset($data['date_of_receipt']) && !empty($data['date_of_receipt']) &&  isset($data['date_of_receipt_to']) && !empty($data['date_of_receipt_to'])) {
+			$startDate = $data['date_of_receipt'];
+			$endDate =  $data['date_of_receipt_to'];
+				 $query->whereDate('date_of_receipt', '>=', $startDate);
+				 $query->whereDate('date_of_receipt', '<=', $endDate);
+		}
+		
 		if (isset($data['transaction_type']) && !empty($data['transaction_type'])) {
             $query->where('transaction_type', $data['transaction_type']);
         }
