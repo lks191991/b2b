@@ -617,10 +617,11 @@ return $dates;
 		} 
 		 return $color;
 	}
-	public static function voucherStatus($val)
+	public static function voucherStatus($val,$remark='')
     {
 		$color = '';
 		$voucherStatus = config("constants.voucherStatus");
+		$voucherStatusRemark = config("constants.voucherStatusRemark");
 		if($val == 1) {
 			$color = '<span class="badge bg-primary">'.$voucherStatus[$val].'</span>';
 		} 
@@ -633,7 +634,15 @@ return $dates;
 			$color = '<span class="badge bg-warning">'.$voucherStatus[$val].'</span>';
 		} else if($val == 5) 
 		{
-			$color = '<span class="badge bg-success">'.$voucherStatus[$val].'</span>';
+			if(!empty($remark))
+			{
+				$remark = $voucherStatusRemark[$remark];
+				$color = '<span class="badge bg-success">'.$voucherStatus[$val].' ('.$remark.')</span>';
+			}
+			else
+			{
+				$color = '<span class="badge bg-success">'.$voucherStatus[$val].'</span>';
+			}
 		} 
 		else if($val == 6) {
 			$color = '<span class="badge bg-danger">'.$voucherStatus[$val].'</span>';

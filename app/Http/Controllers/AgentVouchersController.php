@@ -1071,18 +1071,24 @@ class AgentVouchersController extends Controller
 			$zoneUserEmails = SiteHelpers::getUserByZoneEmail($record->agent_id);
 			
 			try {
-				$bk = RaynaHelper::tourBooking($record);
-				if (isset($bk['status']) && $bk['status'] == false) {
-					$errorDescription = $bk['error']; 
-					$record->status_main = 13;
-					$saveResult = $record->save();
-					$agent->agent_amount_balance += $grandTotal;
-					$agent->save();
-					
-					return redirect()->route('agent-vouchers.show',$record->id)->with('error', $errorDescription);
-				}
-			} catch (\Exception $e) {
-						$record->status_main = 13;
+						$bk = RaynaHelper::tourBooking($record);
+						if (isset($bk['status'])) {
+							if ($bk['status'] == true && $bk['adata'] == 1) {
+									$record->status_main_remark = 1;
+								}else{
+							if (isset($bk['status']) && $bk['status'] == false) {
+								$errorDescription = $bk['error']; 
+								$record->status_main = 4;
+								$saveResult = $record->save();
+								$agent->agent_amount_balance += $grandTotal;
+								$agent->save();
+								
+								return redirect()->route('agent-vouchers.show',$record->id)->with('error', $errorDescription);
+							}
+						}
+						}
+				} catch (\Exception $e) {
+						$record->status_main = 4;
 						$saveResult = $record->save();
 						
 						$agent->agent_amount_balance += $grandTotal;

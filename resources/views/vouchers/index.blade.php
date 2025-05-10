@@ -115,7 +115,7 @@
                     <td>{{ ($record->agent)?$record->agent->company_name:''}}</td>
                     <td>{{ ($record->zone)}}</td>
                     <td>{{ $record->guest_name}}</td>
-                     <td>{!! SiteHelpers::voucherStatus($record->status_main) !!}</td>
+                     <td>{!! SiteHelpers::voucherStatus($record->status_main,$record->status_main_remark) !!}</td>
 					   <td>{{ $record->travel_from_date ? date(config('app.date_format'),strtotime($record->travel_from_date)) : null }} <b>To</b> {{ $record->travel_to_date ? date(config('app.date_format'),strtotime($record->travel_to_date)) : null }}</td>
                
 					<td>{{ ($record->createdBy)?$record->createdBy->name:''}}</td>
@@ -213,7 +213,7 @@
 						  @endif
 						  
 						   @permission('list.invoiceEditButton')
-						   @if($record->status_main ==  5)
+						   @if($record->status_main ==  5 && SiteHelpers::voucherActivityCount($record->id) > 0)
 							   <form id="status-form-{{$record->id}}" method="post" action="{{route('invoice.status.change',$record->id)}}" style="display:none;">
                                 {{csrf_field()}}
                             </form>

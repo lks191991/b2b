@@ -176,6 +176,15 @@ class RaynaHelper
                         $bookingDetails = $bookings['details'] ?? [];
 
                         if (!empty($bookingDetails)) {
+                            $hasFail = 0;
+
+                            foreach ($bookingDetails as $detail) {
+                                if (isset($detail['status']) && strtolower($detail['status']) === 'fail') {
+                                $hasFail = 1;
+                                break;
+                                }
+                            }
+
                             $voucherActivity = VoucherActivity::where('id', $actId)
                                 ->where('isRayna', true)
                                 ->first();
@@ -183,26 +192,31 @@ class RaynaHelper
                             if ($voucherActivity) {
                                 $voucherActivity->RaynaBooking_uniqNO = $uniqueNo;
                                 $voucherActivity->referenceNo = $bookings['referenceNo'];
+                                $voucherActivity->RaynaBooking_uniqNO = $uniqueNo;
                                 $voucherActivity->rayna_booking_details = json_encode($bookingDetails);
+                                if($hasFail== 1){
+                                    $voucherActivity->status = 13;
+                                }
+
                                 $voucherActivity->save();
-                                $returnData[$actId] = ['status' => true, 'error' => ''];
+                                $returnData[$actId] = ['status' => true, 'error' => '', 'adata' => $hasFail];
 								$log->update(['status' => 1]);
                             } else {
-                                $returnData[$actId] = ['status' => false, 'error' => 'Voucher activity not found.'];
+                                $returnData[$actId] = ['status' => false, 'error' => 'Voucher activity not found.', 'adata' => 0];
                             }
                         } else {
                             $errorDescription = $data['error']['description'] ?? 'No description available.';
-                            $returnData[$actId] = ['status' => false, 'error' => $errorDescription];
+                            $returnData[$actId] = ['status' => false, 'error' => $errorDescription, 'adata' => 0];
                         }
                     } else {
                         $errorDescription = $data['error']['description'] ?? 'No description available.';
-                        $returnData[$actId] = ['status' => false, 'error' => $errorDescription];
+                        $returnData[$actId] = ['status' => false, 'error' => $errorDescription, 'adata' => 0];
                     }
                 } else {
-                    $returnData[$actId] = ['status' => false, 'error' => 'Unexpected error occurred.'];
+                    $returnData[$actId] = ['status' => false, 'error' => 'Unexpected error occurred.', 'adata' => 0];
                 }
             } else {
-                $returnData[$actId] = ['status' => false, 'error' => 'Request failed with status code: ' . $response->status()];
+                $returnData[$actId] = ['status' => false, 'error' => 'Request failed with status code: ' . $response->status(), 'adata' => 0];
             }
         }
 
@@ -232,7 +246,7 @@ class RaynaHelper
         ];
     }
 
-    return ['status' => true, 'error' => 'No Rayna data'];
+    return ['status' => true, 'error' => 'No Rayna data', 'adata' => 0];
 }
 
     

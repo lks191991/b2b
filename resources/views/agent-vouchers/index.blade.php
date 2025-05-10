@@ -146,7 +146,7 @@
 						  </td>
 				
 					
-                    <td>{!! SiteHelpers::voucherStatus($record->voucher->status_main) !!}</td>
+                    <td>{!! SiteHelpers::voucherStatus($record->voucher->status_main,$record->voucher->status_main_remark) !!}</td>
                 
 
                      <td>

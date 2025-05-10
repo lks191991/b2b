@@ -34,6 +34,9 @@ return [
 	6 => 'Canceled',
 	7 => 'Invoice Edit Requested',
 	],
+	'voucherStatusRemark' => [
+	1 => 'Partially Booked',
+	],
 	'voucherActivityStatus' => [
 	0 => 'Draft',
 	 1 => 'Cancellation Requested',
@@ -48,7 +51,7 @@ return [
 	10 => 'Rejected',
 	11 => 'Cancellation Initiated',
 	12 => 'Cancelled',
-	13 => 'Rapi',
+	13 => 'Api Rejected',
 	],
 	'agentZone' => [
 			'DXB - Rizwan'=>'DXB - Rizwan',
