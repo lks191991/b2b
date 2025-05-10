@@ -96,7 +96,7 @@
                       {{ $record->voucher->code }}
                                     </a>
                   </td>
-                  <td class="">{{ $record->voucher_activity_id ?? 'N/A' }}</td>
+                  <td class="">{{ $record->voucherActivity->variant_name ?? 'N/A' }}</td>
                   <td class="">{{ $record->total_record ?? 'N/A' }}</td>
                   <td class="">{{ $record->supplier_cost ?? 'N/A' }}</td>
                     <td>{{ $record->created_at ? date(config('app.date_format'),strtotime($record->created_at)) : null }}</td>
