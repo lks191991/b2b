@@ -29,6 +29,12 @@ class LogsController extends Controller
 				
 		}
 
+        if(isset($data['v_code']) && !empty($data['v_code'])) {
+			$query->whereHas('voucher', function($q)  use($data){
+				$q->where('code', 'like', '%' . $data['v_code']);
+			});
+		}
+
         $records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
 
        
@@ -46,6 +52,12 @@ class LogsController extends Controller
 				 $query->whereDate('created_at', '>=', $startDate);
 				 $query->whereDate('created_at', '<=', $endDate);
 				
+		}
+
+        if(isset($data['v_code']) && !empty($data['v_code'])) {
+			$query->whereHas('voucher', function($q)  use($data){
+				$q->where('code', 'like', '%' . $data['v_code']);
+			});
 		}
 
         $records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
@@ -67,6 +79,11 @@ class LogsController extends Controller
 				
 		}
 
+        if(isset($data['v_code']) && !empty($data['v_code'])) {
+			$query->whereHas('voucher', function($q)  use($data){
+				$q->where('code', 'like', '%' . $data['v_code']);
+			});
+		}
         $records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
 
        

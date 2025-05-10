@@ -44,14 +44,19 @@
 			  <div class="row" >
             <form id="filterForm" class="form-inline" method="get" action="{{ route('logs.ticket.generate') }}" >
               <div class="form-row align-items-center">
-			   
-			  <div class="col-auto col-md-4">
+			   <div class="col-auto col-md-3">
+                  <div class="input-group mb-2">
+                    <div class="input-group-prepend"><div class="input-group-text">Voucher Code</div></div>
+                    <input type="text" name="v_code" value="{{ request('v_code') }}" class="form-control " autocomplete ="off"  placeholder="Voucher Code" />
+                  </div>
+                </div>
+			  <div class="col-auto col-md-3">
                   <div class="input-group mb-2">
                     <div class="input-group-prepend"><div class="input-group-text">From Date</div></div>
                     <input type="text" name="from_date" value="{{ request('from_date') }}" autocomplete ="off" class="form-control datepicker"  placeholder="From Date" />
                   </div>
                 </div>
-				<div class="col-auto col-md-4">
+				<div class="col-auto col-md-3">
                   <div class="input-group mb-2">
                     <div class="input-group-prepend"><div class="input-group-text">To Date</div></div>
                     <input type="text" name="to_date" value="{{ request('to_date') }}" class="form-control datepicker" autocomplete ="off"  placeholder="To Date" />
