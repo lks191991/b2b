@@ -82,10 +82,10 @@
                 @endif
               </div>	
               <div class="form-group col-md-2">
-                <label for="inputName">Refundable:</label>
+                <label for="inputName">Booking:</label>
                 <select name="is_refundable" id="is_refundable" class="form-control">
-                    <option value="2" @if(old('is_refundable') ==2) {{'selected="selected"'}} @endif>Yes</option>
-					          <option value="1" @if(old('is_refundable') ==1) {{'selected="selected"'}} @endif >No</option>
+                    <option value="2" @if(old('is_refundable') ==2) {{'selected="selected"'}} @endif>Refundable</option>
+					          <option value="1" @if(old('is_refundable') ==1) {{'selected="selected"'}} @endif >Non Refundable</option>
                  </select>
               </div>
              

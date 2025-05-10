@@ -265,7 +265,7 @@ $(function() {
 						
 						</td>
 						<td class="text-left" >
-							{{$ap->variant->is_refundable==1 ? 'Yes' : 'No'}}
+							{{$ap->variant->is_refundable==1 ? 'Refundable' : 'Non Refundable'}}
 						</td>
 						<td class="text-center" >
 						
@@ -274,7 +274,7 @@ $(function() {
 						
                   </tr>
 				  
-				  @if($ap->variant->touroption_id != '') 
+				 @if($ap->variant->touroption_id != '' && $ap->variant->rayna_cancellation_policy != '')  
 					
 				  	<tr style="background:green;color:#fff!important;">
 					  <td colspan="9" style="color:#fff!important;">
@@ -508,7 +508,7 @@ $(function() {
 						
 						</td>
 						<td class="text-left" >
-							{{$ap->variant->is_refundable==1 ? 'Yes' : 'No'}}
+							{{$ap->variant->is_refundable==1 ? 'Refundable' : 'Non Refundable'}}
 						</td>
 						<td class="text-center" rowspan="{{ $varaint_count }}">
 						
@@ -732,7 +732,7 @@ $(function() {
 						
 						</td>
 						<td class="text-left" >
-							{{$ap->variant->is_refundable==1 ? 'Yes' : 'No'}}
+							{{$ap->variant->is_refundable==1 ? 'Refundable' : 'Non Refundable'}}
 						</td>
 						<td class="text-center" >
 						
@@ -740,7 +740,7 @@ $(function() {
 						</td>
 						
                   </tr>
-				  @if($ap->variant->touroption_id != '') 
+				  @if($ap->variant->touroption_id != '' && $ap->variant->rayna_cancellation_policy != '') 
 					
 				  <tr id="note_{{$kk}}" class="note d-none" style="background:green;color:#fff!important;">
 						<td colspan="10" style="color:#fff!important;">
