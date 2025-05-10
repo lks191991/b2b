@@ -74,6 +74,7 @@
                   <tr>
                     <th width="10%">#</th>
                     <th width="10%">V-Code</th>
+					<th width="10%">Tour Option</th>
                     <th width="30%">User</th>
 					          <th width="40%">IP</th>
                     <th width="10%">Created</th>
@@ -90,6 +91,7 @@
                       {{ $record->voucher->code }}
                                     </a>
                   </td>
+				   <td class="">{{ $record->voucherActivity->variant_name ?? 'N/A' }}</td>
                   <td class="">{{ $record->user->full_name ?? 'N/A' }}</td>
                   
                     <td class="">{{ $record->user_ip }}</td>

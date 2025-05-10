@@ -1086,12 +1086,12 @@ $controller = preg_replace('/.*\\\/', '', $controller);
               </li>
                @php
         $class=''; $active='';
-        if($controller == 'LogsController' and in_array($action,array('downloadTicketLogs'))){
+        
+        if($controller == 'LogsController' and in_array($action,array('ticketDownloadLogs'))){
           $class = 'menu-open';
           $active = 'active';
         }
    
-    
         @endphp 
 			  <li class="nav-item ">
               <a href="{{ route('logs.ticket.download') }}" class="nav-link {{$active}}">
