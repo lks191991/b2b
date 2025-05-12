@@ -238,6 +238,7 @@ class VariantsController extends Controller
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
 		$record->cancel_after_ticket_down = $request->input('cancel_after_ticket_down');
+		$record->all_name_required = $request->input('all_name_required');
 		if (!empty($request->input('optionName'))) {
 			$record->touroption_id = $request->input('tourOptionId');
 			$raynaCancellationPolicy = $this->raynaGetCancellationPolicy($record->touroption_id);
@@ -527,6 +528,7 @@ class VariantsController extends Controller
 		$record->type = $request->input('type');
 		$record->is_refundable = $request->input('is_refundable');
 		$record->cancel_after_ticket_down = $request->input('cancel_after_ticket_down');
+		$record->all_name_required = $request->input('all_name_required');
 		$record->touroption_id = $request->input('optionName') ? $request->input('tourOptionId') : null;
 		if (!empty($record->touroption_id)) {
 			$raynaCancellationPolicy = $this->raynaGetCancellationPolicy($record->touroption_id);

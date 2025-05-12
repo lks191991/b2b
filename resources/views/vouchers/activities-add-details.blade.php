@@ -477,7 +477,8 @@
     discount: discount,
     tourDate: tourDate,
     zonevalue: zonevalue,
-	 zoneValueChild: zoneValueChild
+	 zoneValueChild: zoneValueChild,
+	inputnumber: inputnumber
   };
 
   getPrice(argsArray)
@@ -641,7 +642,8 @@
     discount: discount,
     tourDate: tourDate,
     zonevalue: zonevalue,
-	zoneValueChild: zoneValueChild
+	zoneValueChild: zoneValueChild,
+	inputnumber: inputnumber
   };
 
   getPrice(argsArray)
@@ -672,6 +674,15 @@
       dataType: "json",
       data: argsArray,
       success: function(data) {
+		const totalPrice = data.variantData?.totalprice ?? 0;
+        const allButtons = $('.addToCart');
+
+        if (totalPrice <= 0) {
+          allButtons.prop('disabled', true).css('pointer-events', 'none');
+        } else {
+          allButtons.prop('disabled', false).css('pointer-events', 'auto');
+        }
+		
         resolve(data);
       },
       error: function(error) {

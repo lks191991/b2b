@@ -37,15 +37,21 @@
                     <span class="text-danger">{{ $errors->first('title') }}</span>
                 @endif
               </div>
-			
-			  <div class="form-group col-md-4">
+				
+			  <div class="form-group col-md-2">
                 <label for="inputName">Code: <span class="red">*</span></label>
                 <input type="text" id="code" name="code" value="{{ old('code') }}" class="form-control"  placeholder="Name" />
                 @if ($errors->has('code'))
                     <span class="text-danger">{{ $errors->first('code') }}</span>
                 @endif
               </div>
-			
+			<div class="form-group col-md-2">
+                <label for="inputName">All Name Required:</label>
+                <select name="all_name_required" id="all_name_required" class="form-control">
+                    <option value="1" @if(old('all_name_required') ==1) {{'selected="selected"'}} @endif>Yes</option>
+					          <option value="0" @if(old('all_name_required') ==0) {{'selected="selected"'}} @endif >No</option>
+                 </select>
+              </div>
               <div class="form-group col-md-2">
                 <label for="inputName">Type:</label>
                 <select name="type" id="type" class="form-control">
@@ -74,7 +80,7 @@
                     <span class="text-danger">{{ $errors->first('booking_window') }}</span>
                 @endif
               </div>			  
-				<div class="form-group col-md-2">
+				<div class="form-group col-md-3">
                 <label for="inputName">Cancellation Value (In Hours):</label>
                 <input type="text" id="cancellation_value" name="cancellation_value" value="{{ old('cancellation_value') }}" class="form-control"  placeholder="Cancellation Value (In Hours)" />
                 @if ($errors->has('cancellation_value'))
@@ -88,7 +94,13 @@
 					          <option value="1" @if(old('is_refundable') ==1) {{'selected="selected"'}} @endif >Non Refundable</option>
                  </select>
               </div>
-             
+                <div class="form-group col-md-2">
+                <label for="inputName">Cancel After TKT Download:</label>
+                <select name="cancel_after_ticket_down" id="cancel_after_ticket_down" class="form-control">
+                    <option value="1" @if(old('cancel_after_ticket_down') ==1) {{'selected="selected"'}} @endif>Yes</option>
+					<option value="0" @if(old('cancel_after_ticket_down') ==0) {{'selected="selected"'}} @endif >No</option>
+                 </select>
+              </div>
 			  
 			   <div class="form-group col-md-4">
                 <label for="inputName">Is Open Dated:</label>

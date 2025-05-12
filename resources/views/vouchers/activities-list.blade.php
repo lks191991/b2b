@@ -477,7 +477,8 @@ $('.actcsk:first').prop('checked', true).trigger("change");
     tourDate: tourDate,
     zonevalue: zonevalue,
 	zoneValueChild: zoneValueChild,
-  activityType: activityType
+  activityType: activityType,
+	inputnumber: inputnumber
   };
 
   getPrice(argsArray)
@@ -726,7 +727,8 @@ $('#Noslot').modal('show');
     discount: discount,
     tourDate: tourDate,
     zonevalue: zonevalue,
-	zoneValueChild: zoneValueChild
+	zoneValueChild: zoneValueChild,
+	inputnumber: inputnumber
   };
 
   getPrice(argsArray)
@@ -784,6 +786,15 @@ return zoneChildValue;
       dataType: "json",
       data: argsArray,
       success: function(data) {
+		const totalPrice = data.variantData?.totalprice ?? 0;
+        const allButtons = $('.addToCart');
+
+        if (totalPrice <= 0) {
+          allButtons.prop('disabled', true).css('pointer-events', 'none');
+        } else {
+          allButtons.prop('disabled', false).css('pointer-events', 'auto');
+        }
+		
         resolve(data);
       },
       error: function(error) {

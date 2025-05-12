@@ -462,7 +462,8 @@ border-bottom: var(--bs-modal-footer-border-width) solid var(--bs-modal-footer-b
     discount: discount,
     tourDate: tourDate,
     zonevalue: zonevalue,
-	zoneValueChild: zoneValueChild
+	zoneValueChild: zoneValueChild,
+	inputnumber: inputnumber
   };
 
   getPrice(argsArray)
@@ -527,7 +528,9 @@ $(document).on('click', '.priceModalBtn', function(evt) {
     discount: discount,
     tourDate: tourDate,
     zonevalue: zonevalue,
-	zoneValueChild: zoneValueChild
+	zoneValueChild: zoneValueChild,
+	inputnumber: inputnumber
+	
   };
 
   getPrice(argsArray)
@@ -650,6 +653,15 @@ $(document).on('click', '.priceModalBtn', function(evt) {
       dataType: "json",
       data: argsArray,
       success: function(data) {
+		 const totalPrice = data.variantData?.totalprice ?? 0;
+        const allButtons = $('.addToCart');
+
+        if (totalPrice <= 0) {
+          allButtons.prop('disabled', true).css('pointer-events', 'none');
+        } else {
+          allButtons.prop('disabled', false).css('pointer-events', 'auto');
+        }
+		
         resolve(data);
 		
       },

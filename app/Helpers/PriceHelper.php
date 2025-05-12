@@ -261,7 +261,7 @@ $zonePriceAr = [];
 				
 				//$total = round(($grandTotal+$vatPrice - $discount),2);
 				$total = round(($grandTotal),2);
-				
+				($total<0)?$total=0:$total;
 
 				$data['adultPrice'] += $adultPrice;
 				$data['childPrice'] += $childPrice;
