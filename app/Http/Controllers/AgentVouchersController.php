@@ -851,11 +851,11 @@ class AgentVouchersController extends Controller
 							$actData = $data[0];
 							$errors = [];
 
-							if ($actData['rayna_adultPrice'] > $actData['adultPrice']) {
-								$errors[] = "Adult price error.";
+							if ($actData['rayna_adultPrice'] > ($actData['adultPrice']* $payload['adult'])) {
+								$errors[] = "Adult price error. ";
 							}
 
-							if ($actData['rayna_childPrice'] > $actData['childPrice']) {
+							if ($actData['rayna_childPrice'] > ($actData['childPrice']* $payload['adult'])) {
 								$errors[] = "Child price error.";
 							}
 
