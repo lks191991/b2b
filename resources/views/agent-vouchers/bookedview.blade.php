@@ -2,6 +2,9 @@
 @section('content')
 @php
 //$currency = SiteHelpers::getCurrencyPrice();
+$voucher->currency_code = empty($voucher->currency_code) ? "AED" : $voucher->currency_code;
+$voucher->currency_value = empty($voucher->currency_value) ? 1 : $voucher->currency_value;
+
 @endphp
    
 
@@ -253,7 +256,6 @@ $aid = 0;
                                                 <span  class="clear">
                                                 
                                                 @if(($ap->activity_product_type != 'Bundle_Same') && ($ap->activity_product_type != 'Bundle_Diff'))   
-                                               
                                                 {{$voucher->currency_code}} {{$aPrice*$voucher->currency_value}}
                                                 <small class="clear"><br/>Inclusive of taxes</small>
 
@@ -365,10 +367,10 @@ $aid = 0;
                     
 					@elseif($ap->ticket_generated == '1' && $ap->isRayna == '1' && $ap->status > 3 && $ap->status < 6)
 
-					 <a class=""  href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')" >Download Ticket</a>
+					 <a class=""  href="javascript:void(0)" onclick="downloadTicket('{{$ap->id}}')" >Download Ticket</a>
 							
                     @elseif(($ap->ticket_generated == '1') and ($ap->status == '4'))
-                    <a class=""  href="javascript:void(0)" onclick="TicketModel('{{$ap->id}}')" >Download Ticket</a>
+                    <a class=""  href="javascript:void(0)" onclick="downloadTicket('{{$ap->id}}')" >Download Ticket</a>
                     @endif
                     @endif
                                     </div>
@@ -621,6 +623,11 @@ $(document).ready(function() {
 			 
 	
  });
+ 
+  $(document).on('click', '#DownloadTicketmodel .close', function () {
+    $('#DownloadTicketmodel').modal('hide');
+});
+
  });
 function openModal(cancel,formid) {
         $('#cancelModal').modal('show');
@@ -651,9 +658,10 @@ function TicketModel(id) {
        $('#DownloadTicketmodel').modal('show');
 	   $('#apid').val(id);
     }
-function downloadTicket() {
-		var id = $('#apid').val();
-        event.preventDefault();
+function downloadTicket(id) {
+			$('#apid').val(id);
+		//var id = $('#apid').val();
+       event.preventDefault();
         document.getElementById('tickets-generate-form-'+id).submit();
     }</script>
 @endsection

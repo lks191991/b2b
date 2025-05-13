@@ -675,7 +675,12 @@ class ReporsController extends Controller
 		{
 			$startDate = date('Y-m-d', strtotime($data['from_date']));
 			$endDate = date('Y-m-d', strtotime($data['to_date']));
-			if($data['booking_type'] == 2) {
+			if(Auth::user()->role_id == '3'){
+			$query->whereDate('date_of_receipt', '>=', $startDate);
+			$query->whereDate('date_of_receipt', '<=', $endDate);
+			}
+			else{
+				if($data['booking_type'] == 2) {
 				$query->whereDate('service_date', '>=', $startDate);
 				$query->whereDate('service_date', '<=', $endDate);
 			   }
@@ -683,7 +688,7 @@ class ReporsController extends Controller
 				$query->whereDate('date_of_receipt', '>=', $startDate);
 				$query->whereDate('date_of_receipt', '<=', $endDate);
 			   }
-			
+			}
 
 			$s = 1;
 			if($agent_id!='')

@@ -219,7 +219,7 @@ class RaynaHelper
                 $returnData[$actId] = ['status' => false, 'error' => 'Request failed with status code: ' . $response->status(), 'adata' => 0];
             }
         }
-
+        $rro_data = 0;
         // Categorize booked and non-booked activities
         foreach ($returnData as $key => $value) {
             if ($value['status'] == true) {
@@ -227,6 +227,8 @@ class RaynaHelper
             } else {
                 $nonbooked[$key] = $key;
             }
+
+            $rro_data = $value['adata'];
         }
 
         if (count($bookedId) > 0 && count($nonbooked) > 0) {
@@ -242,7 +244,8 @@ class RaynaHelper
        // dd($errorMessage);
         return [
             'status' => (count($nonbooked) > 0) ? false : true,
-            'error' => $errorMessage
+            'error' => $errorMessage,
+            'adata' => $rro_data
         ];
     }
 
@@ -279,7 +282,7 @@ class RaynaHelper
 					"infant" => (int) ($vac->infant ?? 0),
 					"tourDate" => !empty($vac->tour_date) ? (string) date("Y-m-d", strtotime($vac->tour_date)) : "2025-02-25",
 					"timeSlotId" =>(int) $vac->timeSlotId,
-					"startTime" => !empty($vac->time_slot) ? (string) date("h:i A", strtotime($vac->time_slot)) : "10:00 AM",
+					"startTime" =>  !empty($vac->time_slot) ? (string) date("H:i", strtotime($vac->time_slot)) : "10:00",
 					"transferId" => 41865,
 					"pickup" => (string) $vac->pickup_location ?? "Hotel XYZ",
 					"adultRate" =>($vac->adult > 0 && isset($vac->rayna_adultPrice)) ? (float) ($vac->rayna_adultPrice) : 0.00,
@@ -300,7 +303,7 @@ class RaynaHelper
 					"message" => $voucher->remark ?? "Looking forward to the tour",
 					"leadPassenger" => 1,
 					"paxType" => "Adult",
-					"clientReferenceNo" => $voucher->agent_ref_no ?? "",
+					"clientReferenceNo" => $voucher->code ?? "",
 				];
 		}
 

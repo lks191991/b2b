@@ -101,7 +101,7 @@ $inf = ($abap->prices->infant_min_no_allowed > 0)?$abap->prices->infant_min_no_a
 						@endforeach
 		
 					@if(($activity->product_type == 'Bundle_Same'))
-					<strong>{{$bap->activity->title}} </strong> {!! !empty($bap->variant->touroption_id) ? '<span class="rayna-f">R</span>' : '' !!}
+					<strong>{{$bap->activity->title}} </strong> {!! !empty($bap->variant->touroption_id) ? '<span class="rayna-f" style-"display:none">R</span>' : '' !!}
 </td>
 					<td>
 						@php
@@ -355,7 +355,7 @@ $dates = $disabledDay = "";
 <input type="hidden"  name="activity_variant_code[{{$ap->ucode}}]" id="activity_variant_code{{$kk}}" value="{{implode(',',$activites_code)}}" data-inputnumber="{{$kk}}" /> 
 
 					<input type="checkbox"  name="activity_select_display" required id="activity_select_display{{$kk}}" value="" checked  data-inputnumber="{{$kk}}" disabled />
-					<input type="checkbox"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0')  @endif class="actcsk d-none" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong> {!! !empty($ap->variant->touroption_id) ? '<span class="rayna-f">R</span>' : '' !!}
+					<input type="checkbox"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0')  @endif class="actcsk d-none" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong> {!! !empty($ap->variant->touroption_id) ? '<span class="rayna-f" style-"display:none">R</span>' : '' !!}
 
 				
 					</td>
@@ -588,7 +588,7 @@ $dates = $disabledDay = "";
 					
 					<input type="hidden"  name="activity_variant_title[{{$ap->ucode}}]" id="activity_variant_title{{$kk}}" value="{{$ap->variant->title}}" data-inputnumber="{{$kk}}" />
 					
-					<input type="radio"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0') checked='checked' @endif class="actcsk" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong> {!! !empty($ap->variant->touroption_id) ? '<span class="rayna-f">R</span>' : '' !!}
+					<input type="radio"  name="activity_select" required id="activity_select{{$kk}}" value="{{ $ap->ucode }}" @if($kk == '0') checked='checked' @endif class="actcsk" data-inputnumber="{{$kk}}" /> <strong>{{$ap->variant->title}} </strong> {!! !empty($ap->variant->touroption_id) ? '<span class="rayna-f" style-"display:none">R</span>' : '' !!}
 
 				
 					</td>

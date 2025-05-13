@@ -1736,7 +1736,7 @@ class VouchersController extends Controller
 	return \Response::make($content,200, $headers);
     }
 
-	public function voucherHotelInputSae(Request $request)
+	public function voucherHotelInputSave(Request $request)
     {
 		$data = $request->all();
 		
