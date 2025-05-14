@@ -490,10 +490,14 @@ class VouchersController extends Controller
 		$hotelPriceTotal = 0;
 		$grandTotal = 0;
 		$record = Voucher::where('id',$id)->first();
-		
+		exit;
 		if (empty($record)) {
             return abort(404); //record not found
         }
+
+		if (!isset($data['tearmcsk'])) {
+			return redirect()->back()->with('error', 'Please accept Terms and Conditions.');
+		}
 
 		$voucherActivity = VoucherActivity::where('voucher_id',$record->id);
 		$voucherActivityRecord = $voucherActivity->get();

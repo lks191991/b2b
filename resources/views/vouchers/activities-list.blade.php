@@ -176,7 +176,7 @@
                  <i class="far fa-fw  fa-check-circle"></i> Instant Confirmation
                 </li>
 				@endif
-                <li  class="text-color">
+                <li  class="text-color" style="display:none">
                  <i class="far fa-fw  fa-check-circle "></i> {!!$cutoffTime!!}
                 </li>
                

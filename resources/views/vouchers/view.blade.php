@@ -438,7 +438,7 @@
     <div class="card-footer">
       <div class="row" style="margin-bottom: 5px;">
         <div class="col-md-12 text-left">
-          <input type="checkbox" name="tearmcsk" checked required id="tearmcsk" /> By clicking Pay Now you agree that you have read ad understood our Terms and Conditions
+          <input type="checkbox" name="tearmcsk" checked required id="tearmcsk" placeholder="Terms and Conditions required" /> By clicking Pay Now you agree that you have read ad understood our Terms and Conditions
 		  <br><label id="tearmcsk_message" for="tearmcsk" class="error hide" >This field is required.</label>
         </div>
         <div class="col-12 text-right">

@@ -328,7 +328,7 @@ $currency = SiteHelpers::getCurrencyPrice();
        
                                             <ul>
                                                 <li class="paypal active " style="margin-bottom: 15px;">
-                                                <input type="radio" checked name="payment" value="creditLimit" /> Credit Limit (Wallet Balance AED {{($balance > 0)?$balance:0}})
+                                                <input type="radio" checked name="payment" value="creditLimit" /> Credit Limit (AED {{$voucher->agent->agent_credit_limit}}) (Wallet Balance AED {{($balance > 0)?$balance:0}})
                                                 </li>
                                                 <li class="stripe"  style="margin-bottom: 15px;">
 												@if($voucher->agent->flyremit_reg=='1' && $currency['code']=='INR' && $voucher->agent->country_id=='94')
@@ -347,7 +347,7 @@ $currency = SiteHelpers::getCurrencyPrice();
         <div class="col-md-12">
                                       <div class="form-inner">
                                           <label class="containerss">
-                                              <input type="checkbox" required='required'>
+                                              <input type="checkbox" required placeholder="Terms and Conditions required" name="tearmcsk" id="tearmcsk">
                                               <span class="checkmark"></span>
                                               <span class="text">By clicking Pay Now you agree that you have read ad understood our Terms and Conditions</span>
                                           </label>
@@ -934,7 +934,13 @@ $('#cusDetails').validate({
 
   if ($('#cusDetails').valid()) {
     loaderOverlay.show();
+	var selectedtandc = $('input[name="tearmcsk"]:checked').val();
+	if (!selectedtandc) {
+	alert("You must accept the Terms and Conditions.");
+	 loaderOverlay.hide();
+	return false; 
 
+	} 
     setTimeout(function() {
       $('#cusDetails').submit(); 
     }, 500);

@@ -964,12 +964,17 @@ class AgentVouchersController extends Controller
 	
 	public function statusChangeVoucher(Request $request,$id)
     {
+		
 		$redirectResponse = $this->chekAgentLogin();
 		if ($redirectResponse) {
 		return $redirectResponse;
 		}
 		
 		$data = $request->all();
+		if (!isset($data['tearmcsk'])) {
+			return redirect()->back()->with('error', 'Please accept Terms and Conditions.');
+		}
+
 		$hotelPriceTotal = 0;
 		$grandTotal = 0;
 		$record = Voucher::where('id',$id)->first();
