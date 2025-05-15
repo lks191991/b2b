@@ -44,19 +44,25 @@
 			  <div class="row" >
             <form id="filterForm" class="form-inline" method="get" action="{{ route('logs.ticket.download') }}" >
               <div class="form-row align-items-center">
-			   <div class="col-auto col-md-3">
+			   <div class="col-auto col-md-2">
                   <div class="input-group mb-2">
                     <div class="input-group-prepend"><div class="input-group-text">Voucher Code</div></div>
-                    <input type="text" name="v_code" value="{{ request('v_code') }}" class="form-control " autocomplete ="off"  placeholder="Voucher Code" />
+                    <input type="text" name="v_code" value="{{ request('v_code') }}" class="form-control " autocomplete ="off"  placeholder="Code" />
                   </div>
                 </div>
-			  <div class="col-auto col-md-3">
+				 <div class="col-auto col-md-3">
+                  <div class="input-group mb-2">
+                    <div class="input-group-prepend"><div class="input-group-text">Tour Option</div></div>
+                    <input type="text" name="v_option" value="{{ request('v_option') }}" class="form-control " autocomplete ="off"  placeholder="Option" />
+                  </div>
+                </div>
+			  <div class="col-auto col-md-2">
                   <div class="input-group mb-2">
                     <div class="input-group-prepend"><div class="input-group-text">From Date</div></div>
                     <input type="text" name="from_date" value="{{ request('from_date') }}" autocomplete ="off" class="form-control datepicker"  placeholder="From Date" />
                   </div>
                 </div>
-				<div class="col-auto col-md-3">
+				<div class="col-auto col-md-2">
                   <div class="input-group mb-2">
                     <div class="input-group-prepend"><div class="input-group-text">To Date</div></div>
                     <input type="text" name="to_date" value="{{ request('to_date') }}" class="form-control datepicker" autocomplete ="off"  placeholder="To Date" />
@@ -73,15 +79,19 @@
              
             </form>
           </div>
+		  
         </div>
                 <table id="example1" class="table table-bordered table-striped" >
                   <thead>
+				   <tr>
+                    <th colspan="6"><h5>Total Downloaded Record : <b>{{$totalRecords}}</b></h5></th>
+                  </tr>
                   <tr>
                     <th width="10%">#</th>
                     <th width="10%">V-Code</th>
 					<th width="10%">Tour Option</th>
                     <th width="30%">User</th>
-					          <th width="40%">IP</th>
+					<th width="40%">IP</th>
                     <th width="10%">Created</th>
                   </tr>
 				  

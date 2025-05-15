@@ -41,7 +41,12 @@
      <script src="{{asset('front/assets/js/jquery-3.7.1.min.js')}}"></script>
 	 
 </head>
-
+<style>
+  /* let pointer events pass through the loader overlay */
+  #loader-overlay {
+    pointer-events: none !important;
+  }
+</style>
 <body>
   <div id="loader-overlay">
   <div class="loader"></div>

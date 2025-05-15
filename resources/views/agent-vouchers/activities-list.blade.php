@@ -705,6 +705,7 @@ $(document).on('click', '.priceModalBtn', function(evt) {
 var to = $("body #transfer_option" + inputnumber).find(':selected').val();
 
   loaderOverlay.show();
+  
 	adultChildReq(adult,child,inputnumber);
   const argsArray = {
     transfer_option: transferOptionName,
@@ -780,6 +781,8 @@ var to = $("body #transfer_option" + inputnumber).find(':selected').val();
   $(document).on('click', '.addToCart', function(evt) {
 	  evt.preventDefault();
 	  loaderOverlay.show();
+	   $('#timeslot').val('');
+		$('#timeSlotId').val('');
 	 if($('body #cartForm').validate({})){
 		
      variant_id = $(this).data('variantid');

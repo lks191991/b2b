@@ -190,8 +190,14 @@ class RaynaHelper
                                 ->first();
 
                             if ($voucherActivity) {
+                                $costTotal = (float) ($voucherActivity->rayna_adultPrice ?? 0) + (float) ($voucherActivity->rayna_childPrice ?? 0)  + (float) ($voucherActivity->rayna_infantPrice ?? 0);
+
                                 $voucherActivity->RaynaBooking_uniqNO = $uniqueNo;
                                 $voucherActivity->referenceNo = $bookings['referenceNo'];
+                                $voucherActivity->supplier_ticket = '9dcb9756-d4fa-462b-b0da-4f8c2a08bc4d';
+                                $voucherActivity->ticket_supp_ref_no = $bookings['referenceNo'];
+                                $voucherActivity->actual_total_cost = $costTotal;
+
                                 $voucherActivity->RaynaBooking_uniqNO = $uniqueNo;
                                 $voucherActivity->rayna_booking_details = json_encode($bookingDetails);
                                 if($hasFail== 1){
