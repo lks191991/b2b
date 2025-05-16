@@ -77,6 +77,8 @@ class ProcessTourOptionData implements ShouldQueue
                                         'compulsoryOptions' => $option['compulsoryOptions'],
                                         'isHideRateBreakup' => $option['isHideRateBreakup'],
                                         'isHourly' => $option['isHourly'],
+										'termsAndConditions' => $option['termsAndConditions'],
+										
                                     ]
                                 );
                             }

@@ -82,6 +82,7 @@ class APITourOptionStaticData extends Command
                                     'compulsoryOptions' => $option['compulsoryOptions'],
                                     'isHideRateBreakup' => $option['isHideRateBreakup'],
                                     'isHourly' => $option['isHourly'],
+									'termsAndConditions' => $option['termsAndConditions'],
                                 ]
                             );
                         }
