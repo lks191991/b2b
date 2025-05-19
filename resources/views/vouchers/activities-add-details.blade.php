@@ -781,7 +781,9 @@ function openTimeSlotModal(slots, isRayna, vdata) {
             $target.val(val); 
         }
     }
-    $('.priceChange').first().trigger('change');
+	
+    var inputNumber = $('input[name="activity_select"]:checked').data('inputnumber');
+	$('.priceChange[data-inputnumber="' + inputNumber + '"]').trigger('change');
 });
 
 
