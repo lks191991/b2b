@@ -2196,14 +2196,16 @@ public function productMaster(Request $request)
 			$filter = 1;
 			$startDate = date("Y-m-d", strtotime($data['from_date']));
 			$endDate = date("Y-m-d", strtotime($data['to_date']));
+			$query->whereDate('rate_valid_from', '>=', $startDate);
+			$query->whereDate('rate_valid_to', '<=', $endDate);
 		} else {
 			$filter = 1; 
 			$startDate = date("Y-m-d"); 
 			$endDate = date("Y-m-d", strtotime("+1 month"));
+			$query->whereDate('rate_valid_to', '<=', $endDate);
 		}
 		
-		$query->whereDate('rate_valid_from', '>=', $startDate);
-		$query->whereDate('rate_valid_to', '<=', $endDate);
+		
 		
 		
 		
