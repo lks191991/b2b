@@ -5,6 +5,7 @@
 $currency = SiteHelpers::getCurrencyPrice();
 @endphp
 
+
 <div class="breadcrumb-section"
         style="background-image: linear-gradient(270deg, rgba(0, 0, 0, .3), rgba(0, 0, 0, 0.3) 101.02%), url({{asset('front/assets/img/innerpage/inner-banner-bg.png')}});">
         <div class="container">
@@ -54,7 +55,7 @@ $currency = SiteHelpers::getCurrencyPrice();
                                 <div class="col-md-6">
                                     <div class="form-inner mb-30">
                                         <label>Mobile No.*</label>
-                                        <input type="text" name="customer_mobile" value="{{(!empty($voucher->guest_phone))?$voucher->guest_phone:$voucher->agent->mobile}}" class="form-control" placeholder="Mobile No." >
+                                        <input type="text" name="customer_mobile" value="{{(!empty($voucher->guest_phone))?$voucher->guest_phone:$voucher->agent->mobile}}" class="form-control" placeholder="Mobile No." required >
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -652,7 +653,7 @@ $aid = 0;
     });
 	 
 
-$('#cusDetails').validate({
+/* $('#cusDetails').validate({
         errorPlacement: function (error, element) {
             // Customize error placement logic here
             if (element.attr("name") === "fname") {
@@ -665,7 +666,7 @@ $('#cusDetails').validate({
             }
         },
         // Other validation options...
-    });
+    }); */
 
 	 $(document).on('blur', '.inputsave', function(evt) {
 		
@@ -922,39 +923,65 @@ $('#cusDetails').validate({
        document.getElementById('cusDetails').submit();
       
     }
-    $('#btn_paynow').on('click', function(event) {
-  event.preventDefault();
+  $('#btn_paynow').on('click', function(event) {
+    event.preventDefault();
 
-  const loaderOverlay = $("body #loader-overlay");
+    const loaderOverlay = $("body #loader-overlay");
+    const form = $('#cusDetails');
+    const buttonName = $(this).attr('name');
+    const buttonValue = $(this).val();
+    // Append button info
+    form.append(`<input type="hidden" name="${buttonName}" value="${buttonValue}" />`);
 
-  var buttonName = $(this).attr('name');
-  var buttonValue = $(this).val();
+    let firstInvalid = null;
+    let name = '';
 
-  $('#cusDetails').append(`<input type="hidden" name="${buttonName}" value="${buttonValue}" />`);
+    let requiredValid = true;
+   
 
-  if ($('#cusDetails').valid()) {
-    loaderOverlay.show();
-	var selectedtandc = $('input[name="tearmcsk"]:checked').val();
-	if (!selectedtandc) {
-	alert("You must accept the Terms and Conditions.");
-	 loaderOverlay.hide();
-	return false; 
+   
 
-	} 
-    setTimeout(function() {
-      $('#cusDetails').submit(); 
-    }, 500);
-  } else {
-    var name = '';
-    $('#cusDetails').find(':input').each(function() {
-      if (!$(this).valid()) {
-        name = $(this).attr('placeholder'); 
-        return false; 
-      }
+    if (!form.valid()) {
+        form.find(':input').each(function() {
+            if (!$(this).valid()) {
+                name = $(this).attr('placeholder') || 'a required field';
+                firstInvalid = this;
+                return false; 
+            }
+        });
+
+        alert("Please fill " + name);
+        if (firstInvalid) $(firstInvalid).focus();
+        return false;
+    }
+
+ $('.required').each(function() {
+        if ($(this).val().trim() === '') {
+            requiredValid = false;
+            firstInvalid = this;
+            name = $(this).attr('placeholder') || 'Required field';
+            return false; 
+        }
     });
 
-    alert("Please fill " + name); 
-  }
+    if (!requiredValid) {
+        alert("Please fill " + name);
+        $(firstInvalid).focus();
+        return false; 
+    }
+
+    const selectedtandc = $('input[name="tearmcsk"]:checked').val();
+    if (!selectedtandc) {
+        alert("You must accept the Terms and Conditions.");
+        loaderOverlay.hide();
+        return false;
+    }
+    loaderOverlay.show();
+    setTimeout(() => {
+        form.submit();
+    }, 500);
 });
+
+
     </script>
 @endsection
