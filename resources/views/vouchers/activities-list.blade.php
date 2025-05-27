@@ -893,7 +893,8 @@ function openTimeSlotModal(slots, isRayna, vdata) {
           }
       }
 	
-      $('.priceChange').first().trigger('change');
+       var inputNumber = $('input[name="activity_select"]:checked').data('inputnumber');
+	   $('.priceChange[data-inputnumber="' + inputNumber + '"]').trigger('change');
 });
 
 

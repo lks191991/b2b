@@ -977,7 +977,9 @@ function adultChildReq(a,c,inputnumber) {
           }
       }
 	
-      $('.priceChange').first().trigger('change');
+      var inputNumber = $('input[name="activity_select"]:checked').data('inputnumber');
+	$('.priceChange[data-inputnumber="' + inputNumber + '"]').trigger('change');
+	
 });
 
 
@@ -1404,7 +1406,8 @@ for (let key in valMap) {
       $target.val(val); 
   }
 }
-$('.priceChange').first().trigger('change');
+var inputNumber = $('input[name="activity_select"]:checked').data('inputnumber');
+$('.priceChange[data-inputnumber="' + inputNumber + '"]').trigger('change');
 
 }
 
@@ -1460,7 +1463,8 @@ const valMap = {
             $target.val(val); 
         }
     }
-    $('.priceChange').first().trigger('change');
+    var inputNumber = $('input[name="activity_select"]:checked').data('inputnumber');
+	$('.priceChange[data-inputnumber="' + inputNumber + '"]').trigger('change');
 
     }
  </script> 
