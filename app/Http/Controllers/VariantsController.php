@@ -650,7 +650,8 @@ class VariantsController extends Controller
 
     foreach ($fieldsToCombine as $field) {
         if (!empty($record->$field)) {
-            $cleanedText = trim(strip_tags($record->$field));
+            //$cleanedText = trim(strip_tags($record->$field));
+			$cleanedText = trim($record->$field);
             if (!empty($cleanedText)) {
                 $lines[] = $cleanedText;
             }
