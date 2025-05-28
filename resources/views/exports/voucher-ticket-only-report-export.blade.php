@@ -29,6 +29,7 @@
                   </thead>
                   <tbody>
 				  @foreach ($records as $record)
+				  @if(($record->original_tkt_rate-$record->discount_tkt) > 0)
                   <tr>
 					<td>{{($record->voucher)?$record->voucher->code:''}}</td>
                     <td>{{$record->tour_date}}</td>
@@ -59,7 +60,7 @@
 					
 					
                   </tr>
-                 
+                 @endif 
                   @endforeach
                   </tbody>
                 </table>

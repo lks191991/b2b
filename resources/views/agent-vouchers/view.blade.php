@@ -356,7 +356,7 @@ $currency = SiteHelpers::getCurrencyPrice();
                                   </div>
                                     <div class="form-inner">
                                         <div class="row m-3">
-                                            <div class="col-6 text-right">
+                                            <div class="col-6 text-right" style="display:none">
                                               @if($voucher->status_main < 4 && $voucher->is_refundable==1)
                                               <button type="submit"  name="btn_hold" class="secondary-btn2">Hold</button>
                                               @endif

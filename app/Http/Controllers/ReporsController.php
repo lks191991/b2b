@@ -283,7 +283,7 @@ class ReporsController extends Controller
 		}
 		
 		if(isset($data['booking_status']) && !empty($data['booking_status'])) {
-			$query->where('status', '=', $data['booking_status']);
+			//$query->where('status', '=', $data['booking_status']);
 		}
 		
 		$query->whereHas('voucher', function($q)  use($data){
@@ -295,6 +295,7 @@ class ReporsController extends Controller
 			// });
        // $records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
 		$records = $query->orderBy('created_at', 'DESC')->get();
+		
 		//$records = $query->get();
         return view('reports.voucher-ticket-only-report', compact('records','voucherStatus','supplier_ticket','supplier_transfer'));
 
@@ -304,61 +305,58 @@ class ReporsController extends Controller
     {
 		$this->checkPermissionMethod('list.voucherTicketOnlyReport');
 		$data = $request->all();
-		$perPage = config("constants.ADMIN_PAGE_LIMIT");
-		$voucherStatus = config("constants.voucherStatus");
-		$supplier_ticket = User::where("service_type",'Ticket')->orWhere('service_type','=','Both')->get();
-		$supplier_transfer = User::where("service_type",'Transfer')->orWhere('service_type','=','Both')->get();
 		
-		$query = VoucherActivity::with("activity")->where('id','!=', null)->whereNotIn('status',[1,2])->where('variant_type',1)->whereHas('activity', function ($query)  {
-			$query->whereIn('variant_type',  ["1"]);
-		});
-		
-		
-		 $twoDaysAgo = date("Y-m-d", strtotime(date("Y-m-d") . " -2 days"));
-		 $twoDaysNull = date("Y-m-d", strtotime(date("Y-m-d") . " +2 days"));
-		 if(isset($data['booking_type']) && !empty($data['booking_type'])) {
-			 
-			 if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
-			 $startDate = $data['from_date'];
-			 $endDate =  $data['to_date'];
-				 if($data['booking_type'] == 2) {
-				  $query->whereDate('tour_date', '>=', $startDate);
-				  $query->whereDate('tour_date', '<=', $endDate);
-				 }
-				 elseif($data['booking_type'] == 1) {
-					 $query->whereHas('voucher', function($q)  use($startDate,$endDate){
-				  $q->whereDate('booking_date', '>=', $startDate);
-				  $q->whereDate('booking_date', '<=', $endDate);
-				 });
-		 
-				 }
-				 }
-			 }
-		 else{
-			 $query->whereDate('tour_date', '>=', $twoDaysNull);
-		 }
-		 
-		 if(isset($data['vouchercode']) && !empty($data['vouchercode'])) {
-			 $query->whereHas('voucher', function($q)  use($data){
-				 $q->where('code', 'like', '%' . $data['vouchercode']);
-			 });
-		 }
-		 
-		 if(!empty(Auth::user()->zone)){
-			 $query->whereHas('voucher', function($q)  use($data){
-				 $q->where('zone', '=', Auth::user()->zone);
-			 });
-		 }
-		 
-		 if(isset($data['booking_status']) && !empty($data['booking_status'])) {
-			 $query->where('status', '=', $data['booking_status']);
-		 }
-		 
-		 $query->whereHas('voucher', function($q)  use($data){
-				 $q->where('status_main', '=', 5);
-			 });
-			 
+		$query = VoucherActivity::with("activity")
+		->where('id','!=', null)
+		->whereNotIn('status',[1,2]);
+	   
+	   
+		$twoDaysAgo = date("Y-m-d", strtotime(date("Y-m-d") . " -2 days"));
+		$twoDaysNull = date("Y-m-d", strtotime(date("Y-m-d") . " +2 days"));
+		if(isset($data['booking_type']) && !empty($data['booking_type'])) {
 			
+			if (isset($data['from_date']) && !empty($data['from_date']) &&  isset($data['to_date']) && !empty($data['to_date'])) {
+			$startDate = $data['from_date'];
+			$endDate =  $data['to_date'];
+				if($data['booking_type'] == 2) {
+				 $query->whereDate('tour_date', '>=', $startDate);
+				 $query->whereDate('tour_date', '<=', $endDate);
+				}
+				elseif($data['booking_type'] == 1) {
+					$query->whereHas('voucher', function($q)  use($startDate,$endDate){
+				 $q->whereDate('booking_date', '>=', $startDate);
+				 $q->whereDate('booking_date', '<=', $endDate);
+				});
+		
+				}
+				}
+			}
+		
+		
+        if(isset($data['vouchercode']) && !empty($data['vouchercode'])) {
+			$query->whereHas('voucher', function($q)  use($data){
+				$q->where('code', 'like', '%' . $data['vouchercode']);
+			});
+		}
+		
+		if(!empty(Auth::user()->zone)){
+			$query->whereHas('voucher', function($q)  use($data){
+				$q->where('zone', '=', Auth::user()->zone);
+			});
+		}
+		
+		if(isset($data['booking_status']) && !empty($data['booking_status'])) {
+			$query->where('status', '=', $data['booking_status']);
+		}
+		
+		$query->whereHas('voucher', function($q)  use($data){
+				$q->where('status_main', '=', 5);
+			});
+			
+			// $query->whereHas('voucher', function($q)  use($data){
+			// 	$q->orderBy('booking_date', 'DESC');
+			// });
+       // $records = $query->orderBy('created_at', 'DESC')->paginate($perPage);
 		$records = $query->orderBy('created_at', 'DESC')->get();
 		return Excel::download(new TicketOnlyReportExcelExport($records), 'ticket_only_records'.date('d-M-Y s').'.csv');
 
