@@ -658,10 +658,22 @@ function TicketModel(id) {
        $('#DownloadTicketmodel').modal('show');
 	   $('#apid').val(id);
     }
-function downloadTicket(id) {
-			$('#apid').val(id);
-		//var id = $('#apid').val();
-       event.preventDefault();
-        document.getElementById('tickets-generate-form-'+id).submit();
-    }</script>
+	
+function downloadTicket(id = 0) {
+    if (id > 0) {
+        $('#apid').val(id);
+    }
+
+    id = $('#apid').val();
+
+    const form = document.getElementById('tickets-generate-form-' + id);
+    if (form) {
+        form.submit();
+    } else {
+        console.error(`Form with ID 'tickets-generate-form-${id}' not found.`);
+    }
+}
+
+
+</script>
 @endsection
