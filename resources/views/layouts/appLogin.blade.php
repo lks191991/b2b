@@ -38,6 +38,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 	 <meta name="csrf-token" content="{{ csrf_token() }}" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" integrity="sha256-yMjaV542P+q1RnH6XByCPDfUFhmOafWbeLPmqKh11zo=" crossorigin="anonymous" />
      <script src="{{asset('front/assets/js/jquery-3.7.1.min.js')}}"></script>
 	 
 </head>
@@ -393,7 +394,7 @@ PO BOX 117900
     <script src="{{asset('front/assets/js/jquery.fancybox.min.js')}}"></script>
     <!-- Custom JS -->
     <script src="{{asset('front/assets/js/custom.js')}}"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js" integrity="sha256-5YmaxAwMjIpMrVlK84Y/+NjCpKnFYa8bWWBbUHSBGfU=" crossorigin="anonymous"></script>
 
     <script>
 	 $(function () {
@@ -414,7 +415,9 @@ PO BOX 117900
             duplicated: true,
             startVisible: true,
         });
-		
+		$('.timepicker').datetimepicker({
+            format: 'hh:mm a'
+        });
 		$('body').on('click', '.right-sidebar-close-btn', function () {
     $('.right-sidebar-menu').removeClass('show-right-menu');
 });

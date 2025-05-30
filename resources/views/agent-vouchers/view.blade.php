@@ -169,7 +169,7 @@ $currency = SiteHelpers::getCurrencyPrice();
               </div>
 			 
 			   <div class="col-md-6 form-inner mb-30 ">
-                 <input type="text" id="actual_pickup_time{{$ap->id}}" value="{{$ap->actual_pickup_time}}" class="form-control inputsave required" required placeholder="Arrival Time*" name="temp_10{{$ap->id}}" data-id="{{$ap->id}}" data-name="actual_pickup_time" />
+                 <input type="text" id="actual_pickup_time{{$ap->id}}" value="{{$ap->actual_pickup_time}}" class="form-control inputsave required timepicker" required placeholder="Arrival Time*" name="temp_10{{$ap->id}}" data-id="{{$ap->id}}" data-name="actual_pickup_time" />
 				 
               </div>
 			 
@@ -223,7 +223,7 @@ $currency = SiteHelpers::getCurrencyPrice();
                     @if(($ap->activity_entry_type=='Interhotel'))
 					 <div class="col-md-6 form-inner mb-30 ">
                
-                 <input type="text" id="actual_pickup_time{{$ap->id}}" value="{{$ap->actual_pickup_time}}" name="temp_1{{$ap->id}}" required class="form-control inputsave required"  placeholder="Pickup Time*" required data-id="{{$ap->id}}" data-name="actual_pickup_time" />
+                 <input type="text" id="actual_pickup_time{{$ap->id}}" value="{{$ap->actual_pickup_time}}" name="temp_1{{$ap->id}}" required class="form-control inputsave required timepicker"  placeholder="Pickup Time*" required data-id="{{$ap->id}}" data-name="actual_pickup_time" />
 				 
               </div>
               @endif
@@ -254,7 +254,7 @@ $currency = SiteHelpers::getCurrencyPrice();
 					
 					 <div class="col-md-6 form-inner mb-30 ">
                 
-                 <input type="text" id="actual_pickup_time{{$ap->id}}" value="{{$ap->actual_pickup_time}}" class="form-control inputsave required"  placeholder="Pickup Time*" required data-id="{{$ap->id}}" data-name="actual_pickup_time" />
+                 <input type="text" id="actual_pickup_time{{$ap->id}}" value="{{$ap->actual_pickup_time}}" class="form-control inputsave required timepicker"  placeholder="Pickup Time*" required data-id="{{$ap->id}}" data-name="actual_pickup_time" />
 				 
               </div>
 			  <div class="col-md-6 form-inner mb-30 ">
@@ -293,7 +293,7 @@ $currency = SiteHelpers::getCurrencyPrice();
                      @if(($activity->pvt_TFRS=='1') && ($activity->pick_up_required=='1'))
 					<div class="col-md-6 form-inner mb-30 ">
                 <label for="inputName"></label>
-                 <input type="text" id="actual_pickup_time{{$ap->id}}" value="{{$ap->actual_pickup_time}}" class="form-control inputsave required" required placeholder="Pickup Time*" data-id="{{$ap->id}}" data-name="actual_pickup_time" />
+                 <input type="text" id="actual_pickup_time{{$ap->id}}" value="{{$ap->actual_pickup_time}}" class="form-control inputsave required timepicker" required placeholder="Pickup Time*" data-id="{{$ap->id}}" data-name="actual_pickup_time" />
 				 
               </div>
                     @endif
